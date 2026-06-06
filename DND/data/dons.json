@@ -1,0 +1,390 @@
+{
+    "source": "aidedd.org",
+    "game": "D&D 5.5",
+    "feats": [
+        {
+            "name": "Adepte élémentaire",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur, capacité Sorts ou Magie de pacte",
+            "description": "Augmentez Intelligence, Sagesse ou Charisme de 1 (max 20). Choisissez un type de dégâts (Acide, Froid, Feu, Foudre, Tonnerre) : vos sorts ignorent la résistance à ce type. Les 1 sur les dés de dégâts de ce type deviennent des 2. Répétable avec un type différent."
+        },
+        {
+            "name": "Affinité féerique",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Augmentez Intelligence, Sagesse ou Charisme de 1 (max 20). Choisissez un sort de niveau 1 (Divination ou Enchantement) et obtenez également foulée brumeuse. Utilisable sans emplacement une fois par repos long."
+        },
+        {
+            "name": "Affinité ombreuse",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Augmentez Intelligence, Sagesse ou Charisme de 1 (max 20). Choisissez un sort de niveau 1 (Illusion ou Nécromancie) et invisibilité. Utilisable sans emplacement une fois par repos long."
+        },
+        {
+            "name": "Amélioration de caractéristique",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Augmentez une caractéristique de +2 ou deux de +1 (max 20). Répétable."
+        },
+        {
+            "name": "Archerie",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "+2 aux jets d’attaque avec armes à distance."
+        },
+        {
+            "name": "Arme à deux mains",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "Relancez les 1 et 2 des dés de dégâts des armes à deux mains ou polyvalentes (deviennent 3)."
+        },
+        {
+            "name": "Arme de lancer",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "+2 dégâts avec armes possédant la propriété Lancer."
+        },
+        {
+            "name": "Athlète",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur, Force ou Dextérité 13+",
+            "description": "+1 Force ou Dextérité (max 20). Vitesse d’escalade égale à la vitesse. Se relever avec 1,5 m de mouvement. Saut facilité."
+        },
+        {
+            "name": "Bagarreur de tavernes",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Améliore les frappes à mains nues (1d4+FOR), maîtrise des armes improvisées, repousse les ennemis, relance des 1 sur dégâts."
+        },
+        {
+            "name": "Broyeur",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Force ou Constitution. Déplacement de 1,5 m sur attaque contondante. Avantage après critique contondant."
+        },
+        {
+            "name": "Chanceux",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Points de chance égaux au bonus de maîtrise. Dépenser pour avantage ou imposer désavantage."
+        },
+        {
+            "name": "Chef cuisinier",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Constitution ou Sagesse. Cuisine améliorant repos court (1d8 PV bonus) et soins temporaires."
+        },
+        {
+            "name": "Combat à deux armes",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "Ajout modificateur de caractéristique aux dégâts de l’attaque bonus avec arme légère."
+        },
+        {
+            "name": "Combat à mains nues",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "Frappes améliorées (1d6 ou 1d8), dégâts sur cible agrippée."
+        },
+        {
+            "name": "Combat en aveugle",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "Vision aveugle 3 m."
+        },
+        {
+            "name": "Combattant à deux armes",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur, Force ou Dextérité 13+",
+            "description": "+1 caractéristique. Attaque bonus améliorée avec armes légères. Dégainage rapide."
+        },
+        {
+            "name": "Combattant monté",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 caractéristique. Avantages en combat monté, protection de la monture."
+        },
+        {
+            "name": "Comédien",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur, Charisme 13+",
+            "description": "+1 Charisme. Avantage en tromperie déguisée et imitation vocale."
+        },
+        {
+            "name": "Défense",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "+1 CA en armure."
+        },
+        {
+            "name": "Discret",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur, Dextérité 13+",
+            "description": "+1 Dextérité. Vision aveugle 3 m, avantage furtivité en combat."
+        },
+        {
+            "name": "Doué",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Maîtrise de 3 compétences ou outils. Répétable."
+        },
+        {
+            "name": "Duel",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "+2 dégâts avec arme à une main sans autre arme."
+        },
+        {
+            "name": "Duelliste défensif",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur, Dextérité 13+",
+            "description": "+1 Dextérité. Réaction pour ajouter bonus de maîtrise à la CA."
+        },
+        {
+            "name": "Empaleur",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Force ou Dextérité. Relance dégâts perforants. Bonus sur critique perforant."
+        },
+        {
+            "name": "Empoigneur",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 caractéristique. Attaques améliorées en lutte et avantage contre cibles agrippées."
+        },
+        {
+            "name": "Empoisonneur",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Dextérité ou Intelligence. Création de poison, effets de dégâts et empoisonnement."
+        },
+        {
+            "name": "Esprit affûté",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur, Intelligence 13+",
+            "description": "+1 Intelligence. Expertise et étude rapide."
+        },
+        {
+            "name": "Expert",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 caractéristique. Maîtrise compétence + expertise."
+        },
+        {
+            "name": "Expert de la charge",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Force ou Dextérité. Bonus de charge et effets de poussée ou dégâts."
+        },
+        {
+            "name": "Façonneur",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Maîtrise d’outils, réduction des coûts, fabrication rapide d’équipement temporaire."
+        },
+        {
+            "name": "Faveur épique (divers)",
+            "type": "Don de faveur épique",
+            "prerequisites": "niveau 19 ou supérieur",
+            "description": "Divers effets épiques non décrits."
+        },
+        {
+            "name": "Figure de proue",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Sagesse ou Charisme. Donne des points de vie temporaires aux alliés après repos."
+        },
+        {
+            "name": "Formation aux armes de guerre",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Force ou Dextérité. Maîtrise des armes de guerre."
+        },
+        {
+            "name": "Gaillard",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Constitution. Avantage contre mort, récupération rapide."
+        },
+        {
+            "name": "Guérisseur",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Soins avec trousse de soins et dés de vie, relance des soins faibles."
+        },
+        {
+            "name": "Incantateur d'élite",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 caractéristique magique. Avantages en attaques de sorts et concentration."
+        },
+        {
+            "name": "Initié à la magie",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "2 tours mineurs + 1 sort niveau 1, lançable gratuitement 1 fois par repos long."
+        },
+        {
+            "name": "Interception",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "Réduit dégâts d’une cible proche avec réaction."
+        },
+        {
+            "name": "Mage de guerre",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Avantage concentration, sort en réaction, incantation améliorée."
+        },
+        {
+            "name": "Magie rituelle",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Sorts rituels préparés + rituel rapide 1 fois par repos long."
+        },
+        {
+            "name": "Maître-arbalétrier",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Ignore chargement, tir rapproché sans désavantage, bonus dégâts."
+        },
+        {
+            "name": "Maître d'armes",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Propriété botte sur armes maîtrisées."
+        },
+        {
+            "name": "Maître d'hast",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Attaques supplémentaires et réactions avec armes d’hast."
+        },
+        {
+            "name": "Maître des armes lourdes",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Bonus dégâts armes lourdes, attaque bonus après critique ou kill."
+        },
+        {
+            "name": "Maître des armures intermédiaires",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 caractéristique, meilleure CA en armure intermédiaire."
+        },
+        {
+            "name": "Maître des armures lourdes",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Constitution ou Force. Réduction de dégâts en armure lourde."
+        },
+        {
+            "name": "Maître des boucliers",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Attaque de bouclier et meilleure défense en sauvegarde."
+        },
+        {
+            "name": "Mobile",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+3 m vitesse, terrain difficile ignoré en pointe, pas d’attaques d’opportunité."
+        },
+        {
+            "name": "Musicien",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Maîtrise instruments, inspiration aux alliés après repos."
+        },
+        {
+            "name": "Observateur",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Intelligence ou Sagesse. Expertise perception/intuition/investigation."
+        },
+        {
+            "name": "Protection",
+            "type": "Style de combat",
+            "prerequisites": "capacité Style de combat",
+            "description": "Réaction avec bouclier pour imposer désavantage aux attaques."
+        },
+        {
+            "name": "Protection intermédiaire",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Force ou Dextérité. Accès armures intermédiaires."
+        },
+        {
+            "name": "Protection légère",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Force ou Dextérité. Armures légères et boucliers."
+        },
+        {
+            "name": "Protection lourde",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 Constitution ou Force. Armures lourdes."
+        },
+        {
+            "name": "Résilient",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "+1 caractéristique. Maîtrise d’un type de sauvegarde."
+        },
+        {
+            "name": "Robuste",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "PV max augmentés de 2 par niveau."
+        },
+        {
+            "name": "Sauvagerie martiale",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Une fois par tour, relance des dégâts d’arme et choisir le meilleur."
+        },
+        {
+            "name": "Sentinelle",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Attaques d’opportunité améliorées et immobilisation."
+        },
+        {
+            "name": "Télékinésiste",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Main de mage améliorée + poussée télékinétique."
+        },
+        {
+            "name": "Télépathe",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Télépathie + détection des pensées."
+        },
+        {
+            "name": "Tireur d'élite",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Ignore abris, longue portée sans désavantage."
+        },
+        {
+            "name": "Trancheur",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Réduction de vitesse et désavantage après critique tranchant."
+        },
+        {
+            "name": "Tueur de mages",
+            "type": "Don général",
+            "prerequisites": "niveau 4 ou supérieur",
+            "description": "Avantage contre concentration et sauvegardes mentales."
+        },
+        {
+            "name": "Vigilant",
+            "type": "Don d’origines",
+            "prerequisites": null,
+            "description": "Bonus initiative et échange d’initiative avec allié."
+        }
+    ]
+}

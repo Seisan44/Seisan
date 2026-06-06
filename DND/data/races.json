@@ -1,0 +1,186 @@
+{
+    "source": "https://www.aidedd.org/regles-24/origines-des-personnages/description-des-especes/",
+    "game": "D&D 5e (2024)",
+    "pageType": "species-documentation",
+    "species": [
+        {
+            "id": "dragonborn",
+            "name": "Drakéide",
+            "overview": "Les drakéides sont des humanoïdes liés aux dragons. Leur héritage draconique influence leur apparence, leur souffle et leurs résistances naturelles.",
+            "size": "M",
+            "speed": "9 m",
+            "type": "Humanoïde",
+            "traits": [
+                {
+                    "id": "draconic-ancestry",
+                    "name": "Ascendance draconique",
+                    "description": "Le personnage choisit une lignée draconique (type de dragon) qui détermine le type de dégâts de son souffle et sa résistance naturelle."
+                },
+                {
+                    "id": "breath-weapon",
+                    "name": "Souffle",
+                    "description": "Le drakéide peut libérer une attaque en cône ou en ligne infligeant des dégâts (1d10 au départ). Les dégâts augmentent avec le niveau du personnage."
+                },
+                {
+                    "id": "damage-resistance",
+                    "name": "Résistance aux dégâts",
+                    "description": "Le personnage obtient une résistance aux dégâts correspondant à son ascendance draconique."
+                },
+                {
+                    "id": "darkvision",
+                    "name": "Vision dans le noir",
+                    "description": "Le drakéide peut voir dans l’obscurité jusqu’à 18 mètres comme si c’était une lumière faible."
+                },
+                {
+                    "id": "draconic-flight",
+                    "name": "Vol draconique",
+                    "description": "À partir du niveau 5, le drakéide peut voler temporairement pendant une durée limitée (environ 10 minutes), reflétant la puissance de son héritage draconique."
+                }
+            ]
+        },
+        {
+            "id": "elf",
+            "name": "Elfe",
+            "overview": "Les elfes sont des êtres gracieux et magiques, profondément liés à la nature et aux forces féeriques. Ils vivent longtemps et développent des capacités variées selon leur sous-espèce.",
+            "size": "M",
+            "speed": "9 m",
+            "type": "Humanoïde",
+            "traits": [
+                {
+                    "id": "keen-senses",
+                    "name": "Sens aiguisés",
+                    "description": "Les elfes sont naturellement compétents en Perception grâce à leurs sens extrêmement développés."
+                },
+                {
+                    "id": "fey-ancestry",
+                    "name": "Ascendance féerique",
+                    "description": "Les elfes ont une résistance naturelle contre les effets de charme et la magie liée au sommeil."
+                },
+                {
+                    "id": "darkvision",
+                    "name": "Vision dans le noir",
+                    "description": "Capacité de voir dans l’obscurité jusqu’à 18 mètres."
+                },
+                {
+                    "id": "trance",
+                    "name": "Transe",
+                    "description": "Au lieu de dormir, les elfes entrent dans une transe méditative de 4 heures leur permettant de récupérer complètement."
+                }
+            ],
+            "subspecies": [
+                {
+                    "id": "high-elf",
+                    "name": "Haut-elfe",
+                    "traits": [
+                        {
+                            "name": "Magie elfique",
+                            "description": "Le haut-elfe connaît un sort mineur supplémentaire lié à la magie arcanique."
+                        },
+                        {
+                            "name": "Foulée brumeuse",
+                            "description": "Capacité de déplacement magique permettant une courte téléportation."
+                        }
+                    ]
+                },
+                {
+                    "id": "wood-elf",
+                    "name": "Elfe des bois",
+                    "traits": [
+                        {
+                            "name": "Druidisme",
+                            "description": "Capacité à lancer de petits effets magiques liés à la nature."
+                        },
+                        {
+                            "name": "Passage sans trace",
+                            "description": "Le personnage peut se déplacer furtivement sans laisser de traces visibles."
+                        }
+                    ]
+                },
+                {
+                    "id": "drow",
+                    "name": "Drow",
+                    "traits": [
+                        {
+                            "name": "Magie des ténèbres",
+                            "description": "Les drows peuvent manipuler les ténèbres magiques et créer des zones d’obscurité."
+                        },
+                        {
+                            "name": "Vision supérieure dans le noir",
+                            "description": "Vision très développée dans l’obscurité profonde."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "gnome",
+            "name": "Gnome",
+            "overview": "Les gnomes sont des humanoïdes intelligents et curieux, connus pour leur ingéniosité et leur affinité avec la magie.",
+            "size": "P",
+            "speed": "9 m",
+            "type": "Humanoïde",
+            "traits": [
+                {
+                    "id": "gnome-cunning",
+                    "name": "Ruse gnome",
+                    "description": "Les gnomes ont une grande résistance mentale contre la magie affectant l’intelligence, la sagesse et le charisme."
+                },
+                {
+                    "id": "darkvision",
+                    "name": "Vision dans le noir",
+                    "description": "Permet de voir dans l’obscurité jusqu’à 18 mètres."
+                }
+            ]
+        },
+        {
+            "id": "halfling",
+            "name": "Halfelin",
+            "overview": "Les halfelins sont petits mais courageux. Ils sont connus pour leur chance naturelle et leur agilité exceptionnelle.",
+            "size": "P",
+            "speed": "9 m",
+            "type": "Humanoïde",
+            "traits": [
+                {
+                    "id": "lucky",
+                    "name": "Chance",
+                    "description": "Lorsqu’un jet d’attaque, de caractéristique ou de sauvegarde est critique raté, le joueur peut relancer le dé."
+                },
+                {
+                    "id": "brave",
+                    "name": "Brave",
+                    "description": "Avantage contre la peur."
+                },
+                {
+                    "id": "halfling-nimbleness",
+                    "name": "Agilité halfeline",
+                    "description": "Peut se déplacer à travers l’espace occupé par une créature plus grande."
+                }
+            ]
+        },
+        {
+            "id": "human",
+            "name": "Humain",
+            "overview": "Les humains sont polyvalents et adaptables, capables de s’intégrer dans presque toutes les classes et styles de jeu.",
+            "size": "M ou P",
+            "speed": "9 m",
+            "type": "Humanoïde",
+            "traits": [
+                {
+                    "id": "heroic-inspiration",
+                    "name": "Inspiration héroïque",
+                    "description": "Les humains peuvent obtenir un bonus ponctuel pour influencer le résultat d’une action importante."
+                },
+                {
+                    "id": "skill-versatility",
+                    "name": "Compétences variées",
+                    "description": "Les humains peuvent choisir des compétences supplémentaires lors de la création du personnage."
+                },
+                {
+                    "id": "origin-feat",
+                    "name": "Don d’origine",
+                    "description": "Les humains commencent avec un don supplémentaire qui personnalise leur style de jeu."
+                }
+            ]
+        }
+    ]
+}

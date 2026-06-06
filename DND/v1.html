@@ -1724,6 +1724,15 @@
             </div>
             <div class="form-row">
               <div class="form-group">
+                <label>Race</label>
+                <select id="b-class" onchange="onClassChange()">
+                  <option value="">— Choisir une race —</option>
+                  <option value="Dragon">Dragon</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
                 <label>Classe</label>
                 <select id="b-class" onchange="onClassChange()">
                   <option value="">— Choisir une classe —</option>
@@ -1823,7 +1832,8 @@
           <div class="builder-section" id="b-spells-section">
             <h3>✨ Sorts</h3>
             <div id="b-spells-content">
-              <p style="color:var(--ink-muted)">Choisissez une classe lanceuse de sorts pour voir les options de sorts.
+              <p style="color:var(--ink-muted)">Choisissez une classe lanceuse de sorts pour voir les options de
+                sorts.
               </p>
             </div>
           </div>

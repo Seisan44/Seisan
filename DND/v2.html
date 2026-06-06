@@ -1,0 +1,2678 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D&D 5e 2024 — Guide des Aventuriers</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@300;400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --parch: #faf4e6;
+      --parch2: #f2e8d0;
+      --parch3: #e8d9b8;
+      --ink: #1a0e00;
+      --ink2: #3d2b1a;
+      --ink3: #6b4c2a;
+      --gold: #b8860b;
+      --gold2: #d4a017;
+      --gold3: #f0c040;
+      --crimson: #8b1a1a;
+      --crimson2: #a82020;
+      --forest: #1e4a1e;
+      --sapphire: #1a2a5e;
+      --purple: #4a1a6e;
+      --teal: #0e4040;
+      --shadow: rgba(26, 14, 0, .15);
+      --border: rgba(184, 134, 11, .35);
+      --border2: rgba(138, 98, 0, .5);
+      --r: 6px;
+      --r2: 12px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px
+    }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--parch2);
+      color: var(--ink);
+      min-height: 100vh;
+      background-image: url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E")
+    }
+
+    /* ── HEADER ── */
+    #site-header {
+      background: linear-gradient(160deg, #3a1500 0%, #5a2800 50%, #3a1500 100%);
+      border-bottom: 3px solid var(--gold2);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 3px 16px rgba(0, 0, 0, .4)
+    }
+
+    .h-inner {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 10px 24px;
+      max-width: 1400px;
+      margin: 0 auto
+    }
+
+    .h-logo {
+      font-family: 'Cinzel', serif;
+      font-size: 1.5rem;
+      font-weight: 900;
+      color: var(--gold3);
+      text-shadow: 0 0 18px rgba(240, 192, 64, .5);
+      white-space: nowrap;
+      line-height: 1.1
+    }
+
+    .h-logo span {
+      color: #ff8888
+    }
+
+    .h-logo small {
+      display: block;
+      font-size: .5rem;
+      font-weight: 400;
+      color: #d4b896;
+      letter-spacing: .15em
+    }
+
+    .h-nav {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      flex: 1;
+      justify-content: center
+    }
+
+    .nav-btn {
+      background: transparent;
+      border: 1px solid rgba(201, 144, 10, .3);
+      color: #d4b896;
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: .7rem;
+      letter-spacing: .05em;
+      transition: all .2s;
+      white-space: nowrap
+    }
+
+    .nav-btn:hover,
+    .nav-btn.active {
+      background: var(--gold2);
+      color: var(--ink);
+      border-color: var(--gold2)
+    }
+
+    /* ── LAYOUT ── */
+    #app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 16px
+    }
+
+    .panel {
+      display: none;
+      animation: fadeIn .3s ease
+    }
+
+    .panel.active {
+      display: block
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    /* ── CARDS ── */
+    .card {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      box-shadow: 0 3px 20px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, .6);
+      padding: 24px 28px;
+      margin-bottom: 20px
+    }
+
+    .card-title {
+      font-family: 'Cinzel', serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--crimson);
+      border-bottom: 2px solid var(--border2);
+      padding-bottom: 8px;
+      margin-bottom: 16px
+    }
+
+    .section-header {
+      font-family: 'Cinzel', serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--crimson);
+      text-align: center;
+      margin-bottom: 24px;
+      text-shadow: 1px 1px 2px var(--shadow)
+    }
+
+    /* ── GRID ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 20px
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px
+    }
+
+    /* ── TAGS / BADGES ── */
+    .tag {
+      display: inline-block;
+      background: var(--parch3);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: .72rem;
+      color: var(--ink2);
+      margin: 2px
+    }
+
+    .tag.cat-mécanique {
+      background: #e8f0ff;
+      border-color: #7090cc;
+      color: #1a2a5e
+    }
+
+    .tag.cat-combat {
+      background: #ffe8e8;
+      border-color: #cc7070;
+      color: #6a1a1a
+    }
+
+    .tag.cat-magie {
+      background: #f0e8ff;
+      border-color: #9070cc;
+      color: #3a1a5e
+    }
+
+    .tag.cat-exploration {
+      background: #e8ffe8;
+      border-color: #70cc70;
+      color: #1a4a1a
+    }
+
+    .tag.cat-repos {
+      background: #fff8e8;
+      border-color: #ccaa50;
+      color: #4a3a00
+    }
+
+    .tag.cat-etat {
+      background: #ffe8f8;
+      border-color: #cc70aa;
+      color: #4a1a3a
+    }
+
+    .tag.cat-action {
+      background: #e8fff8;
+      border-color: #50ccaa;
+      color: #004a3a
+    }
+
+    .tag.cat-zone-d-effet,
+    .tag.cat-déplacement {
+      background: #f8ffe8;
+      border-color: #aacc50;
+      color: #2a4a00
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 600;
+      margin: 2px
+    }
+
+    .badge-diff-1 {
+      background: #d4edda;
+      color: #155724
+    }
+
+    .badge-diff-2 {
+      background: #fff3cd;
+      color: #856404
+    }
+
+    .badge-diff-3 {
+      background: #f8d7da;
+      color: #721c24
+    }
+
+    /* ── SEARCH / FILTER BAR ── */
+    .filter-bar {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+      background: var(--parch2);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 8px 12px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: .9rem;
+      color: var(--ink);
+      flex: 1;
+      min-width: 180px
+    }
+
+    .filter-bar input:focus,
+    .filter-bar select:focus {
+      outline: 2px solid var(--gold2);
+      border-color: var(--gold2)
+    }
+
+    .filter-bar label {
+      font-size: .82rem;
+      color: var(--ink2);
+      font-weight: 600;
+      white-space: nowrap
+    }
+
+    .filter-count {
+      font-size: .82rem;
+      color: var(--ink3);
+      margin-left: auto
+    }
+
+    /* ── GLOSSAIRE ── */
+    .glos-entry {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      transition: box-shadow .2s
+    }
+
+    .glos-entry:hover {
+      box-shadow: 0 4px 20px var(--shadow)
+    }
+
+    .glos-term {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--crimson);
+      margin-bottom: 4px
+    }
+
+    .glos-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--ink2)
+    }
+
+    .glos-desc a.gloss-ref {
+      color: var(--crimson2);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--crimson2);
+      cursor: help
+    }
+
+    .glos-desc a.gloss-ref:hover {
+      color: var(--crimson);
+      background: rgba(139, 26, 26, .07);
+      border-radius: 3px;
+      padding: 0 2px
+    }
+
+    .glos-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+      align-items: center
+    }
+
+    .glos-en {
+      font-size: .78rem;
+      color: var(--ink3);
+      font-style: italic;
+      margin-right: 6px
+    }
+
+    /* ── TOOLTIP ── */
+    #glos-tooltip {
+      position: fixed;
+      z-index: 9999;
+      background: var(--parch);
+      border: 2px solid var(--gold2);
+      border-radius: var(--r2);
+      box-shadow: 0 6px 28px rgba(0, 0, 0, .25);
+      padding: 14px 18px;
+      max-width: 340px;
+      display: none;
+      pointer-events: none
+    }
+
+    #glos-tooltip .tt-term {
+      font-family: 'Cinzel', serif;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--crimson);
+      margin-bottom: 6px
+    }
+
+    #glos-tooltip .tt-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: .95rem;
+      line-height: 1.5;
+      color: var(--ink2)
+    }
+
+    /* ── CLASSES ── */
+    .class-card {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      overflow: hidden;
+      box-shadow: 0 3px 16px var(--shadow);
+      transition: transform .2s, box-shadow .2s;
+      cursor: pointer
+    }
+
+    .class-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, .18)
+    }
+
+    .class-card-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .class-emoji {
+      font-size: 2rem;
+      margin-bottom: 6px;
+      display: block
+    }
+
+    .class-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--crimson)
+    }
+
+    .class-accroche {
+      font-size: .85rem;
+      color: var(--ink2);
+      font-style: italic;
+      margin-top: 4px
+    }
+
+    .class-card-body {
+      padding: 14px 20px
+    }
+
+    .class-stat {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: .85rem
+    }
+
+    .class-stat-lbl {
+      color: var(--ink3);
+      font-weight: 600;
+      min-width: 80px
+    }
+
+    .class-stat-val {
+      color: var(--ink)
+    }
+
+    .class-detail {
+      display: none;
+      animation: fadeIn .3s ease
+    }
+
+    .class-detail.active {
+      display: block
+    }
+
+    .cap-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    .cap-item {
+      background: var(--parch2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px 12px
+    }
+
+    .cap-item .cap-lvl {
+      font-size: .7rem;
+      color: var(--gold);
+      font-weight: 700;
+      text-transform: uppercase
+    }
+
+    .cap-item .cap-name {
+      font-family: 'Cinzel', serif;
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--crimson);
+      margin: 2px 0
+    }
+
+    .cap-item .cap-resume {
+      font-size: .82rem;
+      color: var(--ink2);
+      line-height: 1.4
+    }
+
+    .subclass-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+      margin-top: 12px
+    }
+
+    .subclass-item {
+      background: var(--parch2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 12px
+    }
+
+    .subclass-item .sc-name {
+      font-family: 'Cinzel', serif;
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--sapphire)
+    }
+
+    .subclass-item .sc-style {
+      font-size: .75rem;
+      color: var(--purple);
+      font-weight: 600;
+      margin-top: 2px
+    }
+
+    .subclass-item .sc-resume {
+      font-size: .82rem;
+      color: var(--ink2);
+      margin-top: 4px;
+      line-height: 1.4
+    }
+
+    .prog-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .82rem;
+      margin-top: 8px
+    }
+
+    .prog-table th {
+      background: var(--parch3);
+      color: var(--ink2);
+      font-weight: 700;
+      padding: 6px 8px;
+      text-align: left;
+      border: 1px solid var(--border)
+    }
+
+    .prog-table td {
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      color: var(--ink)
+    }
+
+    .prog-table tr:nth-child(even) td {
+      background: var(--parch2)
+    }
+
+    .pros-cons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px
+    }
+
+    .pros,
+    .cons {
+      background: var(--parch2);
+      border-radius: var(--r);
+      padding: 12px
+    }
+
+    .pros {
+      border-left: 3px solid #27ae60
+    }
+
+    .cons {
+      border-left: 3px solid var(--crimson)
+    }
+
+    .pros h4,
+    .cons h4 {
+      font-size: .82rem;
+      font-weight: 700;
+      margin-bottom: 8px
+    }
+
+    .pros h4 {
+      color: #1e6b3a
+    }
+
+    .cons h4 {
+      color: var(--crimson)
+    }
+
+    .pros li,
+    .cons li {
+      font-size: .82rem;
+      color: var(--ink2);
+      margin-left: 14px;
+      margin-bottom: 4px;
+      line-height: 1.4
+    }
+
+    /* ── RACES ── */
+    .race-card {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 18px 20px;
+      box-shadow: 0 3px 16px var(--shadow);
+      transition: transform .2s, box-shadow .2s
+    }
+
+    .race-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 7px 24px rgba(0, 0, 0, .16)
+    }
+
+    .race-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--crimson);
+      margin-bottom: 4px
+    }
+
+    .race-overview {
+      font-family: 'Crimson Text', serif;
+      font-size: .97rem;
+      color: var(--ink2);
+      line-height: 1.5;
+      margin-bottom: 10px
+    }
+
+    .race-traits {
+      list-style: none;
+      padding: 0
+    }
+
+    .race-traits li {
+      background: var(--parch2);
+      border-radius: var(--r);
+      padding: 8px 12px;
+      margin-bottom: 6px;
+      border-left: 3px solid var(--gold2)
+    }
+
+    .trait-name {
+      font-weight: 700;
+      font-size: .85rem;
+      color: var(--ink);
+      margin-bottom: 2px
+    }
+
+    .trait-desc {
+      font-size: .82rem;
+      color: var(--ink2);
+      line-height: 1.4
+    }
+
+    .subspecies-badge {
+      display: inline-block;
+      background: var(--parch3);
+      border: 1px solid var(--gold);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: .72rem;
+      color: var(--ink2);
+      margin: 2px;
+      cursor: pointer
+    }
+
+    .subspecies-badge.active {
+      background: var(--gold2);
+      color: var(--ink)
+    }
+
+    /* ── SORTS DANS GLOSSAIRE ── */
+    .sort-card {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      transition: box-shadow .2s
+    }
+
+    .sort-card:hover {
+      box-shadow: 0 4px 16px var(--shadow)
+    }
+
+    .sort-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 8px
+    }
+
+    .sort-name {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--sapphire)
+    }
+
+    .sort-lvl {
+      background: var(--sapphire);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 700
+    }
+
+    .sort-school {
+      background: var(--purple);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .72rem
+    }
+
+    .sort-conc {
+      background: #8b6914;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: .72rem
+    }
+
+    .sort-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 4px;
+      margin-bottom: 8px
+    }
+
+    .sort-meta-item {
+      font-size: .78rem;
+      color: var(--ink2)
+    }
+
+    .sort-meta-item span {
+      font-weight: 700;
+      color: var(--ink)
+    }
+
+    .sort-desc {
+      font-family: 'Crimson Text', serif;
+      font-size: .97rem;
+      color: var(--ink2);
+      line-height: 1.5
+    }
+
+    .sort-classes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-top: 6px
+    }
+
+    /* ── CHARACTER SHEET ── */
+    .sheet {
+      background: var(--parch);
+      border: 2px solid var(--border2);
+      border-radius: var(--r2);
+      box-shadow: 0 6px 32px var(--shadow)
+    }
+
+    .sheet-header {
+      background: linear-gradient(135deg, var(--crimson) 0%, var(--crimson2) 100%);
+      padding: 20px 28px;
+      border-radius: var(--r2) var(--r2) 0 0
+    }
+
+    .sheet-header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      color: #fff;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, .4)
+    }
+
+    .sheet-header .sub {
+      color: #ffcccc;
+      font-size: .82rem;
+      margin-top: 4px
+    }
+
+    .sheet-body {
+      padding: 24px 28px
+    }
+
+    .sheet-section {
+      margin-bottom: 20px
+    }
+
+    .sheet-section-title {
+      font-family: 'Cinzel', serif;
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 12px;
+      padding-bottom: 6px
+    }
+
+    .field-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 10px
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 120px
+    }
+
+    .field label {
+      font-size: .72rem;
+      color: var(--ink3);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      margin-bottom: 4px
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      background: var(--parch2);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      padding: 7px 10px;
+      font-family: 'Source Sans 3', sans-serif;
+      font-size: .9rem;
+      color: var(--ink)
+    }
+
+    .field textarea {
+      resize: vertical;
+      min-height: 60px
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      outline: 2px solid var(--gold2);
+      background: #fff
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px
+    }
+
+    .stat-box {
+      background: var(--parch2);
+      border: 2px solid var(--border2);
+      border-radius: var(--r2);
+      text-align: center;
+      padding: 8px 4px;
+      position: relative
+    }
+
+    .stat-box label {
+      font-size: .65rem;
+      color: var(--ink3);
+      font-weight: 700;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px
+    }
+
+    .stat-box input.stat-val {
+      width: 100%;
+      background: transparent;
+      border: none;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--crimson);
+      outline: none;
+      padding: 0
+    }
+
+    .stat-box .mod-display {
+      font-size: .75rem;
+      color: var(--ink2);
+      font-weight: 600;
+      background: var(--parch3);
+      border-radius: 20px;
+      padding: 1px 8px;
+      display: inline-block;
+      margin-top: 2px
+    }
+
+    .hp-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px
+    }
+
+    .hp-item {
+      background: var(--parch2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px;
+      text-align: center
+    }
+
+    .hp-item label {
+      font-size: .65rem;
+      color: var(--ink3);
+      font-weight: 700;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 4px
+    }
+
+    .hp-item input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      text-align: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--forest);
+      font-family: 'Cinzel', serif;
+      outline: none
+    }
+
+    .comp-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px
+    }
+
+    .comp-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .82rem;
+      color: var(--ink2)
+    }
+
+    .comp-item input[type=checkbox] {
+      accent-color: var(--crimson);
+      width: 14px;
+      height: 14px
+    }
+
+    .comp-item .comp-val {
+      font-weight: 700;
+      color: var(--ink);
+      min-width: 28px;
+      text-align: right
+    }
+
+    .equip-list {
+      list-style: none
+    }
+
+    .equip-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .equip-item input[type=text] {
+      flex: 1;
+      background: transparent;
+      border: none;
+      font-size: .88rem;
+      color: var(--ink);
+      outline: none;
+      font-family: 'Crimson Text', serif
+    }
+
+    .equip-item input[type=text]:focus {
+      background: var(--parch2);
+      border-radius: 3px;
+      padding: 2px 4px
+    }
+
+    .equip-add {
+      background: var(--gold2);
+      color: var(--ink);
+      border: none;
+      border-radius: var(--r);
+      padding: 6px 14px;
+      cursor: pointer;
+      font-size: .82rem;
+      font-weight: 700;
+      margin-top: 8px
+    }
+
+    .equip-add:hover {
+      background: var(--gold)
+    }
+
+    .equip-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--crimson);
+      font-size: 1rem;
+      padding: 0 4px;
+      line-height: 1
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 8px
+    }
+
+    .action-item {
+      background: var(--parch2);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px 12px
+    }
+
+    .action-item .a-name {
+      font-family: 'Cinzel', serif;
+      font-size: .88rem;
+      font-weight: 700;
+      color: var(--crimson)
+    }
+
+    .action-item .a-type {
+      font-size: .7rem;
+      color: var(--purple);
+      font-weight: 600;
+      text-transform: uppercase
+    }
+
+    .action-item .a-desc {
+      font-size: .8rem;
+      color: var(--ink2);
+      margin-top: 4px;
+      line-height: 1.4
+    }
+
+    .action-item .a-dmg {
+      display: inline-block;
+      background: var(--crimson);
+      color: #fff;
+      border-radius: var(--r);
+      padding: 2px 8px;
+      font-size: .78rem;
+      font-weight: 700;
+      margin-top: 4px
+    }
+
+    .action-item .a-dist {
+      display: inline-block;
+      background: var(--forest);
+      color: #fff;
+      border-radius: var(--r);
+      padding: 2px 8px;
+      font-size: .78rem;
+      margin-top: 4px;
+      margin-left: 4px
+    }
+
+    .sorts-sheet {
+      list-style: none
+    }
+
+    .sort-slot-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .sort-slot-row .lvl-badge {
+      background: var(--sapphire);
+      color: #fff;
+      border-radius: 20px;
+      padding: 2px 8px;
+      font-size: .72rem;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    .sort-slot-row input.sort-name-input {
+      flex: 2;
+      background: transparent;
+      border: none;
+      font-family: 'Crimson Text', serif;
+      font-size: .95rem;
+      color: var(--ink);
+      outline: none
+    }
+
+    .sort-slot-row input.sort-name-input:focus {
+      background: var(--parch2);
+      border-radius: 3px;
+      padding: 1px 6px
+    }
+
+    .sort-slot-row .slot-used {
+      display: flex;
+      gap: 3px
+    }
+
+    .sort-slot-row .slot-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid var(--sapphire);
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .sort-slot-row .slot-dot.used {
+      background: var(--sapphire)
+    }
+
+    .rest-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px
+    }
+
+    .rest-btn {
+      padding: 8px 18px;
+      border: 2px solid var(--border2);
+      border-radius: var(--r);
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: .8rem;
+      font-weight: 700;
+      transition: all .2s
+    }
+
+    .rest-btn.short {
+      background: var(--parch2);
+      color: var(--ink2)
+    }
+
+    .rest-btn.short:hover {
+      background: var(--parch3);
+      border-color: var(--gold)
+    }
+
+    .rest-btn.long {
+      background: var(--forest);
+      color: #d4f0d4;
+      border-color: var(--forest)
+    }
+
+    .rest-btn.long:hover {
+      background: #164a16
+    }
+
+    .death-saves {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 8px
+    }
+
+    .ds-group {
+      display: flex;
+      gap: 6px;
+      align-items: center
+    }
+
+    .ds-group label {
+      font-size: .78rem;
+      font-weight: 700
+    }
+
+    .ds-group.succ label {
+      color: var(--forest)
+    }
+
+    .ds-group.fail label {
+      color: var(--crimson)
+    }
+
+    .ds-box {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .ds-box.checked {
+      background: currentColor
+    }
+
+    .tips-box {
+      background: linear-gradient(135deg, #fffbee, #fff8dc);
+      border: 1px solid var(--gold);
+      border-radius: var(--r2);
+      padding: 14px 18px;
+      margin-bottom: 12px
+    }
+
+    .tips-box h4 {
+      font-family: 'Cinzel', serif;
+      font-size: .9rem;
+      color: var(--gold);
+      margin-bottom: 6px
+    }
+
+    .tips-box p,
+    .tips-box li {
+      font-size: .85rem;
+      color: var(--ink2);
+      line-height: 1.5
+    }
+
+    .tips-box ul {
+      padding-left: 16px
+    }
+
+    /* ── ACCUEIL ── */
+    .hero {
+      background: linear-gradient(135deg, #3a1500 0%, #5a2800 40%, #3a1500 100%);
+      border: 2px solid var(--gold2);
+      border-radius: var(--r2);
+      padding: 40px 32px;
+      text-align: center;
+      margin-bottom: 24px
+    }
+
+    .hero h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--gold3);
+      text-shadow: 0 0 20px rgba(240, 192, 64, .5);
+      margin-bottom: 8px
+    }
+
+    .hero .sub {
+      color: #d4b896;
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto 20px
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap
+    }
+
+    .hero-btn {
+      background: var(--gold2);
+      color: var(--ink);
+      border: none;
+      border-radius: var(--r);
+      padding: 10px 22px;
+      font-family: 'Cinzel', serif;
+      font-size: .85rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .hero-btn:hover {
+      background: var(--gold3)
+    }
+
+    .hero-btn.outline {
+      background: transparent;
+      color: var(--gold3);
+      border: 2px solid var(--gold2)
+    }
+
+    .hero-btn.outline:hover {
+      background: rgba(212, 160, 23, .15)
+    }
+
+    .basics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px
+    }
+
+    .basics-item {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 16px 20px;
+      box-shadow: 0 2px 12px var(--shadow)
+    }
+
+    .basics-item .bi-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block
+    }
+
+    .basics-item h3 {
+      font-family: 'Cinzel', serif;
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--crimson);
+      margin-bottom: 6px
+    }
+
+    .basics-item p {
+      font-size: .85rem;
+      color: var(--ink2);
+      line-height: 1.5
+    }
+
+    .guide-steps {
+      counter-reset: step
+    }
+
+    .guide-step {
+      background: var(--parch);
+      border: 1px solid var(--border);
+      border-radius: var(--r2);
+      padding: 16px 20px 16px 62px;
+      margin-bottom: 12px;
+      position: relative;
+      box-shadow: 0 2px 12px var(--shadow)
+    }
+
+    .guide-step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      background: var(--crimson);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: .9rem;
+      line-height: 32px;
+      text-align: center
+    }
+
+    .guide-step h4 {
+      font-family: 'Cinzel', serif;
+      font-size: .95rem;
+      color: var(--crimson);
+      margin-bottom: 4px
+    }
+
+    .guide-step p {
+      font-size: .85rem;
+      color: var(--ink2);
+      line-height: 1.5
+    }
+
+    .highlight-box {
+      background: linear-gradient(135deg, #fff8e8, #fff3d4);
+      border: 1px solid var(--gold);
+      border-radius: var(--r2);
+      padding: 16px 20px;
+      margin-bottom: 16px
+    }
+
+    .highlight-box h3 {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      color: var(--gold);
+      margin-bottom: 8px
+    }
+
+    .highlight-box p {
+      font-size: .88rem;
+      color: var(--ink2);
+      line-height: 1.5
+    }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px) {
+      .h-inner {
+        flex-direction: column;
+        padding: 10px 16px
+      }
+
+      .h-logo {
+        font-size: 1.2rem
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(3, 1fr)
+      }
+
+      .pros-cons {
+        grid-template-columns: 1fr
+      }
+
+      #app {
+        padding: 16px 10px
+      }
+
+      .card {
+        padding: 16px 14px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header id="site-header">
+    <div class="h-inner">
+      <div class="h-logo">⚔️ D&amp;D 5e <span>2024</span><small>GUIDE DES AVENTURIERS</small></div>
+      <nav class="h-nav">
+        <button class="nav-btn active" onclick="switchTab('accueil',this)">🏠 Accueil</button>
+        <button class="nav-btn" onclick="switchTab('classes',this)">⚔️ Classes</button>
+        <button class="nav-btn" onclick="switchTab('races',this)">🌟 Espèces</button>
+        <button class="nav-btn" onclick="switchTab('glossaire',this)">📖 Glossaire</button>
+        <button class="nav-btn" onclick="switchTab('fiche',this)">📋 Fiche de personnage</button>
+      </nav>
+    </div>
+  </header>
+
+  <div id="app">
+
+    <!-- ══ ACCUEIL ══ -->
+    <div id="panel-accueil" class="panel active">
+      <div class="hero">
+        <h1>🐉 Bienvenue dans D&amp;D 5e</h1>
+        <p class="sub">Le guide complet pour débutants — apprenez les bases, choisissez votre classe et lancez-vous dans
+          l'aventure !</p>
+        <div class="hero-btns">
+          <button class="hero-btn" onclick="switchTabById('classes')">Découvrir les classes</button>
+          <button class="hero-btn" onclick="switchTabById('fiche')">Créer mon personnage</button>
+          <button class="hero-btn outline" onclick="switchTabById('glossaire')">Glossaire interactif</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎲 D&amp;D en 2 minutes</div>
+        <div class="basics-grid">
+          <div class="basics-item">
+            <span class="bi-icon">🎭</span>
+            <h3>C'est quoi D&amp;D ?</h3>
+            <p>Un jeu de rôle en groupe où vous incarnez des héros dans un monde fantastique. Un Maître du Jeu (MJ)
+              raconte l'histoire, vous décidez ce que vos personnages font.</p>
+          </div>
+          <div class="basics-item">
+            <span class="bi-icon">🎲</span>
+            <h3>Le dé à 20 faces (d20)</h3>
+            <p>C'est le dé principal du jeu. Quand vous tentez quelque chose de difficile, vous lancez un d20 et ajoutez
+              un bonus. Plus le résultat est élevé, mieux c'est !</p>
+          </div>
+          <div class="basics-item">
+            <span class="bi-icon">👤</span>
+            <h3>Votre personnage</h3>
+            <p>Vous choisissez une espèce (elfe, humain…) et une classe (guerrier, magicien…). Ensemble, ils définissent
+              vos capacités, vos sorts et votre style de combat.</p>
+          </div>
+          <div class="basics-item">
+            <span class="bi-icon">⚔️</span>
+            <h3>Le combat</h3>
+            <p>En combat, chaque personnage agit à son tour. Vous avez une Action, une Action Bonus (selon la classe),
+              et un déplacement. Frappez, lancez des sorts, aidez vos alliés !</p>
+          </div>
+          <div class="basics-item">
+            <span class="bi-icon">❤️</span>
+            <h3>Les Points de vie</h3>
+            <p>Vos PV représentent votre résistance. Quand ils tombent à 0, vous êtes à terre et en danger. À 0 PV,
+              lancez des jets de sauvegarde contre la mort : 3 succès = stabilisé, 3 échecs = mort.</p>
+          </div>
+          <div class="basics-item">
+            <span class="bi-icon">🌙</span>
+            <h3>Les Repos</h3>
+            <p>Un repos court (1h) vous laisse récupérer quelques PV. Un repos long (8h) restaure tous vos PV et
+              capacités. Gérez vos ressources entre les combats !</p>
+          </div>
+          <div class="basics-item">
+            <span class="bi-icon">💪</span>
+            <h3>Les 6 caractéristiques</h3>
+            <p><strong>Force, Dextérité, Constitution, Intelligence, Sagesse, Charisme.</strong> Chaque action utilise
+              l'une d'elles. Les hautes valeurs donnent de meilleurs bonus à vos jets.</p>
+          </div>
+          <div class="basics-item">
+            <span class="bi-icon">✨</span>
+            <h3>La magie</h3>
+            <p>Les lanceurs de sorts utilisent des emplacements de sort (limités) pour lancer des sorts puissants. Les
+              sorts mineurs, eux, sont utilisables à l'infini !</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📚 Comment utiliser ce guide</div>
+        <div class="guide-step">
+          <h4>Parcourez les Classes</h4>
+          <p>Comparez les 12 classes disponibles. Chaque fiche explique le style de jeu, les capacités clés et les
+            conseils pour débutants. Choisissez celle qui vous correspond !</p>
+        </div>
+        <div class="guide-step">
+          <h4>Choisissez votre Espèce</h4>
+          <p>Votre espèce (race) donne des traits passifs uniques : vision dans le noir, résistances, bonus spéciaux.
+            Elle s'associe librement avec n'importe quelle classe.</p>
+        </div>
+        <div class="guide-step">
+          <h4>Consultez le Glossaire</h4>
+          <p>Vous ne comprenez pas un terme ? Cherchez-le dans le glossaire interactif. Les mots en rouge dans les
+            descriptions sont des liens : passez la souris pour voir leur définition !</p>
+        </div>
+        <div class="guide-step">
+          <h4>Remplissez votre Fiche</h4>
+          <p>La fiche de personnage interactive vous guide pour noter vos statistiques, compétences, sorts et
+            équipements. Sauvegardez-la localement dans votre navigateur.</p>
+        </div>
+
+        <div class="highlight-box" style="margin-top:16px">
+          <h3>💡 Conseil pour débutants</h3>
+          <p>Commencez avec un <strong>Guerrier</strong> ou un <strong>Barbare</strong> (difficulté 1/3). Ils sont
+            simples, robustes et vous permettront d'apprendre les règles de base sans gérer des dizaines de sorts.
+            Montez en niveau, découvrez le jeu, puis essayez les classes avancées !</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 Les actions en combat — résumé rapide</div>
+        <div id="accueil-actions">Chargement…</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚖️ Avantage & Désavantage</div>
+        <div class="grid-2">
+          <div class="basics-item" style="border-left:3px solid #27ae60">
+            <span class="bi-icon">🟢</span>
+            <h3>Avantage</h3>
+            <p>Lancez <strong>2 dés à 20</strong> et gardez le <strong>meilleur</strong> résultat. Survient quand les
+              conditions vous favorisent (attaque sur ennemi inconscient, aide d'un allié…).</p>
+          </div>
+          <div class="basics-item" style="border-left:3px solid var(--crimson)">
+            <span class="bi-icon">🔴</span>
+            <h3>Désavantage</h3>
+            <p>Lancez <strong>2 dés à 20</strong> et gardez le <strong>plus faible</strong> résultat. Survient quand les
+              conditions vous défavorisent (attaque sans voir, blessure grave…).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ CLASSES ══ -->
+    <div id="panel-classes" class="panel">
+      <div class="section-header">⚔️ Les Classes de Personnage</div>
+      <div class="tips-box">
+        <h4>💡 Comment choisir sa classe ?</h4>
+        <ul>
+          <li><strong>Débutant</strong> ? → Guerrier (badge vert) : combat simple, aucune magie obligatoire.</li>
+          <li><strong>Vous aimez soigner</strong> ? → Clerc ou Barde.</li>
+          <li><strong>Vous aimez les grands sorts</strong> ? → Magicien, Ensorceleur ou Druide.</li>
+          <li>Cliquez sur une carte pour voir tous les détails !</li>
+        </ul>
+      </div>
+      <div class="filter-bar">
+        <label>Filtrer :</label>
+        <input type="text" id="class-search" placeholder="Nom, rôle…" oninput="filterClasses()">
+        <select id="class-diff" onchange="filterClasses()">
+          <option value="">Toutes les difficultés</option>
+          <option value="1">Débutant</option>
+          <option value="2">Intermédiaire</option>
+          <option value="3">Avancé</option>
+        </select>
+        <select id="class-role" onchange="filterClasses()">
+          <option value="">Tous les rôles</option>
+          <option value="Combattant">Combattant</option>
+          <option value="Soutien">Soutien</option>
+          <option value="Sorts">Lanceur de sorts</option>
+        </select>
+        <span class="filter-count" id="class-count"></span>
+      </div>
+      <div class="grid-3" id="classes-grid">Chargement…</div>
+      <div id="class-detail-container" class="class-detail" style="margin-top:20px"></div>
+    </div>
+
+    <!-- ══ RACES ══ -->
+    <div id="panel-races" class="panel">
+      <div class="section-header">🌟 Les Espèces de Personnage</div>
+      <div class="tips-box">
+        <h4>💡 Espèce vs Classe</h4>
+        <p>L'espèce donne des traits <strong>passifs permanents</strong> (vision, résistances, sorts gratuits). La
+          classe définit votre <strong>style de jeu actif</strong>. Toutes les combinaisons sont possibles !</p>
+      </div>
+      <div class="grid-2" id="races-grid">Chargement…</div>
+    </div>
+
+    <!-- ══ GLOSSAIRE ══ -->
+    <div id="panel-glossaire" class="panel">
+      <div class="section-header">📖 Glossaire Interactif</div>
+      <div class="tips-box">
+        <h4>💡 Comment utiliser le glossaire</h4>
+        <p>Recherchez n'importe quel terme (sort, état, règle…). Les mots <span
+            style="color:var(--crimson2);border-bottom:1px dashed">soulignés en rouge</span> dans les descriptions sont
+          des liens : <strong>survolez-les</strong> pour voir la définition !</p>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="glos-search" placeholder="Rechercher un terme, une description…"
+          oninput="filterGlossaire()">
+        <select id="glos-cat" onchange="filterGlossaire()">
+          <option value="">Toutes les catégories</option>
+          <option value="action">Actions</option>
+          <option value="etat">États</option>
+          <option value="mécanique">Mécaniques</option>
+          <option value="combat">Combat</option>
+          <option value="magie">Magie</option>
+          <option value="exploration">Exploration</option>
+          <option value="repos">Repos</option>
+          <option value="zone-d-effet">Zones d'effet</option>
+          <option value="déplacement">Déplacement</option>
+          <option value="sort">Sorts</option>
+        </select>
+        <select id="glos-source" onchange="filterGlossaire()">
+          <option value="">Toutes les sources</option>
+          <option value="glossaire">Règles générales</option>
+          <option value="sort">Sorts</option>
+          <option value="don">Dons</option>
+        </select>
+        <select id="glos-niveau" onchange="filterGlossaire()" style="display:none" id="glos-niveau-sel">
+          <option value="">Tous les niveaux</option>
+          <option value="0">Sort mineur (0)</option>
+          <option value="1">Niveau 1</option>
+          <option value="2">Niveau 2</option>
+          <option value="3">Niveau 3</option>
+          <option value="4">Niveau 4</option>
+          <option value="5">Niveau 5</option>
+          <option value="6">Niveau 6</option>
+          <option value="7">Niveau 7</option>
+          <option value="8">Niveau 8</option>
+          <option value="9">Niveau 9</option>
+        </select>
+        <span class="filter-count" id="glos-count"></span>
+      </div>
+      <div id="glossaire-list">Chargement…</div>
+    </div>
+
+    <!-- ══ FICHE DE PERSONNAGE ══ -->
+    <div id="panel-fiche" class="panel">
+      <div class="section-header">📋 Fiche de Personnage</div>
+      <div class="tips-box">
+        <h4>💡 Remplissez et sauvegardez</h4>
+        <p>La fiche se sauvegarde automatiquement dans votre navigateur. Fermez et rouvrez la page : vos données seront
+          encore là !</p>
+      </div>
+      <div class="sheet">
+        <div class="sheet-header">
+          <h1 id="sheet-title-display">Mon Personnage</h1>
+          <div class="sub" id="sheet-sub-display">Niveau 1 — Classe — Espèce</div>
+        </div>
+        <div class="sheet-body">
+
+          <!-- Identité -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">⚔️ Identité</div>
+            <div class="field-row">
+              <div class="field" style="flex:2"><label>Nom du personnage</label><input type="text" id="f-nom"
+                  placeholder="Aragorn, Elminster…" oninput="updateSheetTitle()"></div>
+              <div class="field"><label>Classe</label>
+                <select id="f-classe" onchange="onClassChange()">
+                  <option value="">— Choisir —</option>
+                  <option>Barbare</option>
+                  <option>Barde</option>
+                  <option>Clerc</option>
+                  <option>Druide</option>
+                  <option>Ensorceleur</option>
+                  <option>Guerrier</option>
+                  <option>Magicien</option>
+                  <option>Moine</option>
+                  <option>Occultiste</option>
+                  <option>Paladin</option>
+                  <option>Rôdeur</option>
+                </select>
+              </div>
+              <div class="field"><label>Niveau</label><input type="number" id="f-niveau" min="1" max="20" value="1"
+                  oninput="updateSheetTitle();calcAll()"></div>
+              <div class="field"><label>Espèce</label>
+                <select id="f-espece" onchange="updateSheetTitle()">
+                  <option value="">— Choisir —</option>
+                  <option>Drakéide</option>
+                  <option>Elfe</option>
+                  <option>Gnome</option>
+                  <option>Halfelin</option>
+                  <option>Humain</option>
+                  <option>Nain</option>
+                  <option>Tiefelin</option>
+                  <option>Demi-elfe</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field"><label>Background / Historique</label><input type="text" id="f-background"
+                  placeholder="Soldat, Ermite, Noble…"></div>
+              <div class="field"><label>Alignement</label>
+                <select id="f-alignement">
+                  <option>Loyal Bon</option>
+                  <option>Neutre Bon</option>
+                  <option>Chaotique Bon</option>
+                  <option>Loyal Neutre</option>
+                  <option selected>Neutre</option>
+                  <option>Chaotique Neutre</option>
+                  <option>Loyal Mauvais</option>
+                  <option>Neutre Mauvais</option>
+                  <option>Chaotique Mauvais</option>
+                </select>
+              </div>
+              <div class="field"><label>Points d'expérience</label><input type="number" id="f-xp" min="0" value="0">
+              </div>
+              <div class="field"><label>Bonus de maîtrise</label><input type="text" id="f-bm" readonly
+                  style="font-weight:700;color:var(--crimson)"></div>
+            </div>
+            <div class="field-row">
+              <div class="field" style="flex:3"><label>Trait de personnalité</label><textarea id="f-trait"
+                  placeholder="Je dis toujours la vérité même si ça me nuit…"></textarea></div>
+              <div class="field" style="flex:3"><label>Idéaux & Liens & Défauts</label><textarea id="f-ideaux"
+                  placeholder="Idéal : La liberté. Lien : Ma famille. Défaut : Je suis trop impulsif."></textarea></div>
+            </div>
+          </div>
+
+          <!-- Caractéristiques -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">💪 Caractéristiques</div>
+            <div class="stat-grid">
+              <div class="stat-box">
+                <label>Force</label>
+                <input type="number" class="stat-val" id="s-for" min="1" max="30" value="10" oninput="calcAll()">
+                <div class="mod-display" id="m-for">+0</div>
+              </div>
+              <div class="stat-box">
+                <label>Dextérité</label>
+                <input type="number" class="stat-val" id="s-dex" min="1" max="30" value="10" oninput="calcAll()">
+                <div class="mod-display" id="m-dex">+0</div>
+              </div>
+              <div class="stat-box">
+                <label>Constitution</label>
+                <input type="number" class="stat-val" id="s-con" min="1" max="30" value="10" oninput="calcAll()">
+                <div class="mod-display" id="m-con">+0</div>
+              </div>
+              <div class="stat-box">
+                <label>Intelligence</label>
+                <input type="number" class="stat-val" id="s-int" min="1" max="30" value="10" oninput="calcAll()">
+                <div class="mod-display" id="m-int">+0</div>
+              </div>
+              <div class="stat-box">
+                <label>Sagesse</label>
+                <input type="number" class="stat-val" id="s-sag" min="1" max="30" value="10" oninput="calcAll()">
+                <div class="mod-display" id="m-sag">+0</div>
+              </div>
+              <div class="stat-box">
+                <label>Charisme</label>
+                <input type="number" class="stat-val" id="s-cha" min="1" max="30" value="10" oninput="calcAll()">
+                <div class="mod-display" id="m-cha">+0</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PV / CA / Initiative / Vitesse -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">❤️ Combat</div>
+            <div class="hp-box">
+              <div class="hp-item"><label>PV Maximum</label><input type="number" id="f-pv-max" value="0"
+                  oninput="saveSheet()"></div>
+              <div class="hp-item"><label>PV Actuels</label><input type="number" id="f-pv-cur" value="0"
+                  oninput="saveSheet()"></div>
+              <div class="hp-item"><label>PV Temporaires</label><input type="number" id="f-pv-tmp" value="0"
+                  oninput="saveSheet()"></div>
+            </div>
+            <div class="field-row" style="margin-top:10px">
+              <div class="field"><label>Classe d'Armure (CA)</label><input type="number" id="f-ca" value="10"
+                  oninput="saveSheet()"></div>
+              <div class="field"><label>Initiative</label><input type="text" id="f-init" readonly></div>
+              <div class="field"><label>Vitesse</label><input type="text" id="f-vitesse" value="9 m"></div>
+              <div class="field"><label>Dé de vie</label><input type="text" id="f-dv" placeholder="d8" readonly></div>
+              <div class="field"><label>Dés de vie restants</label><input type="number" id="f-dv-cur" value="1" min="0">
+              </div>
+            </div>
+            <!-- Jets de sauvegarde contre la mort -->
+            <div style="margin-top:12px">
+              <div style="font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:6px">⚰️ Jets de sauvegarde
+                contre la mort</div>
+              <div class="death-saves">
+                <div class="ds-group succ"><label>Succès :</label>
+                  <div class="ds-box" onclick="toggleDS(this,'succ')"></div>
+                  <div class="ds-box" onclick="toggleDS(this,'succ')"></div>
+                  <div class="ds-box" onclick="toggleDS(this,'succ')"></div>
+                </div>
+                <div class="ds-group fail"><label>Échecs :</label>
+                  <div class="ds-box" onclick="toggleDS(this,'fail')"></div>
+                  <div class="ds-box" onclick="toggleDS(this,'fail')"></div>
+                  <div class="ds-box" onclick="toggleDS(this,'fail')"></div>
+                </div>
+              </div>
+            </div>
+            <div class="rest-buttons">
+              <button class="rest-btn short" onclick="shortRest()">☕ Repos court</button>
+              <button class="rest-btn long" onclick="longRest()">🌙 Repos long</button>
+            </div>
+          </div>
+
+          <!-- Compétences -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">🎯 Jets de sauvegarde &amp; Compétences</div>
+            <div style="margin-bottom:12px">
+              <div style="font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:6px">Jets de sauvegarde</div>
+              <div class="comp-grid" id="saves-grid"></div>
+            </div>
+            <div style="font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:6px">Compétences</div>
+            <div class="comp-grid" id="skills-grid"></div>
+            <div style="margin-top:10px">
+              <div class="field" style="max-width:200px"><label>Perception passive</label><input type="text"
+                  id="f-perc-pass" readonly></div>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">⚡ Actions disponibles</div>
+            <div class="tips-box" style="margin-bottom:10px">
+              <p>Ces actions sont disponibles pour <strong>tous les personnages</strong>. Votre classe peut en ajouter
+                d'autres.</p>
+            </div>
+            <div class="actions-grid" id="actions-grid"></div>
+          </div>
+
+          <!-- Équipement -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">🎒 Équipement &amp; Armes</div>
+            <div class="field-row" style="margin-bottom:8px">
+              <div class="field"><label>po (or)</label><input type="number" id="f-po" value="0" min="0"
+                  oninput="saveSheet()"></div>
+              <div class="field"><label>pa (argent)</label><input type="number" id="f-pa" value="0" min="0"
+                  oninput="saveSheet()"></div>
+              <div class="field"><label>pc (cuivre)</label><input type="number" id="f-pc" value="0" min="0"
+                  oninput="saveSheet()"></div>
+              <div class="field"><label>pp (platine)</label><input type="number" id="f-pp" value="0" min="0"
+                  oninput="saveSheet()"></div>
+            </div>
+            <ul class="equip-list" id="equip-list"></ul>
+            <button class="equip-add" onclick="addEquipItem()">+ Ajouter un objet</button>
+          </div>
+
+          <!-- Sorts -->
+          <div class="sheet-section" id="sorts-section">
+            <div class="sheet-section-title">✨ Sorts</div>
+            <div class="tips-box" style="margin-bottom:10px">
+              <p><strong>Sorts mineurs</strong> = utilisables à volonté. <strong>Emplacements de sort</strong> =
+                limités, se rechargent au repos long. Cochez les ronds pour marquer les emplacements utilisés.</p>
+            </div>
+            <div id="sorts-sheet-container"></div>
+          </div>
+
+          <!-- Notes -->
+          <div class="sheet-section">
+            <div class="sheet-section-title">📝 Notes &amp; Histoire</div>
+            <div class="field-row">
+              <div class="field" style="flex:1"><label>Capacités spéciales &amp; Dons</label><textarea id="f-capacites"
+                  style="min-height:100px" placeholder="Rage (2/long repos), Témérité, Sens du danger…"
+                  oninput="saveSheet()"></textarea></div>
+              <div class="field" style="flex:1"><label>Histoire du personnage</label><textarea id="f-histoire"
+                  style="min-height:100px" placeholder="Né dans un village isolé, il cherche à venger sa famille…"
+                  oninput="saveSheet()"></textarea></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div><!-- /#app -->
+
+  <!-- Tooltip glossaire -->
+  <div id="glos-tooltip">
+    <div class="tt-term" id="tt-term"></div>
+    <div class="tt-desc" id="tt-desc"></div>
+  </div>
+
+  <script>
+    // ════════════════════════════════════════════════════════════
+    // DATA STORE
+    // ════════════════════════════════════════════════════════════
+    let DATA = { glossaire: [], actions: [], etats: [], sorts: [], dons: [], classes: [], races: [] };
+    let glossMap = {}; // id → entry
+
+    const SAVES = [
+      { id: 'sav-for', label: 'Force', stat: 'for' },
+      { id: 'sav-dex', label: 'Dextérité', stat: 'dex' },
+      { id: 'sav-con', label: 'Constitution', stat: 'con' },
+      { id: 'sav-int', label: 'Intelligence', stat: 'int' },
+      { id: 'sav-sag', label: 'Sagesse', stat: 'sag' },
+      { id: 'sav-cha', label: 'Charisme', stat: 'cha' },
+    ];
+    const SKILLS = [
+      { id: 'sk-ath', label: 'Athlétisme', stat: 'for' },
+      { id: 'sk-acr', label: 'Acrobaties', stat: 'dex' },
+      { id: 'sk-esc', label: 'Escamotage', stat: 'dex' },
+      { id: 'sk-dis', label: 'Discrétion', stat: 'dex' },
+      { id: 'sk-arc', label: 'Arcanes', stat: 'int' },
+      { id: 'sk-his', label: 'Histoire', stat: 'int' },
+      { id: 'sk-inv', label: 'Investigation', stat: 'int' },
+      { id: 'sk-nat', label: 'Nature', stat: 'int' },
+      { id: 'sk-rel', label: 'Religion', stat: 'int' },
+      { id: 'sk-dre', label: 'Dressage', stat: 'sag' },
+      { id: 'sk-int', label: 'Intuition', stat: 'sag' },
+      { id: 'sk-med', label: 'Médecine', stat: 'sag' },
+      { id: 'sk-per', label: 'Perception', stat: 'sag' },
+      { id: 'sk-sur', label: 'Survie', stat: 'sag' },
+      { id: 'sk-tro', label: 'Tromperie', stat: 'cha' },
+      { id: 'sk-imi', label: 'Intimidation', stat: 'cha' },
+      { id: 'sk-prs', label: 'Persuasion', stat: 'cha' },
+      { id: 'sk-rep', label: 'Représentation', stat: 'cha' },
+    ];
+    const STAT_KEYS = ['for', 'dex', 'con', 'int', 'sag', 'cha'];
+    const CLASS_DV = { barbare: 'd12', barde: 'd8', clerc: 'd8', druide: 'd8', ensorceleur: 'd6', guerrier: 'd10', magicien: 'd6', moine: 'd8', occultiste: 'd8', paladin: 'd10', 'rôdeur': 'd10' };
+
+    // ════════════════════════════════════════════════════════════
+    // INIT
+    // ════════════════════════════════════════════════════════════
+    async function init() {
+      try {
+        const [gData, rData, cData, sData, dData] = await Promise.all([
+          fetch('data/glossaire.json').then(r => r.json()),
+          fetch('data/races.json').then(r => r.json()),
+          fetch('data/classes.json').then(r => r.json()),
+          fetch('data/sorts.json').then(r => r.json()),
+          fetch('data/dons.json').then(r => r.json()),
+        ]);
+        DATA.glossaire = gData.glossaire || [];
+        DATA.actions = gData.actions || [];
+        DATA.etats = gData.etats || [];
+        DATA.sorts = sData || [];
+        DATA.dons = dData.feats || [];
+        DATA.classes = cData.classes || [];
+        DATA.races = rData.species || [];
+
+        // Build glossMap (all glossaire + actions + etats)
+        [...DATA.glossaire, ...DATA.actions, ...DATA.etats].forEach(e => { glossMap[e.id] = e; });
+
+        renderAccueilActions();
+        renderClasses();
+        renderRaces();
+        renderGlossaire();
+        initSheet();
+        loadSheet();
+      } catch (e) {
+        console.error('Erreur chargement données:', e);
+        document.querySelectorAll('[id$="-grid"],[id$="-list"]').forEach(el => {
+          el.innerHTML = '<p style="color:red;padding:16px">Erreur de chargement. Assurez-vous d\'ouvrir via un serveur HTTP (pas file://).</p>';
+        });
+      }
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // TAB NAVIGATION
+    // ════════════════════════════════════════════════════════════
+    function switchTab(id, btn) {
+      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('panel-' + id).classList.add('active');
+      if (btn) btn.classList.add('active');
+    }
+    function switchTabById(id) {
+      const btn = [...document.querySelectorAll('.nav-btn')].find(b => b.getAttribute('onclick')?.includes("'" + id + "'"));
+      switchTab(id, btn);
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // GLOSSAIRE HELPERS
+    // ════════════════════════════════════════════════════════════
+    function parseDesc(text) {
+      if (!text) return '';
+      // Replace #id# with hoverable links
+      return text.replace(/#([a-z0-9-]+)#/g, (match, id) => {
+        const entry = glossMap[id];
+        if (entry) {
+          return `<a class="gloss-ref" href="#" data-gid="${id}" onclick="return false">${entry.terme}</a>`;
+        }
+        return `<em>${id}</em>`;
+      });
+    }
+
+    const tooltip = document.getElementById('glos-tooltip');
+    const ttTerm = document.getElementById('tt-term');
+    const ttDesc = document.getElementById('tt-desc');
+
+    document.addEventListener('mouseover', e => {
+      const a = e.target.closest('a.gloss-ref');
+      if (!a) return;
+      const entry = glossMap[a.dataset.gid];
+      if (!entry) return;
+      ttTerm.textContent = entry.terme;
+      ttDesc.textContent = entry.description.replace(/#([a-z0-9-]+)#/g, (m, id) => glossMap[id]?.terme || id);
+      tooltip.style.display = 'block';
+      positionTooltip(e);
+    });
+    document.addEventListener('mousemove', e => {
+      if (tooltip.style.display === 'block') positionTooltip(e);
+    });
+    document.addEventListener('mouseout', e => {
+      if (!e.target.closest('a.gloss-ref')) return;
+      tooltip.style.display = 'none';
+    });
+    function positionTooltip(e) {
+      const pad = 14, w = tooltip.offsetWidth || 340, h = tooltip.offsetHeight || 120;
+      let x = e.clientX + pad, y = e.clientY + pad;
+      if (x + w > window.innerWidth - 10) x = e.clientX - w - pad;
+      if (y + h > window.innerHeight - 10) y = e.clientY - h - pad;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // ACCUEIL – ACTIONS RÉSUMÉ
+    // ════════════════════════════════════════════════════════════
+    function renderAccueilActions() {
+      const el = document.getElementById('accueil-actions');
+      if (!DATA.actions.length) { el.innerHTML = ''; return; }
+      const html = `<div class="actions-grid">${DATA.actions.map(a => `
+    <div class="action-item">
+      <div class="a-name">${a.terme}</div>
+      <div class="a-type">${a.anglais || ''}</div>
+      <div class="a-desc">${a.description.substring(0, 140).replace(/#([a-z0-9-]+)#/g, (m, id) => `<em>${glossMap[id]?.terme || id}</em>`)}…</div>
+    </div>`).join('')}</div>`;
+      el.innerHTML = html;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // CLASSES
+    // ════════════════════════════════════════════════════════════
+    let openClassId = null;
+
+    function renderClasses() {
+      const grid = document.getElementById('classes-grid');
+      filterClasses();
+    }
+
+    function filterClasses() {
+      const q = (document.getElementById('class-search')?.value || '').toLowerCase();
+      const diff = document.getElementById('class-diff')?.value || '';
+      const role = document.getElementById('class-role')?.value || '';
+      const grid = document.getElementById('classes-grid');
+
+      const filtered = DATA.classes.filter(c => {
+        const matchQ = !q || c.nom.toLowerCase().includes(q) || (c.role || '').toLowerCase().includes(q) || (c.roles_tags || []).some(t => t.toLowerCase().includes(q));
+        const matchDiff = !diff || String(c.difficulte) === diff;
+        const matchRole = !role || (c.role || '').includes(role) || (c.roles_tags || []).some(t => t.includes(role));
+        return matchQ && matchDiff && matchRole;
+      });
+
+      document.getElementById('class-count').textContent = `${filtered.length} classe${filtered.length > 1 ? 's' : ''}`;
+      grid.innerHTML = filtered.map(c => renderClassCard(c)).join('');
+    }
+
+    function renderClassCard(c) {
+      const diffLabel = ['', 'Débutant', 'Intermédiaire', 'Avancé'][c.difficulte || 1];
+      const diffClass = ['', 'badge-diff-1', 'badge-diff-2', 'badge-diff-3'][c.difficulte || 1];
+      const tags = (c.roles_tags || []).map(t => `<span class="tag">${t}</span>`).join('');
+      return `<div class="class-card" onclick="toggleClassDetail('${c.id}')">
+    <div class="class-card-header">
+      <span class="class-emoji">${c.emoji || '⚔️'}</span>
+      <div class="class-name">${c.nom}</div>
+      <div class="class-accroche">${c.accroche || ''}</div>
+    </div>
+    <div class="class-card-body">
+      <div style="margin-bottom:8px"><span class="badge ${diffClass}">⭐ ${diffLabel}</span>${tags}</div>
+      <div class="class-stat"><span class="class-stat-lbl">Rôle :</span><span class="class-stat-val">${c.role || ''}</span></div>
+      <div class="class-stat"><span class="class-stat-lbl">Dé de vie :</span><span class="class-stat-val">${c.de_vie?.de || '?'}</span></div>
+      <div class="class-stat"><span class="class-stat-lbl">Caractéristique :</span><span class="class-stat-val">${c.caracteristiques?.principale || '?'}</span></div>
+      <div class="class-stat"><span class="class-stat-lbl">Magie :</span><span class="class-stat-val">${c.sorts?.lanceur_de_sorts ? '✅ Oui' : '❌ Non'}</span></div>
+      <div style="font-size:.78rem;color:var(--ink3);margin-top:6px;font-style:italic">${c.pour_qui || c.comment_jouer?.pour_qui || ''}</div>
+    </div>
+  </div>`;
+    }
+
+    function toggleClassDetail(id) {
+      const container = document.getElementById('class-detail-container');
+      if (openClassId === id) {
+        container.classList.remove('active');
+        container.innerHTML = '';
+        openClassId = null;
+        return;
+      }
+      openClassId = id;
+      const c = DATA.classes.find(x => x.id === id);
+      if (!c) { return; }
+      container.innerHTML = renderClassDetailFull(c);
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function renderClassDetailFull(c) {
+      const caps = (c.capacites_cles || []).map(cap => `
+    <div class="cap-item">
+      <div class="cap-lvl">Niv. ${cap.niveau} — ${cap.type || ''}</div>
+      <div class="cap-name">${cap.nom}</div>
+      <div class="cap-resume">${cap.resume}</div>
+      <div style="margin-top:4px">${(cap.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+    </div>`).join('');
+
+      const subs = (c.sous_classes || []).map(sc => `
+    <div class="subclass-item">
+      <div class="sc-name">${sc.nom}</div>
+      <div class="sc-style">${sc.style || ''}</div>
+      <div class="sc-resume">${sc.resume || ''}</div>
+    </div>`).join('');
+
+      const pros = (c.comment_jouer?.points_forts || []).map(p => `<li>${p}</li>`).join('');
+      const cons = (c.comment_jouer?.points_faibles || []).map(p => `<li>${p}</li>`).join('');
+
+      const progHeaders = Object.keys(c.progression?.[0] || {}).filter(k => k !== 'capacites').map(k => `<th>${k.replace('_', ' ')}</th>`).join('');
+      const progRows = (c.progression || []).map(row => {
+        const cells = Object.entries(row).filter(([k]) => k !== 'capacites').map(([, v]) => `<td>${Array.isArray(v) ? v.join(', ') : v}</td>`).join('');
+        const capCell = `<td style="font-size:.75rem">${(row.capacites || []).join(', ')}</td>`;
+        return `<tr>${cells}${capCell}</tr>`;
+      }).join('');
+
+      const sortInfo = c.sorts?.lanceur_de_sorts ? `
+    <div class="card" style="margin-top:0">
+      <div class="card-title" style="font-size:1rem">✨ Magie</div>
+      <div class="field-row" style="flex-wrap:wrap;gap:8px">
+        <div><strong>Caractéristique :</strong> ${c.sorts.caracteristique || '?'}</div>
+        <div><strong>Récupération :</strong> ${c.sorts.recuperation || '?'}</div>
+        <div><strong>Sorts mineurs (niv.1) :</strong> ${c.sorts.sorts_mineurs_niv1 || 0}</div>
+      </div>
+      ${c.sorts.sorts_recommandes_debutants?.length ? `<div style="margin-top:8px"><strong>Sorts recommandés pour débutants :</strong><br><span style="color:var(--sapphire)">${c.sorts.sorts_recommandes_debutants.join(', ')}</span></div>` : ''}
+      ${c.sorts.note ? `<div style="margin-top:8px;font-style:italic;color:var(--ink3)">${c.sorts.note}</div>` : ''}
+    </div>` : `<div style="background:var(--parch2);border-radius:var(--r);padding:10px 14px;font-size:.88rem;color:var(--ink3)">❌ Cette classe ne lance pas de sorts. ${c.sorts?.note || ''}</div>`;
+
+      return `<div class="card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <span style="font-size:2.5rem">${c.emoji || '⚔️'}</span>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:1.6rem;font-weight:700;color:var(--crimson)">${c.nom}</div>
+        <div style="color:var(--ink2);font-style:italic">${c.accroche || ''}</div>
+      </div>
+      <button onclick="toggleClassDetail('${c.id}')" style="margin-left:auto;background:var(--parch3);border:1px solid var(--border2);border-radius:var(--r);padding:6px 14px;cursor:pointer;font-family:'Cinzel',serif;font-size:.78rem">✕ Fermer</button>
+    </div>
+    <div style="font-family:'Crimson Text',serif;font-size:1rem;color:var(--ink2);line-height:1.6;margin-bottom:16px">${c.description_longue || ''}</div>
+
+    <div class="grid-2" style="gap:12px;margin-bottom:16px">
+      <div class="card" style="margin:0">
+        <div class="card-title" style="font-size:1rem">📊 Statistiques</div>
+        <div class="class-stat"><span class="class-stat-lbl">Dé de vie :</span><span><strong>${c.de_vie?.de || '?'}</strong> (${c.de_vie?.valeur || '?'} PV au niv.1)</span></div>
+        <div class="class-stat"><span class="class-stat-lbl">Caract. princ. :</span><span>${c.caracteristiques?.principale || '?'}</span></div>
+        <div class="class-stat"><span class="class-stat-lbl">Jets sauvegarde :</span><span>${(c.caracteristiques?.jets_sauvegarde || []).join(', ')}</span></div>
+        <div class="class-stat"><span class="class-stat-lbl">Armes :</span><span>${(c.maitrise?.armes || []).join(', ')}</span></div>
+        <div class="class-stat"><span class="class-stat-lbl">Armures :</span><span>${(c.maitrise?.armures || []).join(', ')}</span></div>
+        <div class="class-stat"><span class="class-stat-lbl">Compétences :</span><span>${c.caracteristiques?.nb_competences || 2} au choix parmi ${(c.caracteristiques?.competences_disponibles || []).join(', ')}</span></div>
+      </div>
+      ${sortInfo}
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div class="card-title" style="font-size:1rem">⚡ Capacités clés</div>
+      <div class="cap-grid">${caps}</div>
+    </div>
+
+    <div class="pros-cons" style="margin-bottom:16px">
+      <div class="pros"><h4>✅ Points forts</h4><ul>${pros}</ul></div>
+      <div class="cons"><h4>❌ Points faibles</h4><ul>${cons}</ul></div>
+    </div>
+
+    ${c.comment_jouer ? `<div class="tips-box" style="margin-bottom:16px">
+      <h4>🎯 Conseil principal</h4>
+      <p>${c.comment_jouer.conseil_principal || ''}</p>
+      <p style="margin-top:6px"><strong>Caractéristiques prioritaires :</strong> ${(c.comment_jouer.caracteristiques_prioritaires || []).join(' → ')}</p>
+    </div>` : ''}
+
+    ${subs ? `<div style="margin-bottom:16px">
+      <div class="card-title" style="font-size:1rem">🌟 Sous-classes (disponibles au niv.3)</div>
+      <div class="subclass-grid">${subs}</div>
+    </div>` : ''}
+
+    <div>
+      <div class="card-title" style="font-size:1rem">📈 Progression (niveaux 1–10)</div>
+      <div style="overflow-x:auto">
+        <table class="prog-table">
+          <thead><tr>${progHeaders}<th>Capacités</th></tr></thead>
+          <tbody>${progRows}</tbody>
+        </table>
+      </div>
+    </div>
+  </div>`;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // RACES
+    // ════════════════════════════════════════════════════════════
+    function renderRaces() {
+      const grid = document.getElementById('races-grid');
+      grid.innerHTML = DATA.races.map(r => {
+        const traits = (r.traits || []).map(t => `
+      <li>
+        <div class="trait-name">${t.name}</div>
+        <div class="trait-desc">${t.description}</div>
+      </li>`).join('');
+        const subs = r.subspecies?.length ? `
+      <div style="margin-top:10px">
+        <div style="font-size:.78rem;font-weight:700;color:var(--ink3);margin-bottom:4px">SOUS-ESPÈCES</div>
+        <div>${r.subspecies.map(s => renderSubspecies(s)).join('')}</div>
+      </div>` : '';
+        return `<div class="race-card">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+        <div class="race-name">${r.name}</div>
+        <span class="tag">Taille ${r.size}</span>
+        <span class="tag">Vitesse ${r.speed}</span>
+      </div>
+      <p class="race-overview">${r.overview}</p>
+      <div style="font-size:.78rem;font-weight:700;color:var(--ink3);margin-bottom:6px">TRAITS RACIAUX</div>
+      <ul class="race-traits">${traits}</ul>
+      ${subs}
+    </div>`;
+      }).join('');
+    }
+
+    function renderSubspecies(s) {
+      const traits = (s.traits || []).map(t => `<li style="list-style:disc;margin-left:16px;font-size:.82rem;color:var(--ink2);margin-bottom:4px"><strong>${t.name}</strong> — ${t.description}</li>`).join('');
+      return `<div style="background:var(--parch2);border-radius:var(--r);padding:10px 12px;margin-bottom:6px;border-left:3px solid var(--sapphire)">
+    <div style="font-family:'Cinzel',serif;font-size:.88rem;font-weight:700;color:var(--sapphire);margin-bottom:4px">${s.name}</div>
+    <ul>${traits}</ul>
+  </div>`;
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // GLOSSAIRE
+    // ════════════════════════════════════════════════════════════
+    let allGlossItems = [];
+
+    function buildAllGlossItems() {
+      const items = [];
+      DATA.glossaire.forEach(e => items.push({ ...e, _source: 'glossaire' }));
+      DATA.actions.forEach(e => items.push({ ...e, _source: 'glossaire', categorie: e.categorie || 'action' }));
+      DATA.etats.forEach(e => items.push({ ...e, _source: 'glossaire', categorie: e.categorie || 'etat' }));
+      DATA.dons.forEach(d => items.push({
+        id: 'don-' + d.name.toLowerCase().replace(/\s+/g, '-'),
+        terme: d.name,
+        description: d.description,
+        categorie: 'don',
+        _source: 'don',
+        _type: d.type,
+        _prereq: d.prerequisites
+      }));
+      DATA.sorts.forEach(s => items.push({
+        id: 'sort-' + s.name.toLowerCase().replace(/[\s|]/g, '-').replace(/[^a-z0-9-]/g, ''),
+        terme: s.name,
+        description: s.description,
+        categorie: 'sort',
+        _source: 'sort',
+        _ecole: s.ecole,
+        _niveau: s.niveau,
+        _classes: s.classes,
+        _temps: s.temps,
+        _portee: s.portee,
+        _composants: s.composants,
+        _duree: s.duree,
+        _concentration: s.concentration
+      }));
+      allGlossItems = items;
+    }
+
+    function filterGlossaire() {
+      const q = (document.getElementById('glos-search')?.value || '').toLowerCase();
+      const cat = document.getElementById('glos-cat')?.value || '';
+      const src = document.getElementById('glos-source')?.value || '';
+      const niv = document.getElementById('glos-niveau')?.value || '';
+
+      // Show/hide niveau filter based on source
+      const nivSel = document.getElementById('glos-niveau');
+      if (nivSel) nivSel.style.display = (src === 'sort' || cat === 'sort') ? 'block' : 'none';
+
+      const filtered = allGlossItems.filter(e => {
+        const matchQ = !q || (e.terme || '').toLowerCase().includes(q) || (e.description || '').toLowerCase().includes(q);
+        const matchCat = !cat || e.categorie === cat;
+        const matchSrc = !src || e._source === src;
+        const matchNiv = !niv || e._niveau === niv;
+        return matchQ && matchCat && matchSrc && matchNiv;
+      });
+
+      document.getElementById('glos-count').textContent = `${filtered.length} résultat${filtered.length > 1 ? 's' : ''}`;
+
+      const limit = 120;
+      const shown = filtered.slice(0, limit);
+      const list = document.getElementById('glossaire-list');
+      list.innerHTML = shown.map(e => renderGlossEntry(e)).join('') +
+        (filtered.length > limit ? `<div style="text-align:center;padding:16px;color:var(--ink3);font-size:.88rem">… et ${filtered.length - limit} autres résultats. Affinez votre recherche.</div>` : '');
+    }
+
+    function renderGlossEntry(e) {
+      if (e._source === 'sort') return renderSortEntry(e);
+      const tags = [
+        e.categorie ? `<span class="tag cat-${e.categorie}">${e.categorie}</span>` : '',
+        e._source === 'don' ? `<span class="tag" style="background:#fff0e8;border-color:#cc9060;color:#4a2a00">${e._type || 'Don'}</span>` : '',
+        e.anglais ? `<span class="glos-en">(${e.anglais})</span>` : '',
+        e._prereq ? `<span style="font-size:.75rem;color:var(--ink3)">Prérequis : ${e._prereq}</span>` : '',
+      ].filter(Boolean).join('');
+      const vLinks = (e.voir_aussi || []).map(id => {
+        const ref = glossMap[id];
+        return ref ? `<a class="gloss-ref" data-gid="${id}" href="#" onclick="return false" style="font-size:.78rem">${ref.terme}</a>` : '';
+      }).filter(Boolean).join(' • ');
+
+      return `<div class="glos-entry">
+    <div class="glos-term">${e.terme}</div>
+    <div class="glos-desc">${parseDesc(e.description)}</div>
+    <div class="glos-meta">${tags}${vLinks ? `<div style="margin-top:4px;width:100%"><span style="font-size:.72rem;color:var(--ink3);font-weight:700">VOIR AUSSI : </span>${vLinks}</div>` : ''}</div>
+  </div>`;
+    }
+
+    function renderSortEntry(e) {
+      const lvlTxt = e._niveau === '0' ? 'Sort mineur' : `Niveau ${e._niveau}`;
+      const conc = e._concentration ? `<span class="sort-conc">Concentration</span>` : '';
+      const classes = (e._classes || []).map(c => `<span class="tag">${c}</span>`).join('');
+      return `<div class="sort-card">
+    <div class="sort-header">
+      <span class="sort-name">${e.terme}</span>
+      <span class="sort-lvl">${lvlTxt}</span>
+      <span class="sort-school">${e._ecole || ''}</span>
+      ${conc}
+    </div>
+    <div class="sort-meta">
+      <div class="sort-meta-item"><span>Temps :</span> ${e._temps || ''}</div>
+      <div class="sort-meta-item"><span>Portée :</span> ${e._portee || ''}</div>
+      <div class="sort-meta-item"><span>Durée :</span> ${e._duree || ''}</div>
+      <div class="sort-meta-item"><span>Composants :</span> ${(e._composants || []).join(', ')}</div>
+    </div>
+    <div class="sort-desc">${e.description}</div>
+    <div class="sort-classes" style="margin-top:8px">${classes}</div>
+  </div>`;
+    }
+
+    function renderGlossaire() {
+      buildAllGlossItems();
+      filterGlossaire();
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // CHARACTER SHEET
+    // ════════════════════════════════════════════════════════════
+    function getMod(val) { return Math.floor((parseInt(val) || 10) / 2) - 5; }
+    function fmtMod(v) { return (v >= 0 ? '+' : '') + v; }
+    function getBM() {
+      const lvl = parseInt(document.getElementById('f-niveau')?.value) || 1;
+      return Math.ceil(lvl / 4) + 1;
+    }
+
+    function initSheet() {
+      // Saves
+      const saveGrid = document.getElementById('saves-grid');
+      if (saveGrid) saveGrid.innerHTML = SAVES.map(s => `
+    <div class="comp-item">
+      <input type="checkbox" id="${s.id}-cb" onchange="calcAll();saveSheet()">
+      <span class="comp-val" id="${s.id}-val">+0</span>
+      <span>${s.label}</span>
+    </div>`).join('');
+
+      // Skills
+      const skillGrid = document.getElementById('skills-grid');
+      if (skillGrid) skillGrid.innerHTML = SKILLS.map(s => `
+    <div class="comp-item">
+      <input type="checkbox" id="${s.id}-cb" onchange="calcAll();saveSheet()">
+      <span class="comp-val" id="${s.id}-val">+0</span>
+      <span>${s.label} <span style="font-size:.72rem;color:var(--ink3)">(${s.stat.charAt(0).toUpperCase() + s.stat.slice(1)})</span></span>
+    </div>`).join('');
+
+      // Actions
+      const actGrid = document.getElementById('actions-grid');
+      if (actGrid && DATA.actions.length) {
+        actGrid.innerHTML = DATA.actions.map(a => `
+      <div class="action-item">
+        <div class="a-name">${a.terme}</div>
+        <div class="a-type">${a.anglais || ''}</div>
+        <div class="a-desc">${(a.description || '').replace(/#([a-z0-9-]+)#/g, (m, id) => `<em>${glossMap[id]?.terme || id}</em>`).substring(0, 180)}…</div>
+      </div>`).join('');
+      }
+
+      // Equipment default
+      if (!document.getElementById('equip-list').children.length) {
+        addEquipItem('');
+        addEquipItem('');
+        addEquipItem('');
+      }
+
+      renderSortsSheet();
+      calcAll();
+    }
+
+    function calcAll() {
+      const bm = getBM();
+      document.getElementById('f-bm').value = '+' + bm;
+
+      STAT_KEYS.forEach(k => {
+        const val = parseInt(document.getElementById('s-' + k)?.value) || 10;
+        const mod = getMod(val);
+        document.getElementById('m-' + k).textContent = fmtMod(mod);
+      });
+
+      // Saves
+      SAVES.forEach(s => {
+        const mod = getMod(document.getElementById('s-' + s.stat)?.value || 10);
+        const prof = document.getElementById(`${s.id}-cb`)?.checked ? bm : 0;
+        const el = document.getElementById(`${s.id}-val`);
+        if (el) el.textContent = fmtMod(mod + prof);
+      });
+
+      // Skills
+      SKILLS.forEach(s => {
+        const mod = getMod(document.getElementById('s-' + s.stat)?.value || 10);
+        const prof = document.getElementById(`${s.id}-cb`)?.checked ? bm : 0;
+        const el = document.getElementById(`${s.id}-val`);
+        if (el) el.textContent = fmtMod(mod + prof);
+      });
+
+      // Initiative = Dex mod
+      const dexMod = getMod(document.getElementById('s-dex')?.value || 10);
+      const initEl = document.getElementById('f-init');
+      if (initEl) initEl.value = fmtMod(dexMod);
+
+      // Perception passive = 10 + Perception bonus
+      const percEl = document.getElementById('sk-per-val');
+      const percVal = percEl ? parseInt(percEl.textContent) || 0 : 0;
+      const ppEl = document.getElementById('f-perc-pass');
+      if (ppEl) ppEl.value = 10 + percVal;
+
+      updateSheetTitle();
+      saveSheet();
+    }
+
+    function onClassChange() {
+      const cl = (document.getElementById('f-classe')?.value || '').toLowerCase();
+      const dv = CLASS_DV[cl] || '';
+      const dvEl = document.getElementById('f-dv');
+      if (dvEl) dvEl.value = dv;
+      renderSortsSheet();
+      calcAll();
+    }
+
+    function updateSheetTitle() {
+      const nom = document.getElementById('f-nom')?.value || 'Mon Personnage';
+      const classe = document.getElementById('f-classe')?.value || 'Classe';
+      const niveau = document.getElementById('f-niveau')?.value || '1';
+      const espece = document.getElementById('f-espece')?.value || 'Espèce';
+      const title = document.getElementById('sheet-title-display');
+      const sub = document.getElementById('sheet-sub-display');
+      if (title) title.textContent = nom;
+      if (sub) sub.textContent = `Niveau ${niveau} — ${classe} — ${espece}`;
+    }
+
+    // ── SORTS SHEET ──
+    const SPELL_SLOTS_BY_LEVEL = [
+      [2, 0, 0, 0, 0, 0, 0, 0, 0],
+      [3, 0, 0, 0, 0, 0, 0, 0, 0],
+      [4, 2, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 0, 0, 0, 0, 0, 0, 0],
+      [4, 3, 2, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 0, 0, 0, 0, 0, 0],
+      [4, 3, 3, 1, 0, 0, 0, 0, 0],
+      [4, 3, 3, 2, 0, 0, 0, 0, 0],
+      [4, 3, 3, 3, 1, 0, 0, 0, 0],
+      [4, 3, 3, 3, 2, 0, 0, 0, 0],
+    ];
+
+    function renderSortsSheet() {
+      const container = document.getElementById('sorts-sheet-container');
+      if (!container) return;
+      const lvl = Math.min(10, Math.max(1, parseInt(document.getElementById('f-niveau')?.value) || 1)) - 1;
+      const slots = SPELL_SLOTS_BY_LEVEL[lvl] || SPELL_SLOTS_BY_LEVEL[0];
+
+      let html = `<div style="margin-bottom:12px">
+    <div style="font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:4px">Sorts mineurs (illimités)</div>`;
+      for (let i = 0; i < 4; i++) {
+        html += `<div class="sort-slot-row">
+      <span class="lvl-badge">Mineur</span>
+      <input type="text" class="sort-name-input" placeholder="Nom du sort mineur…" oninput="saveSheet()">
+    </div>`;
+      }
+      html += `</div><div>
+    <div style="font-size:.82rem;font-weight:700;color:var(--ink2);margin-bottom:4px">Sorts préparés</div>`;
+      slots.forEach((count, idx) => {
+        if (count === 0) return;
+        const spellLvl = idx + 1;
+        const dots = Array.from({ length: count }, (_, i) => `<div class="slot-dot" onclick="this.classList.toggle('used');saveSheet()" title="Emplacement ${i + 1}"></div>`).join('');
+        html += `<div class="sort-slot-row">
+      <span class="lvl-badge">Niv.${spellLvl}</span>
+      <input type="text" class="sort-name-input" placeholder="Sort de niveau ${spellLvl}…" oninput="saveSheet()">
+      <div class="slot-used" title="Emplacements (cliquez pour utiliser)">${dots}</div>
+    </div>`;
+      });
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // ── EQUIPMENT ──
+    function addEquipItem(val = '') {
+      const list = document.getElementById('equip-list');
+      const li = document.createElement('li');
+      li.className = 'equip-item';
+      li.innerHTML = `<input type="text" placeholder="Objet, arme, armure…" value="${val}" oninput="saveSheet()">
+    <span style="font-size:.75rem;color:var(--ink3)">Dégâts/Notes :</span>
+    <input type="text" style="width:120px" placeholder="ex: 1d8+3 tranchant" oninput="saveSheet()">
+    <button class="equip-del" onclick="this.parentElement.remove();saveSheet()" title="Supprimer">✕</button>`;
+      list.appendChild(li);
+    }
+
+    // ── DEATH SAVES ──
+    function toggleDS(el, type) {
+      el.classList.toggle('checked');
+      const group = el.closest('.ds-group');
+      const checked = group.querySelectorAll('.ds-box.checked').length;
+      if (type === 'succ' && checked >= 3) {
+        showAlert('✅ Stabilisé ! Le personnage est sauvé. Réinitialisez les jets après soins.');
+      } else if (type === 'fail' && checked >= 3) {
+        showAlert('💀 Mort ! Le personnage a échoué 3 fois.');
+      }
+      saveSheet();
+    }
+
+    function showAlert(msg) {
+      const div = document.createElement('div');
+      div.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--parch);border:2px solid var(--gold2);border-radius:var(--r2);padding:16px 24px;z-index:9998;font-family:Cinzel,serif;font-weight:700;box-shadow:0 4px 24px rgba(0,0,0,.3);font-size:.9rem;color:var(--crimson)';
+      div.textContent = msg;
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 3500);
+    }
+
+    // ── REST ──
+    function shortRest() {
+      showAlert('☕ Repos court — Dépensez vos Dés de vie pour récupérer des PV si votre classe le permet.');
+    }
+    function longRest() {
+      // Restore HP, clear slots
+      const maxHP = document.getElementById('f-pv-max')?.value;
+      const curEl = document.getElementById('f-pv-cur');
+      if (curEl && maxHP) curEl.value = maxHP;
+      document.querySelectorAll('.slot-dot.used').forEach(d => d.classList.remove('used'));
+      document.querySelectorAll('.ds-box.checked').forEach(d => d.classList.remove('checked'));
+      showAlert('🌙 Repos long — PV restaurés, emplacements rechargés !');
+      saveSheet();
+    }
+
+    // ── SAVE / LOAD ──
+    function saveSheet() {
+      const data = {
+        nom: document.getElementById('f-nom')?.value,
+        classe: document.getElementById('f-classe')?.value,
+        niveau: document.getElementById('f-niveau')?.value,
+        espece: document.getElementById('f-espece')?.value,
+        background: document.getElementById('f-background')?.value,
+        alignement: document.getElementById('f-alignement')?.value,
+        xp: document.getElementById('f-xp')?.value,
+        trait: document.getElementById('f-trait')?.value,
+        ideaux: document.getElementById('f-ideaux')?.value,
+        for: document.getElementById('s-for')?.value,
+        dex: document.getElementById('s-dex')?.value,
+        con: document.getElementById('s-con')?.value,
+        int: document.getElementById('s-int')?.value,
+        sag: document.getElementById('s-sag')?.value,
+        cha: document.getElementById('s-cha')?.value,
+        pvMax: document.getElementById('f-pv-max')?.value,
+        pvCur: document.getElementById('f-pv-cur')?.value,
+        pvTmp: document.getElementById('f-pv-tmp')?.value,
+        ca: document.getElementById('f-ca')?.value,
+        vitesse: document.getElementById('f-vitesse')?.value,
+        dvCur: document.getElementById('f-dv-cur')?.value,
+        po: document.getElementById('f-po')?.value,
+        pa: document.getElementById('f-pa')?.value,
+        pc: document.getElementById('f-pc')?.value,
+        pp: document.getElementById('f-pp')?.value,
+        capacites: document.getElementById('f-capacites')?.value,
+        histoire: document.getElementById('f-histoire')?.value,
+        saves: SAVES.map(s => document.getElementById(`${s.id}-cb`)?.checked),
+        skills: SKILLS.map(s => document.getElementById(`${s.id}-cb`)?.checked),
+        equip: [...(document.getElementById('equip-list')?.querySelectorAll('.equip-item') || [])].map(li => {
+          const ins = li.querySelectorAll('input');
+          return { name: ins[0]?.value || '', note: ins[1]?.value || '' };
+        }),
+        sorts: [...(document.getElementById('sorts-sheet-container')?.querySelectorAll('.sort-name-input') || [])].map(i => i.value),
+        usedSlots: [...(document.getElementById('sorts-sheet-container')?.querySelectorAll('.slot-dot') || [])].map(d => d.classList.contains('used')),
+      };
+      try { localStorage.setItem('dnd5e_sheet', JSON.stringify(data)); } catch (e) { }
+    }
+
+    function loadSheet() {
+      let data;
+      try { data = JSON.parse(localStorage.getItem('dnd5e_sheet') || '{}'); } catch (e) { data = {}; }
+      if (!data || !data.nom) return;
+      const set = (id, v) => { const el = document.getElementById(id); if (el && v != null) el.value = v; };
+      set('f-nom', data.nom); set('f-classe', data.classe); set('f-niveau', data.niveau);
+      set('f-espece', data.espece); set('f-background', data.background);
+      set('f-alignement', data.alignement); set('f-xp', data.xp);
+      set('f-trait', data.trait); set('f-ideaux', data.ideaux);
+      set('s-for', data.for); set('s-dex', data.dex); set('s-con', data.con);
+      set('s-int', data.int); set('s-sag', data.sag); set('s-cha', data.cha);
+      set('f-pv-max', data.pvMax); set('f-pv-cur', data.pvCur); set('f-pv-tmp', data.pvTmp);
+      set('f-ca', data.ca); set('f-vitesse', data.vitesse); set('f-dv-cur', data.dvCur);
+      set('f-po', data.po); set('f-pa', data.pa); set('f-pc', data.pc); set('f-pp', data.pp);
+      set('f-capacites', data.capacites); set('f-histoire', data.histoire);
+
+      if (data.saves) SAVES.forEach((s, i) => { const cb = document.getElementById(`${s.id}-cb`); if (cb) cb.checked = !!data.saves[i]; });
+      if (data.skills) SKILLS.forEach((s, i) => { const cb = document.getElementById(`${s.id}-cb`); if (cb) cb.checked = !!data.skills[i]; });
+
+      if (data.classe) onClassChange();
+
+      // Restore equipment
+      if (data.equip?.length) {
+        document.getElementById('equip-list').innerHTML = '';
+        data.equip.forEach(item => {
+          addEquipItem(item.name || '');
+          const last = document.getElementById('equip-list').lastChild;
+          const ins = last.querySelectorAll('input');
+          if (ins[1]) ins[1].value = item.note || '';
+        });
+      }
+
+      calcAll();
+      renderSortsSheet();
+
+      // Restore spell names after render
+      setTimeout(() => {
+        const inputs = document.getElementById('sorts-sheet-container')?.querySelectorAll('.sort-name-input') || [];
+        if (data.sorts) inputs.forEach((inp, i) => { if (data.sorts[i] != null) inp.value = data.sorts[i]; });
+        const dots = document.getElementById('sorts-sheet-container')?.querySelectorAll('.slot-dot') || [];
+        if (data.usedSlots) dots.forEach((d, i) => { if (data.usedSlots[i]) d.classList.add('used'); });
+      }, 100);
+    }
+
+    // ════════════════════════════════════════════════════════════
+    // START
+    // ════════════════════════════════════════════════════════════
+    init();
+  </script>
+</body>
+
+</html>
