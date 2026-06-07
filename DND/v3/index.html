@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D&D 5e — Guide du Débutant</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">⚔️</span>
+        <span class="logo-text">D&D <span class="logo-accent">5e</span></span>
+        <span class="logo-sub">Guide du Débutant</span>
+      </div>
+      <nav class="main-nav" role="navigation" aria-label="Navigation principale">
+        <button class="nav-tab active" data-tab="accueil" aria-selected="true">🏠 Accueil</button>
+        <button class="nav-tab" data-tab="classes" aria-selected="false">⚔️ Classes</button>
+        <button class="nav-tab" data-tab="races" aria-selected="false">🧝 Espèces</button>
+        <button class="nav-tab" data-tab="sorts" aria-selected="false">✨ Sorts</button>
+        <button class="nav-tab" data-tab="glossaire" aria-selected="false">📖 Glossaire</button>
+        <button class="nav-tab" data-tab="fiche" aria-selected="false">📋 Fiche</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- ACCUEIL -->
+    <section id="tab-accueil" class="tab-panel active" role="tabpanel">
+      <div class="hero-banner">
+        <h1>Bienvenue dans D&D 5e</h1>
+        <p class="hero-sub">Le guide interactif pour découvrir Donjons & Dragons sans se perdre.</p>
+      </div>
+
+      <div class="home-grid">
+        <div class="home-nav-card" onclick="switchTab('classes')">
+          <span class="card-icon">⚔️</span>
+          <strong>Classes</strong>
+          <span>Guerrier, Magicien, Clerc…</span>
+        </div>
+        <div class="home-nav-card" onclick="switchTab('races')">
+          <span class="card-icon">🧝</span>
+          <strong>Espèces</strong>
+          <span>Elfe, Humain, Drakéide…</span>
+        </div>
+        <div class="home-nav-card" onclick="switchTab('sorts')">
+          <span class="card-icon">✨</span>
+          <strong>Sorts</strong>
+          <span>Boule de feu, Soins…</span>
+        </div>
+        <div class="home-nav-card" onclick="switchTab('glossaire')">
+          <span class="card-icon">📖</span>
+          <strong>Glossaire</strong>
+          <span>Termes, Actions, États…</span>
+        </div>
+        <div class="home-nav-card" onclick="switchTab('fiche')">
+          <span class="card-icon">📋</span>
+          <strong>Fiche</strong>
+          <span>Créez votre personnage</span>
+        </div>
+      </div>
+
+      <div class="home-sections">
+        <div class="home-section">
+          <h2>D&D en 2 minutes</h2>
+          <div class="basics-grid">
+            <div class="basic-card">
+              <div class="basic-icon">🧙</div>
+              <h3>Personnage</h3>
+              <p>Vous incarnez un héros avec une <strong>classe</strong> (Guerrier, Mage…), une <strong>espèce</strong> (Humain, Elfe…) et des <strong>caractéristiques</strong> (Force, Dextérité…).</p>
+            </div>
+            <div class="basic-card">
+              <div class="basic-icon">🎲</div>
+              <h3>Jets de dés</h3>
+              <p>Le dé à 20 faces (<strong>d20</strong>) est central. Ajoutez votre modificateur de caractéristique et votre bonus de maîtrise si maîtrisé. Battez le DD fixé par le MJ.</p>
+            </div>
+            <div class="basic-card">
+              <div class="basic-icon">💪</div>
+              <h3>Caractéristiques</h3>
+              <p>6 stats : <strong>For</strong> (combat physique), <strong>Dex</strong> (agilité), <strong>Con</strong> (résistance), <strong>Int</strong> (savoir), <strong>Sag</strong> (perception), <strong>Cha</strong> (social). Score 1–20, modificateur = (score−10)/2.</p>
+            </div>
+            <div class="basic-card">
+              <div class="basic-icon">🎯</div>
+              <h3>Compétences</h3>
+              <p>Sous-catégories de caractéristiques : Athlétisme (For), Discrétion (Dex), Perception (Sag)… Si maîtrisé, ajoutez votre <strong>Bonus de Maîtrise</strong> (+2 au départ).</p>
+            </div>
+            <div class="basic-card">
+              <div class="basic-icon">⚔️</div>
+              <h3>Combat</h3>
+              <p>Chaque round : <strong>Action</strong> (attaquer, lancer un sort…), <strong>Action Bonus</strong> si disponible, <strong>Déplacement</strong> (9 m), <strong>Réaction</strong> (hors de votre tour). Initiative (d20+Dex) détermine l'ordre.</p>
+            </div>
+            <div class="basic-card">
+              <div class="basic-icon">✨</div>
+              <h3>Sorts</h3>
+              <p>Les lanceurs de sorts utilisent des <strong>emplacements de sorts</strong> (comme des cartouches) pour lancer leurs sorts. Les sorts mineurs sont gratuits et illimités. Récupération après repos long.</p>
+            </div>
+            <div class="basic-card">
+              <div class="basic-icon">⬆️</div>
+              <h3>Progression</h3>
+              <p>En gagnant de l'expérience, vous montez de niveau (1 à 20). Chaque niveau améliore vos capacités, PV et bonus. Le <strong>Bonus de Maîtrise</strong> passe de +2 (niv. 1) à +6 (niv. 17).</p>
+            </div>
+            <div class="basic-card">
+              <div class="basic-icon">💊</div>
+              <h3>Points de vie</h3>
+              <p>Représentent votre résistance. À 0 PV : vous tombez et effectuez des <strong>jets de sauvegarde contre la mort</strong>. 3 réussites = stabilisé, 3 échecs = mort. Les repos récupèrent les PV.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="home-section">
+          <h2>Comment utiliser ce guide</h2>
+          <div class="guide-steps">
+            <div class="guide-step">
+              <span class="step-num">1</span>
+              <div>
+                <strong>Choisissez votre classe</strong>
+                <p>Rendez-vous dans l'onglet <em>Classes</em> pour explorer chaque archétype et comparer leurs styles de jeu.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <span class="step-num">2</span>
+              <div>
+                <strong>Choisissez votre espèce</strong>
+                <p>L'onglet <em>Espèces</em> liste les traits et capacités de chaque race jouable.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <span class="step-num">3</span>
+              <div>
+                <strong>Consultez le glossaire</strong>
+                <p>Un terme inconnu ? L'onglet <em>Glossaire</em> agrège toutes les règles, états, actions et sorts en un seul endroit.</p>
+              </div>
+            </div>
+            <div class="guide-step">
+              <span class="step-num">4</span>
+              <div>
+                <strong>Créez votre fiche</strong>
+                <p>L'onglet <em>Fiche</em> vous guide pas à pas pour constituer votre personnage.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CLASSES -->
+    <section id="tab-classes" class="tab-panel" role="tabpanel">
+      <div class="panel-header">
+        <h2>Classes de personnage</h2>
+        <div class="search-bar">
+          <input type="search" id="classes-search" placeholder="Rechercher une classe…" aria-label="Rechercher une classe">
+        </div>
+        <div class="filter-row">
+          <button class="filter-btn active" data-filter="all">Toutes</button>
+          <button class="filter-btn" data-filter="1">Débutant</button>
+          <button class="filter-btn" data-filter="2">Intermédiaire</button>
+          <button class="filter-btn" data-filter="3">Avancé</button>
+        </div>
+      </div>
+      <div id="classes-grid" class="cards-grid"></div>
+      <div id="class-detail" class="detail-panel hidden"></div>
+    </section>
+
+    <!-- RACES -->
+    <section id="tab-races" class="tab-panel" role="tabpanel">
+      <div class="panel-header">
+        <h2>Espèces jouables</h2>
+        <div class="search-bar">
+          <input type="search" id="races-search" placeholder="Rechercher une espèce…" aria-label="Rechercher une espèce">
+        </div>
+      </div>
+      <div id="races-grid" class="cards-grid"></div>
+      <div id="race-detail" class="detail-panel hidden"></div>
+    </section>
+
+    <!-- SORTS -->
+    <section id="tab-sorts" class="tab-panel" role="tabpanel">
+      <div class="panel-header">
+        <h2>Sorts</h2>
+        <div class="search-bar">
+          <input type="search" id="sorts-search" placeholder="Rechercher un sort…" aria-label="Rechercher un sort">
+        </div>
+        <div class="filter-row" id="sorts-filters">
+          <select id="sorts-niveau" aria-label="Filtrer par niveau">
+            <option value="">Tous niveaux</option>
+            <option value="0">Sorts mineurs (0)</option>
+            <option value="1">Niveau 1</option>
+            <option value="2">Niveau 2</option>
+            <option value="3">Niveau 3</option>
+            <option value="4">Niveau 4</option>
+            <option value="5">Niveau 5</option>
+          </select>
+          <select id="sorts-ecole" aria-label="Filtrer par école">
+            <option value="">Toutes écoles</option>
+          </select>
+          <select id="sorts-classe" aria-label="Filtrer par classe">
+            <option value="">Toutes classes</option>
+          </select>
+          <label class="toggle-label">
+            <input type="checkbox" id="sorts-concentration"> Concentration seule
+          </label>
+        </div>
+      </div>
+      <div id="sorts-count" class="results-count"></div>
+      <div id="sorts-list" class="sorts-list"></div>
+    </section>
+
+    <!-- GLOSSAIRE -->
+    <section id="tab-glossaire" class="tab-panel" role="tabpanel">
+      <div class="panel-header">
+        <h2>Glossaire interactif</h2>
+        <div class="search-bar">
+          <input type="search" id="glossaire-search" placeholder="Rechercher un terme, sort, état…" aria-label="Rechercher dans le glossaire">
+        </div>
+        <div class="filter-row">
+          <button class="filter-btn active" data-gfilter="all">Tout</button>
+          <button class="filter-btn" data-gfilter="mécanique">Mécanique</button>
+          <button class="filter-btn" data-gfilter="combat">Combat</button>
+          <button class="filter-btn" data-gfilter="magie">Magie</button>
+          <button class="filter-btn" data-gfilter="etat">États</button>
+          <button class="filter-btn" data-gfilter="action">Actions</button>
+          <button class="filter-btn" data-gfilter="exploration">Exploration</button>
+          <button class="filter-btn" data-gfilter="repos">Repos</button>
+        </div>
+      </div>
+      <div id="glossaire-count" class="results-count"></div>
+      <div id="glossaire-list" class="glossaire-list"></div>
+    </section>
+
+    <!-- FICHE -->
+    <section id="tab-fiche" class="tab-panel" role="tabpanel">
+      <div class="panel-header">
+        <h2>Fiche de personnage</h2>
+        <div class="fiche-actions">
+          <button class="btn-secondary" onclick="resetFiche()">Réinitialiser</button>
+          <button class="btn-primary" onclick="printFiche()">🖨️ Imprimer</button>
+        </div>
+      </div>
+      <div class="fiche-container">
+        <!-- Identité -->
+        <div class="fiche-section fiche-identite">
+          <h3>Identité</h3>
+          <div class="fiche-row">
+            <div class="fiche-field">
+              <label>Nom du personnage</label>
+              <input type="text" id="f-nom" placeholder="Ex: Aelindra Nightwhisper">
+            </div>
+            <div class="fiche-field">
+              <label>Classe</label>
+              <select id="f-classe"><option value="">— choisir —</option></select>
+            </div>
+            <div class="fiche-field fiche-field-sm">
+              <label>Niveau</label>
+              <input type="number" id="f-niveau" min="1" max="20" value="1">
+            </div>
+            <div class="fiche-field">
+              <label>Espèce</label>
+              <select id="f-race"><option value="">— choisir —</option></select>
+            </div>
+            <div class="fiche-field">
+              <label>Historique</label>
+              <input type="text" id="f-background" placeholder="Ex: Soldat, Érudit…">
+            </div>
+            <div class="fiche-field fiche-field-sm">
+              <label>Alignement</label>
+              <select id="f-alignement">
+                <option value="">—</option>
+                <option>Loyal Bon</option>
+                <option>Neutre Bon</option>
+                <option>Chaotique Bon</option>
+                <option>Loyal Neutre</option>
+                <option>Neutre</option>
+                <option>Chaotique Neutre</option>
+                <option>Loyal Mauvais</option>
+                <option>Neutre Mauvais</option>
+                <option>Chaotique Mauvais</option>
+              </select>
+            </div>
+          </div>
+          <div class="fiche-row">
+            <div class="fiche-field fiche-field-wide">
+              <label>Traits de personnalité</label>
+              <textarea id="f-traits" rows="2" placeholder="Décrivez votre personnage en quelques mots…"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Caractéristiques -->
+        <div class="fiche-section fiche-stats">
+          <h3>Caractéristiques</h3>
+          <div class="stats-grid">
+            <div class="stat-block" id="stat-for">
+              <label>Force</label>
+              <input type="number" class="stat-score" min="1" max="30" value="10" data-stat="for">
+              <div class="stat-mod" id="mod-for">+0</div>
+            </div>
+            <div class="stat-block" id="stat-dex">
+              <label>Dextérité</label>
+              <input type="number" class="stat-score" min="1" max="30" value="10" data-stat="dex">
+              <div class="stat-mod" id="mod-dex">+0</div>
+            </div>
+            <div class="stat-block" id="stat-con">
+              <label>Constitution</label>
+              <input type="number" class="stat-score" min="1" max="30" value="10" data-stat="con">
+              <div class="stat-mod" id="mod-con">+0</div>
+            </div>
+            <div class="stat-block" id="stat-int">
+              <label>Intelligence</label>
+              <input type="number" class="stat-score" min="1" max="30" value="10" data-stat="int">
+              <div class="stat-mod" id="mod-int">+0</div>
+            </div>
+            <div class="stat-block" id="stat-sag">
+              <label>Sagesse</label>
+              <input type="number" class="stat-score" min="1" max="30" value="10" data-stat="sag">
+              <div class="stat-mod" id="mod-sag">+0</div>
+            </div>
+            <div class="stat-block" id="stat-cha">
+              <label>Charisme</label>
+              <input type="number" class="stat-score" min="1" max="30" value="10" data-stat="cha">
+              <div class="stat-mod" id="mod-cha">+0</div>
+            </div>
+          </div>
+          <div class="derived-stats">
+            <div class="derived-block">
+              <label>Bonus Maîtrise</label>
+              <div class="derived-value" id="f-bm">+2</div>
+            </div>
+            <div class="derived-block">
+              <label>Classe d'Armure</label>
+              <input type="number" id="f-ca" value="10" min="1" max="30">
+            </div>
+            <div class="derived-block">
+              <label>Initiative</label>
+              <div class="derived-value" id="f-init">+0</div>
+            </div>
+            <div class="derived-block">
+              <label>Vitesse</label>
+              <input type="text" id="f-vitesse" value="9 m">
+            </div>
+            <div class="derived-block derived-pv">
+              <label>Points de vie max</label>
+              <input type="number" id="f-pv-max" value="10" min="1">
+            </div>
+            <div class="derived-block derived-pv">
+              <label>PV actuels</label>
+              <input type="number" id="f-pv-cur" value="10" min="0">
+            </div>
+            <div class="derived-block">
+              <label>PV temporaires</label>
+              <input type="number" id="f-pv-tmp" value="0" min="0">
+            </div>
+            <div class="derived-block">
+              <label>Dés de vie</label>
+              <input type="text" id="f-dv" value="1d8" placeholder="1d8">
+            </div>
+          </div>
+        </div>
+
+        <!-- Jets de sauvegarde & Compétences -->
+        <div class="fiche-section fiche-competences">
+          <div class="comp-col">
+            <h3>Jets de sauvegarde</h3>
+            <div id="sauvegardes-list" class="saves-list"></div>
+          </div>
+          <div class="comp-col">
+            <h3>Compétences</h3>
+            <div id="competences-list" class="skills-list"></div>
+          </div>
+        </div>
+
+        <!-- Actions / Attaques -->
+        <div class="fiche-section fiche-combat">
+          <h3>Actions de combat</h3>
+          <div class="combat-actions-row">
+            <div class="action-slot">
+              <div class="action-type">Action</div>
+              <input type="text" id="f-action" placeholder="Ex: Attaque, Sort…">
+            </div>
+            <div class="action-slot">
+              <div class="action-type">Action Bonus</div>
+              <input type="text" id="f-bonus-action" placeholder="Ex: Second souffle…">
+            </div>
+            <div class="action-slot">
+              <div class="action-type">Réaction</div>
+              <input type="text" id="f-reaction" placeholder="Ex: Attaque d'opportunité…">
+            </div>
+          </div>
+          <h4>Attaques</h4>
+          <div id="attacks-list" class="attacks-table">
+            <div class="attacks-header">
+              <span>Arme / Sort</span>
+              <span>Bonus d'attaque</span>
+              <span>Dégâts</span>
+              <span>Type</span>
+              <span>Notes</span>
+              <span></span>
+            </div>
+          </div>
+          <button class="btn-add" onclick="addAttack()">+ Ajouter une attaque</button>
+        </div>
+
+        <!-- Équipement -->
+        <div class="fiche-section fiche-equipement">
+          <h3>Équipement & Inventaire</h3>
+          <div class="fiche-row">
+            <div class="fiche-field fiche-field-sm">
+              <label>Or (po)</label>
+              <input type="number" id="f-po" value="0" min="0">
+            </div>
+            <div class="fiche-field fiche-field-sm">
+              <label>Argent (pa)</label>
+              <input type="number" id="f-pa" value="0" min="0">
+            </div>
+            <div class="fiche-field fiche-field-sm">
+              <label>Cuivre (pc)</label>
+              <input type="number" id="f-pc" value="0" min="0">
+            </div>
+          </div>
+          <textarea id="f-inventaire" rows="4" placeholder="Listez vos objets, armes, armures…"></textarea>
+        </div>
+
+        <!-- Sorts -->
+        <div class="fiche-section fiche-sorts" id="fiche-sorts-section">
+          <h3>Sorts</h3>
+          <div class="sorts-fiche-info" id="sorts-fiche-info"></div>
+          <div class="fiche-row">
+            <div class="fiche-field fiche-field-sm">
+              <label>Caract. d'incantation</label>
+              <input type="text" id="f-sort-caract" placeholder="Ex: Int" readonly>
+            </div>
+            <div class="fiche-field fiche-field-sm">
+              <label>DD des sorts</label>
+              <div class="derived-value" id="f-sort-dd">—</div>
+            </div>
+            <div class="fiche-field fiche-field-sm">
+              <label>Bonus d'attaque de sort</label>
+              <div class="derived-value" id="f-sort-atk">—</div>
+            </div>
+          </div>
+          <div class="sorts-slots" id="sorts-slots"></div>
+          <h4>Sorts mineurs</h4>
+          <textarea id="f-cantrips" rows="2" placeholder="Sorts mineurs connus…"></textarea>
+          <h4>Sorts préparés</h4>
+          <textarea id="f-spells" rows="4" placeholder="Sorts préparés…"></textarea>
+        </div>
+
+        <!-- Notes -->
+        <div class="fiche-section fiche-notes">
+          <h3>Notes</h3>
+          <textarea id="f-notes" rows="5" placeholder="Quêtes en cours, PNJ rencontrés, secrets découverts…"></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Tooltip glossaire -->
+  <div id="tooltip" class="glossaire-tooltip hidden" role="tooltip"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
