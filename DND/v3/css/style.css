@@ -13,7 +13,7 @@ html {
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-family: 'Source Sans 3', 'Segoe UI', system-ui, -apple-system, sans-serif;
   background: #4b270e;
   color: #2a1a0e;
   min-height: 100vh;
@@ -953,161 +953,174 @@ select option {
 /* ===== SORTS ===== */
 .sorts-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 1rem;
   align-items: start;
 }
 
+/* Carte sort — layout vertical avec accent couleur par école */
 .sort-item {
   background: var(--bg-card);
   border: 1.5px solid var(--border);
+  border-top: 3px solid var(--ecole-color, var(--border-gold));
   border-radius: var(--radius);
   overflow: hidden;
-  transition: all 0.15s;
+  transition: all 0.2s;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
 }
 
 .sort-item:hover {
-  border-color: var(--border-gold);
+  border-color: var(--ecole-color, var(--border-gold));
+  border-top-color: var(--ecole-color, var(--border-gold));
   box-shadow: var(--shadow);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
-.sort-header {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto auto;
-  grid-template-areas:
-    "badge name chevron"
-    "ecole tags tags";
-  column-gap: 0.6rem;
-  row-gap: 0.2rem;
-  padding: 0.75rem 1rem 0.6rem;
-  cursor: pointer;
+.sort-card-body {
+  padding: 0.7rem 0.85rem 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.sort-card-toprow {
+  display: flex;
   align-items: center;
+  gap: 0.3rem;
+  flex-wrap: wrap;
 }
 
+/* badge niveau — commun carte + modale */
 .sort-niveau-badge {
-  grid-area: badge;
   background: #f5f0e8;
   border: 1.5px solid var(--border);
   color: var(--text-subtle);
-  padding: 0.15rem 0.45rem;
+  padding: 0.12rem 0.42rem;
   border-radius: 10px;
-  font-size: 0.7rem;
+  font-size: 0.67rem;
   font-weight: 700;
   white-space: nowrap;
-  min-width: 42px;
   text-align: center;
 }
+.sort-niveau-badge.niveau-0 { background:#f8f5ef; color:#7a6040; border-color:#d8c898; }
+.sort-niveau-badge.niveau-1 { background:#eefaea; color:#1a6a20; border-color:#90d8a0; }
+.sort-niveau-badge.niveau-2 { background:#eaf0ff; color:#1a40a0; border-color:#90b0e8; }
+.sort-niveau-badge.niveau-3 { background:#fffae8; color:#7a5800; border-color:#e0c060; }
+.sort-niveau-badge.niveau-4 { background:#fff0ee; color:#8a2010; border-color:#e0a090; }
+.sort-niveau-badge.niveau-5 { background:#f5eeff; color:#6010a0; border-color:#c090e8; }
+.sort-niveau-badge.niveau-6 { background:#fff6e0; color:#a04000; border-color:#e8c070; }
+.sort-niveau-badge.niveau-7 { background:#e8fff4; color:#005840; border-color:#70d8a8; }
+.sort-niveau-badge.niveau-8 { background:#f0f0ff; color:#282870; border-color:#a0a0e0; }
+.sort-niveau-badge.niveau-9 { background:#fff0f8; color:#680050; border-color:#d890c0; }
 
-.sort-niveau-badge.niveau-0 {
-  background: #f8f5ef;
-  color: #7a6040;
-  border-color: #d8c898;
-}
-
-.sort-niveau-badge.niveau-1 {
-  background: #eefaea;
-  color: #1a6a20;
-  border-color: #90d8a0;
-}
-
-.sort-niveau-badge.niveau-2 {
-  background: #eaf0ff;
-  color: #1a40a0;
-  border-color: #90b0e8;
-}
-
-.sort-niveau-badge.niveau-3 {
-  background: #fffae8;
-  color: #7a5800;
-  border-color: #e0c060;
-}
-
-.sort-niveau-badge.niveau-4 {
-  background: #fff0ee;
-  color: #8a2010;
-  border-color: #e0a090;
-}
-
-.sort-niveau-badge.niveau-5 {
-  background: #f5eeff;
-  color: #6010a0;
-  border-color: #c090e8;
-}
-
-.sort-name {
-  grid-area: name;
-  font-weight: 700;
-  color: var(--text-dark);
-  font-size: 0.9rem;
-}
-
-.sort-ecole {
-  grid-area: ecole;
-  font-size: 0.72rem;
-  color: var(--text-subtle);
-  font-style: italic;
-}
-
-.sort-tags {
-  grid-area: tags;
-  display: flex;
-  gap: 0.3rem;
-  flex-wrap: wrap;
+.sort-ecole-tag {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--ecole-color, var(--gold));
+  background: var(--ecole-bg, var(--gold-light));
+  padding: 0.07rem 0.38rem;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--ecole-color, var(--border-gold)) 40%, transparent);
+  white-space: nowrap;
 }
 
 .sort-tag-conc {
   background: #fff0ee;
   border: 1px solid var(--border-red);
   color: var(--red-bright);
-  padding: 0.1rem 0.4rem;
+  padding: 0.07rem 0.38rem;
   border-radius: 8px;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 600;
+  white-space: nowrap;
 }
 
-.sort-chevron {
-  grid-area: chevron;
-  align-self: start;
+.sort-card-name {
+  font-family: 'Cinzel', 'Georgia', serif;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-dark);
+  line-height: 1.25;
+}
+
+.sort-card-meta {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.sort-meta-pill {
+  font-size: 0.63rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
   color: var(--text-subtle);
-  font-size: 0.7rem;
-  transition: transform 0.2s;
+  white-space: nowrap;
 }
 
-/* accordion désactivé — expansion via modale */
+.sort-card-preview {
+  font-size: 0.72rem;
+  color: var(--text-subtle);
+  font-style: italic;
+  line-height: 1.45;
+  border-left: 2px solid var(--ecole-color, var(--border-gold));
+  padding-left: 0.45rem;
+  margin-top: 0.05rem;
+  /* clamp à 2 lignes */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
 
+.sort-card-classes {
+  display: flex;
+  gap: 0.22rem;
+  flex-wrap: wrap;
+  margin-top: 0.15rem;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--border-soft);
+}
+
+.sort-card-class {
+  font-size: 0.59rem;
+  padding: 0.07rem 0.36rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  color: var(--text-subtle);
+}
+
+/* ── Styles modal sorts (inchangés) ── */
 .sort-meta {
   display: flex;
   gap: 1.2rem;
   flex-wrap: wrap;
   margin: 0.7rem 0;
 }
-
 .sort-meta-item {
   font-size: 0.79rem;
   color: var(--text-muted);
 }
-
 .sort-meta-item strong {
   color: var(--text-dark);
 }
-
 .sort-desc {
   font-size: 0.82rem;
   color: var(--text-muted);
   line-height: 1.6;
 }
-
 .sort-classes {
   display: flex;
   gap: 0.3rem;
   flex-wrap: wrap;
   margin-top: 0.6rem;
 }
-
 .sort-class-tag {
   font-size: 0.68rem;
   padding: 0.12rem 0.45rem;
@@ -1117,11 +1130,31 @@ select option {
   color: var(--text-subtle);
 }
 
+/* ── Types de dégâts colorés ── */
+.dmg-type {
+  font-weight: 700;
+  padding: 0.05em 0.32em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  white-space: nowrap;
+}
+.dmg-acide      { background:#e8f5e9; color:#2e7d32; border:1px solid #a5d6a7; }
+.dmg-feu        { background:#ffebee; color:#b71c1c; border:1px solid #ef9a9a; }
+.dmg-froid      { background:#e3f2fd; color:#0d47a1; border:1px solid #90caf9; }
+.dmg-foudre     { background:#fffde7; color:#e65100; border:1px solid #ffe082; }
+.dmg-tonnerre   { background:#eceff1; color:#263238; border:1px solid #b0bec5; }
+.dmg-poison     { background:#f3e5f5; color:#6a1b9a; border:1px solid #ce93d8; }
+.dmg-necrotique { background:#e0e0e0; color:#1a1a1a; border:1px solid #9e9e9e; }
+.dmg-radiant    { background:#fff8e1; color:#bf6000; border:1px solid #ffe082; }
+.dmg-psychique  { background:#fce4ec; color:#880e4f; border:1px solid #f48fb1; }
+.dmg-force      { background:#f5f5f5; color:#37474f; border:1px solid #b0bec5; }
+.dmg-physique   { background:#fafafa; color:#546e7a; border:1px solid #cfd8dc; }
+
 /* ===== GLOSSAIRE ===== */
 .glossaire-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.8rem;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.85rem;
   align-items: start;
 }
 
@@ -1130,109 +1163,95 @@ select option {
   border: 1.5px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  transition: all 0.15s;
+  transition: all 0.18s;
   box-shadow: var(--shadow-sm);
   cursor: pointer;
+  padding: 0.75rem 0.9rem 0.7rem;
 }
 
 .glossaire-item:hover {
   border-color: var(--border-gold);
   box-shadow: var(--shadow);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
 }
 
-.glossaire-header {
+.glossaire-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.glossaire-cat-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+  margin-top: 0.08rem;
+}
+
+.glossaire-card-info {
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.75rem 1rem 0.65rem;
-  cursor: pointer;
+  gap: 0.12rem;
 }
 
-.glossaire-header-row {
+.glossaire-terme-row {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  flex-wrap: wrap;
 }
 
 .glossaire-terme {
+  font-family: 'Cinzel', 'Georgia', serif;
   font-weight: 700;
   color: var(--text-dark);
   font-size: 0.88rem;
   flex: 1;
+  min-width: 0;
+  line-height: 1.2;
 }
 
 .glossaire-en {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-subtle);
   font-style: italic;
 }
 
+.glossaire-excerpt {
+  font-size: 0.71rem;
+  color: var(--text-subtle);
+  line-height: 1.45;
+  margin-top: 0.45rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
 .glossaire-cat {
-  font-size: 0.68rem;
-  padding: 0.15rem 0.5rem;
+  font-size: 0.6rem;
+  padding: 0.1rem 0.42rem;
   border-radius: 10px;
   border: 1.5px solid var(--border);
-  font-weight: 600;
+  font-weight: 700;
   background: #f8f5f0;
   color: var(--text-subtle);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
+.glossaire-cat.mécanique  { background:#f8f5e8; border-color:var(--border-gold); color:var(--gold); }
+.glossaire-cat.combat     { background:var(--red-light); border-color:var(--border-red); color:var(--red-bright); }
+.glossaire-cat.magie      { background:#f5eeff; border-color:#c090e8; color:#6010a0; }
+.glossaire-cat.etat       { background:#eaf0ff; border-color:#90b0e8; color:#1a40a0; }
+.glossaire-cat.action     { background:#eefaea; border-color:#90d8a0; color:#1a6a20; }
+.glossaire-cat.exploration{ background:#f0ffe0; border-color:#a8d878; color:#305010; }
+.glossaire-cat.repos      { background:#e8f4ff; border-color:#90c8e8; color:#104870; }
+.glossaire-cat.zone-d-effet { background:#f8eeff; border-color:#d0a0e8; color:#501880; }
+.glossaire-cat.déplacement { background:#fef8e8; border-color:#d8c070; color:#6a4a00; }
 
-.glossaire-cat.mécanique {
-  background: #f8f5e8;
-  border-color: var(--border-gold);
-  color: var(--gold);
-}
-
-.glossaire-cat.combat {
-  background: var(--red-light);
-  border-color: var(--border-red);
-  color: var(--red-bright);
-}
-
-.glossaire-cat.magie {
-  background: #f5eeff;
-  border-color: #c090e8;
-  color: #6010a0;
-}
-
-.glossaire-cat.etat {
-  background: #eaf0ff;
-  border-color: #90b0e8;
-  color: #1a40a0;
-}
-
-.glossaire-cat.action {
-  background: #eefaea;
-  border-color: #90d8a0;
-  color: #1a6a20;
-}
-
-.glossaire-cat.exploration {
-  background: #f0ffe0;
-  border-color: #a8d878;
-  color: #305010;
-}
-
-.glossaire-cat.repos {
-  background: #e8f4ff;
-  border-color: #90c8e8;
-  color: #104870;
-}
-
-.glossaire-cat.zone-d-effet {
-  background: #f8eeff;
-  border-color: #d0a0e8;
-  color: #501880;
-}
-
-.glossaire-cat.déplacement {
-  background: #fef8e8;
-  border-color: #d8c070;
-  color: #6a4a00;
-}
-
-/* accordion glossaire désactivé — expansion via modale */
+/* expansion via modale */
 
 .glossaire-desc {
   font-size: 0.83rem;
@@ -2154,6 +2173,190 @@ textarea {
   cursor: help;
   vertical-align: middle;
   margin-left: 2px;
+}
+
+/* ===== TYPOGRAPHIE D&D — CINZEL + LIBRE BASKERVILLE ===== */
+
+/* Titres et éléments d'interface → Cinzel (serif élégant, style fantasy) */
+.modal-title,
+.card-name,
+.sort-name,
+.glossaire-terme,
+.panel-header h2,
+.home-section h2,
+.home-banner h1,
+.detail-header h2,
+.fiche-section h3,
+.logo-text,
+.nav-tab {
+  font-family: 'Cinzel', 'Trajan Pro', 'Times New Roman', serif;
+}
+
+/* Corps des descriptions → Libre Baskerville (lisibilité sur parchemin) */
+.sort-desc,
+.glossaire-desc,
+.sort-desc-para,
+.sort-desc-list li,
+.modal-body-desc {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.85rem;
+  line-height: 1.78;
+  color: var(--text-body);
+}
+
+/* Étiquettes et UI compact → Source Sans 3 */
+.filter-row select,
+.filter-row label,
+.search-bar input,
+.fiche-section label,
+.comp-col,
+.skill-row,
+.save-row {
+  font-family: 'Source Sans 3', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ===== DESCRIPTIONS DE SORTS — FORMATAGE ===== */
+
+.sort-desc-para {
+  margin-bottom: 0.55rem;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.85rem;
+  line-height: 1.78;
+  color: var(--text-body);
+}
+
+.sort-desc-para:last-child { margin-bottom: 0; }
+
+.sort-desc-list {
+  margin: 0.2rem 0 0.6rem 1.2rem;
+  padding: 0;
+}
+
+.sort-desc-list li {
+  font-family: 'Libre Baskerville', Georgia, serif;
+  font-size: 0.85rem;
+  line-height: 1.72;
+  color: var(--text-body);
+  margin-bottom: 0.35rem;
+  padding-left: 0.2rem;
+}
+
+/* Amélioration par niveau */
+.sort-amelioration {
+  margin-top: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-parch);
+  border-left: 3px solid var(--gold-bright);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.81rem;
+  color: var(--text-muted);
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+.sort-amelioration strong { color: var(--gold); }
+
+/* ===== MISE EN ÉVIDENCE DES TERMES ===== */
+
+/* États de jeu (Charmé, Aveuglé, etc.) — rouge + dotted underline + cliquable */
+.term-etat {
+  color: var(--red);
+  font-weight: 700;
+  border-bottom: 1.5px dotted var(--red);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.term-etat:hover { opacity: 0.75; }
+
+/* Termes mécaniques (jet de sauvegarde, concentration, etc.) — or */
+strong.term-mec {
+  color: var(--gold);
+  font-weight: 700;
+  font-style: normal;
+}
+
+/* Nom alternatif d'un sort (ex: Amis | Faux amis) */
+.sort-name-alt {
+  font-weight: 400;
+  color: var(--text-subtle);
+  font-size: 0.78em;
+  font-family: 'Source Sans 3', sans-serif;
+}
+
+/* ===== TOGGLE RÉSUMÉ / COMPLET (MODAL) ===== */
+
+.modal-desc-toggle {
+  display: flex;
+  gap: 0;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  margin: 0.5rem 0 0.8rem;
+  width: fit-content;
+}
+
+.modal-desc-btn {
+  background: transparent;
+  border: none;
+  padding: 0.28rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Source Sans 3', sans-serif;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.modal-desc-btn:hover { color: var(--red); }
+
+.modal-desc-btn.active {
+  background: var(--red);
+  color: #fff;
+}
+
+/* ===== PRÉFÉRENCE MODE (BARRE SORTS) ===== */
+
+.desc-mode-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 0;
+  flex-wrap: wrap;
+}
+
+.desc-mode-label {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.desc-mode-pills {
+  display: flex;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.desc-mode-pill {
+  background: transparent;
+  border: none;
+  padding: 0.22rem 0.75rem;
+  font-size: 0.71rem;
+  font-weight: 600;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Source Sans 3', sans-serif;
+  white-space: nowrap;
+}
+
+.desc-mode-pill:hover { color: var(--gold); }
+
+.desc-mode-pill.active {
+  background: var(--gold);
+  color: #fff;
 }
 
 /* ===== PRINT ===== */

@@ -4,9 +4,9 @@ window.DND_DATA = {};
 async function loadAllData() {
   const files = [
     ['classes', 'data/classes.json'],
-    ['races',   'data/races.json'],
-    ['sorts',   'data/sorts.json'],
-    ['dons',    'data/dons.json'],
+    ['races', 'data/races.json'],
+    ['sorts', 'data/sorts.json'],
+    ['dons', 'data/dons.json'],
     ['glossaire', 'data/glossaire.json'],
   ];
   const results = await Promise.all(

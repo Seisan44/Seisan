@@ -174,7 +174,7 @@ function buildClassDetail(c) {
               <td><strong>${p.niveau}</strong></td>
               <td>+${p.bonus_maitrise}</td>
               ${buildProgressionCells(c, p)}
-              <td style="font-size:0.75rem;color:var(--text-muted)">${(p.capacites||[]).join(', ') || '—'}</td>
+              <td style="font-size:0.75rem;color:var(--text-muted)">${(p.capacites || []).join(', ') || '—'}</td>
             </tr>`).join('')}
           </tbody>
         </table>
@@ -244,7 +244,7 @@ function buildProgressionCells(c, p) {
   const p0 = c.progression[0];
   if ('rages' in p0) return `<td>${p.rages}</td><td>${p.degats_rage}</td>`;
   if ('sorts_mineurs' in p0 && 'sorts_prepares' in p0 && !('sorts_connus' in p0)) return `<td>${p.sorts_mineurs}</td><td>${p.sorts_prepares}</td>`;
-  if ('points_ki' in p0) return `<td>${p.points_ki}</td><td>${p.de_arts_martiaux||'—'}</td>`;
+  if ('points_ki' in p0) return `<td>${p.points_ki}</td><td>${p.de_arts_martiaux || '—'}</td>`;
   if ('second_souffle' in p0 && !('sorts_mineurs' in p0)) return `<td>${p.second_souffle}</td>`;
   if ('sorts_connus' in p0) return `<td>${p.sorts_mineurs}</td><td>${p.sorts_connus}</td><td>${p.points_sorcellerie}</td>`;
   if ('formes_sauvages' in p0) return `<td>${p.formes_sauvages}</td><td>${p.sorts_mineurs}</td><td>${p.sorts_prepares}</td>`;
@@ -264,7 +264,7 @@ function buildSortsTab(c) {
     ${s.note ? `<div class="conseil-block" style="margin:0.7rem 0"><p style="font-size:0.82rem;color:var(--text-muted)">${s.note}</p></div>` : ''}
     <h4 style="color:var(--text-muted);font-size:0.75rem;text-transform:uppercase;letter-spacing:.05em;margin:0.8rem 0 .5rem">Sorts recommandés pour débutants</h4>
     <div class="card-tags">
-      ${(s.sorts_recommandes_debutants||[]).map(n => `<span class="tag tag-blue">${n}</span>`).join('')}
+      ${(s.sorts_recommandes_debutants || []).map(n => `<span class="tag tag-blue">${n}</span>`).join('')}
     </div>
   </div>`;
 }
@@ -283,7 +283,7 @@ function initRaces() {
         <div class="card-name">${r.name}</div>
         <div class="card-role">${r.size === 'P' ? 'Petite taille' : r.size === 'M' ? 'Taille moyenne' : r.size} · ${r.speed}</div>
         <div class="card-desc">${r.overview}</div>
-        <div class="card-tags">${r.traits.slice(0,3).map(t => `<span class="tag">${t.name}</span>`).join('')}</div>
+        <div class="card-tags">${r.traits.slice(0, 3).map(t => `<span class="tag">${t.name}</span>`).join('')}</div>
       </div>`).join('');
     grid.querySelectorAll('.race-card').forEach(card => {
       card.addEventListener('click', () => {
@@ -347,6 +347,9 @@ function initSorts() {
   const sorts = window.DND_DATA.sorts;
   if (!sorts) return;
 
+  // Construire les données de mise en évidence (nécessite window.DND_DATA.glossaire)
+  buildSortTermsData();
+
   // Populate filters
   const ecoles = [...new Set(sorts.map(s => s.ecole))].sort();
   const classes = [...new Set(sorts.flatMap(s => s.classes))].sort();
@@ -371,7 +374,11 @@ function initSorts() {
     const classe = document.getElementById('sorts-classe').value;
     const conc = document.getElementById('sorts-concentration').checked;
     let list = sorts;
-    if (q) list = list.filter(s => s.name.toLowerCase().includes(q) || s.description.toLowerCase().includes(q));
+    if (q) list = list.filter(s =>
+      s.name.toLowerCase().includes(q) ||
+      (s.description || '').toLowerCase().includes(q) ||
+      (s.description_resume || '').toLowerCase().includes(q)
+    );
     if (niv !== '') list = list.filter(s => String(s.niveau) === niv);
     if (ecole) list = list.filter(s => s.ecole === ecole);
     if (classe) list = list.filter(s => s.classes.includes(classe));
@@ -380,23 +387,48 @@ function initSorts() {
   }
 
   render(sorts);
-  ['sorts-search','sorts-niveau','sorts-ecole','sorts-classe','sorts-concentration'].forEach(id => {
+  ['sorts-search', 'sorts-niveau', 'sorts-ecole', 'sorts-classe', 'sorts-concentration'].forEach(id => {
     document.getElementById(id).addEventListener('input', applyFilters);
     document.getElementById(id).addEventListener('change', applyFilters);
+  });
+
+  // Initialiser la barre de préférence de mode d'affichage
+  const pills = document.querySelectorAll('.desc-mode-pill');
+  const savedMode = getDescMode();
+  pills.forEach(pill => {
+    pill.classList.toggle('active', pill.dataset.mode === savedMode);
+    pill.addEventListener('click', () => {
+      setDescMode(pill.dataset.mode);
+      pills.forEach(p => p.classList.toggle('active', p.dataset.mode === pill.dataset.mode));
+    });
   });
 }
 
 function buildSortItem(s) {
   const niv = s.niveau === '0' ? 'Mineur' : `Niv.${s.niveau}`;
-  return `<div class="sort-item">
-    <div class="sort-header">
-      <span class="sort-niveau-badge niveau-${s.niveau}">${niv}</span>
-      <span class="sort-name">${s.name}</span>
-      <span class="sort-ecole">${s.ecole}</span>
-      <div class="sort-tags">
-        ${s.concentration ? `<span class="sort-tag-conc">Concentration</span>` : ''}
+  const nameParts = s.name.split('|');
+  const mainName = nameParts[0].trim();
+  const altName = nameParts.length > 1 ? nameParts.slice(1).map(p => p.trim()).join(' / ') : null;
+  const ec = getSortEcoleConfig(s.ecole);
+  const preview = getSortPreview(s);
+  const dureeShort = formatDuration(s.duree);
+  return `<div class="sort-item" style="--ecole-color:${ec.color};--ecole-bg:${ec.bg}">
+    <div class="sort-card-body">
+      <div class="sort-card-toprow">
+        <span class="sort-niveau-badge niveau-${s.niveau}">${niv}</span>
+        <span class="sort-ecole-tag">${ec.emoji} ${s.ecole}</span>
+        ${s.concentration ? `<span class="sort-tag-conc">◉ Conc.</span>` : ''}
       </div>
-      <span class="sort-chevron">▶</span>
+      <div class="sort-card-name">${mainName}${altName ? ` <span class="sort-name-alt">/ ${altName}</span>` : ''}</div>
+      <div class="sort-card-meta">
+        <span class="sort-meta-pill">⚡ ${s.temps}</span>
+        <span class="sort-meta-pill">🎯 ${s.portee}</span>
+        <span class="sort-meta-pill">⏱ ${dureeShort}</span>
+      </div>
+      ${preview ? `<div class="sort-card-preview">${preview}</div>` : ''}
+      <div class="sort-card-classes">
+        ${s.classes.map(c => `<span class="sort-card-class">${c}</span>`).join('')}
+      </div>
     </div>
   </div>`;
 }
@@ -452,15 +484,20 @@ function initGlossaire() {
 }
 
 function buildGlossaireItem(g) {
+  const cat = CAT_CONFIG[g.cat] || { emoji: '📖', label: g.cat };
+  const excerpt = getGlossaireExcerpt(g.description);
   return `<div class="glossaire-item" data-id="${g.id}">
-    <div class="glossaire-header">
-      <div class="glossaire-header-row">
-        <span class="glossaire-terme">${g.terme}</span>
-        <span class="glossaire-cat ${g.cat}">${g.cat}</span>
-        <span class="sort-chevron">▶</span>
+    <div class="glossaire-card-header">
+      <div class="glossaire-cat-icon">${cat.emoji}</div>
+      <div class="glossaire-card-info">
+        <div class="glossaire-terme-row">
+          <span class="glossaire-terme">${g.terme}</span>
+          <span class="glossaire-cat ${g.cat}">${cat.label}</span>
+        </div>
+        ${g.anglais ? `<span class="glossaire-en">${g.anglais}</span>` : ''}
       </div>
-      ${g.anglais ? `<span class="glossaire-en">${g.anglais}</span>` : ''}
     </div>
+    ${excerpt ? `<div class="glossaire-excerpt">${excerpt}</div>` : ''}
   </div>`;
 }
 
@@ -499,13 +536,40 @@ function showModal(html) {
 
 function openSortModal(s) {
   const niv = s.niveau === '0' ? 'Sort mineur' : `Niveau ${s.niveau}`;
+
+  // Nom avec pipe (nouveau | ancien)
+  const nameParts = s.name.split('|');
+  const mainName = nameParts[0].trim();
+  const altName = nameParts.length > 1 ? nameParts.slice(1).map(p => p.trim()).join(' / ') : null;
+
+  // Description résumée : liste structurée + termes mis en évidence
+  const descResumeHtml = formatSortDesc(s.description_resume);
+
+  // Description complète : paragraphe avec termes mis en évidence
+  const descCompleteHtml = s.description
+    ? s.description.split('\n').filter(Boolean).map(l => `<p class="sort-desc-para">${highlightSortTerms(l)}</p>`).join('')
+    : '<p class="sort-desc-para" style="color:var(--text-subtle);font-style:italic">Description complète non disponible.</p>';
+
+  // Amélioration par niveau
+  const ameliorationHtml = s.amelioration
+    ? `<div class="sort-amelioration"><strong>⬆ Amélioration :</strong> ${highlightSortTerms(s.amelioration)}</div>`
+    : '';
+
+  const mode = getDescMode();
+
   showModal(`
     <div class="modal-badges">
       <span class="sort-niveau-badge niveau-${s.niveau}">${niv}</span>
       ${s.concentration ? `<span class="sort-tag-conc">Concentration</span>` : ''}
     </div>
-    <div class="modal-title">${s.name}</div>
+    <div class="modal-title">
+      ${mainName}${altName ? ` <span class="sort-name-alt">/ ${altName}</span>` : ''}
+    </div>
     <div class="modal-subtitle">${s.ecole}</div>
+    <div class="modal-desc-toggle">
+      <button class="modal-desc-btn${mode === 'resume' ? ' active' : ''}" data-desc-mode="resume">📋 Résumé</button>
+      <button class="modal-desc-btn${mode === 'complete' ? ' active' : ''}" data-desc-mode="complete">📜 Complet</button>
+    </div>
     <hr class="modal-divider">
     <div class="sort-meta">
       <div class="sort-meta-item"><strong>Temps :</strong> ${s.temps}</div>
@@ -514,11 +578,48 @@ function openSortModal(s) {
       <div class="sort-meta-item"><strong>Composants :</strong> ${s.composants.join(', ')}</div>
     </div>
     <hr class="modal-divider">
-    <div class="sort-desc">${s.description.replace(/\n/g, '<br>')}</div>
+    <div class="sort-desc" id="modal-sort-desc">
+      ${mode === 'resume' ? descResumeHtml : descCompleteHtml}
+      ${ameliorationHtml}
+    </div>
     <div class="sort-classes" style="margin-top:1rem">
       ${s.classes.map(c => `<span class="sort-class-tag">${c}</span>`).join('')}
     </div>
   `);
+
+  // Toggle résumé / complet
+  document.querySelectorAll('.modal-desc-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const newMode = btn.dataset.descMode;
+      setDescMode(newMode);
+      // Mettre à jour les boutons du modal
+      document.querySelectorAll('.modal-desc-btn').forEach(b =>
+        b.classList.toggle('active', b.dataset.descMode === newMode)
+      );
+      // Mettre à jour le contenu
+      document.getElementById('modal-sort-desc').innerHTML =
+        (newMode === 'resume' ? descResumeHtml : descCompleteHtml) + ameliorationHtml;
+      // Sync les pills de préférence dans l'onglet Sorts
+      document.querySelectorAll('.desc-mode-pill').forEach(p =>
+        p.classList.toggle('active', p.dataset.mode === newMode)
+      );
+      // Réattacher les handlers états dans le nouveau contenu
+      attachEtatHandlers();
+    });
+  });
+
+  // Rendre les termes d'état cliquables (→ modale glossaire)
+  attachEtatHandlers();
+}
+
+function attachEtatHandlers() {
+  document.querySelectorAll('#modal-content .term-etat[data-gloss]').forEach(el => {
+    el.addEventListener('click', e => {
+      e.stopPropagation();
+      const item = window.GLOSSAIRE_MAP?.[el.dataset.gloss];
+      if (item) openGlossaireModal(item);
+    });
+  });
 }
 
 function openGlossaireModal(g) {
@@ -586,32 +687,235 @@ function positionTooltip(e, tooltip) {
 
 // ===== FICHE DE PERSONNAGE =====
 const COMPETENCES = [
-  { nom: 'Acrobaties',    stat: 'dex' },
-  { nom: 'Arcanes',       stat: 'int' },
-  { nom: 'Athlétisme',    stat: 'for' },
-  { nom: 'Discrétion',    stat: 'dex' },
-  { nom: 'Dressage',      stat: 'sag' },
-  { nom: 'Escamotage',    stat: 'dex' },
-  { nom: 'Histoire',      stat: 'int' },
-  { nom: 'Intimidation',  stat: 'cha' },
+  { nom: 'Acrobaties', stat: 'dex' },
+  { nom: 'Arcanes', stat: 'int' },
+  { nom: 'Athlétisme', stat: 'for' },
+  { nom: 'Discrétion', stat: 'dex' },
+  { nom: 'Dressage', stat: 'sag' },
+  { nom: 'Escamotage', stat: 'dex' },
+  { nom: 'Histoire', stat: 'int' },
+  { nom: 'Intimidation', stat: 'cha' },
   { nom: 'Investigation', stat: 'int' },
-  { nom: 'Intuition',     stat: 'sag' },
-  { nom: 'Médecine',      stat: 'sag' },
-  { nom: 'Nature',        stat: 'int' },
-  { nom: 'Perception',    stat: 'sag' },
-  { nom: 'Persuasion',    stat: 'cha' },
-  { nom: 'Religion',      stat: 'int' },
-  { nom: 'Représentation',stat: 'cha' },
-  { nom: 'Survie',        stat: 'sag' },
-  { nom: 'Tromperie',     stat: 'cha' },
+  { nom: 'Intuition', stat: 'sag' },
+  { nom: 'Médecine', stat: 'sag' },
+  { nom: 'Nature', stat: 'int' },
+  { nom: 'Perception', stat: 'sag' },
+  { nom: 'Persuasion', stat: 'cha' },
+  { nom: 'Religion', stat: 'int' },
+  { nom: 'Représentation', stat: 'cha' },
+  { nom: 'Survie', stat: 'sag' },
+  { nom: 'Tromperie', stat: 'cha' },
 ];
 
-const STATS_LIST = ['for','dex','con','int','sag','cha'];
+const STATS_LIST = ['for', 'dex', 'con', 'int', 'sag', 'cha'];
 
 function getMod(score) { return Math.floor((score - 10) / 2); }
 function fmtMod(mod) { return (mod >= 0 ? '+' : '') + mod; }
 function getBM(niveau) {
   return Math.ceil(niveau / 4) + 1;
+}
+
+// ===== DESCRIPTION MODE PREFERENCE =====
+const DESC_MODE_KEY = 'dnd_desc_mode';
+function getDescMode() { return localStorage.getItem(DESC_MODE_KEY) || 'resume'; }
+function setDescMode(mode) { localStorage.setItem(DESC_MODE_KEY, mode); }
+
+// ===== SORT TERM HIGHLIGHTING =====
+let SORT_ETAT_MAP = {};  // { terme.toLowerCase() → { id, terme } }
+
+const SORT_DICE_REGEX = /\b\d*d(4|6|8|10|12|20)\b/gi;
+
+// Termes mécaniques à mettre en gras (gold) — triés par longueur desc
+const SORT_BOLD_TERMS = [
+  'jet de sauvegarde de Dextérité',
+  'jet de sauvegarde de Sagesse',
+  'jet de sauvegarde de Constitution',
+  'jet de sauvegarde de Charisme',
+  'jet de sauvegarde de Force',
+  'jet de sauvegarde d\'Intelligence',
+  'jets de sauvegarde',
+  'jet de sauvegarde',
+  'jet d\'attaque à distance',
+  'jet d\'attaque au corps à corps',
+  'jet d\'attaque',
+  'jets d\'attaque',
+  'points de vie temporaires',
+  'emplacement de sort',
+  'emplacements de sort',
+  'bonus de maîtrise',
+  'classe d\'armure',
+  'action bonus',
+  'Degré de Difficulté',
+  'points de vie',
+  'concentration',
+  'avantage',
+  'désavantage',
+  'réaction',
+  'initiative',
+  'demi-dégâts',
+  'résistance',
+  'immunité',
+].sort((a, b) => b.length - a.length);
+
+// ===== SCHOOLS CONFIG =====
+const ECOLE_CONFIG = {
+  'Abjuration':    { color: '#2e6dd4', bg: '#e8f0ff', emoji: '🛡️' },
+  'Invocation':    { color: '#1a8070', bg: '#dff4f2', emoji: '🌀' },
+  'Conjuration':   { color: '#1a8070', bg: '#dff4f2', emoji: '🌀' },
+  'Divination':    { color: '#8a6000', bg: '#fff8e0', emoji: '🔮' },
+  'Enchantement':  { color: '#b0184a', bg: '#fde4ec', emoji: '💫' },
+  'Évocation':     { color: '#c82020', bg: '#ffecec', emoji: '⚡' },
+  'Illusion':      { color: '#6a10a0', bg: '#f3e5f8', emoji: '👁️' },
+  'Nécromancie':   { color: '#2a4040', bg: '#e4eeee', emoji: '💀' },
+  'Transmutation': { color: '#b84000', bg: '#fff2e0', emoji: '⚗️' },
+};
+
+function getSortEcoleConfig(ecole) {
+  return ECOLE_CONFIG[ecole] || { color: '#7a5a0a', bg: '#fdf8ee', emoji: '✨' };
+}
+
+function getSortPreview(s) {
+  const text = s.description_resume || s.description || '';
+  const firstLine = text.split('\n')[0].replace(/^- /, '').trim();
+  return firstLine.length > 100 ? firstLine.slice(0, 97) + '…' : firstLine;
+}
+
+function formatDuration(duree) {
+  if (!duree) return '—';
+  if (duree === 'Instantanée') return 'Instant.';
+  if (duree.startsWith('Concentration')) return 'Conc.';
+  if (duree.includes('prochain tour')) return 'Fin de tour';
+  return duree.replace('minutes', 'min').replace('minute', 'min')
+              .replace('heures', 'h').replace('heure', 'h');
+}
+
+// ===== GLOSSAIRE CATEGORY CONFIG =====
+const CAT_CONFIG = {
+  'mécanique':    { emoji: '⚙️',  label: 'Mécanique'   },
+  'combat':       { emoji: '⚔️',  label: 'Combat'       },
+  'magie':        { emoji: '✨',  label: 'Magie'        },
+  'etat':         { emoji: '🔴',  label: 'État'         },
+  'action':       { emoji: '▶️',  label: 'Action'       },
+  'exploration':  { emoji: '🗺️', label: 'Exploration'  },
+  'repos':        { emoji: '💤',  label: 'Repos'        },
+  'zone-d-effet': { emoji: '💥',  label: 'Zone'         },
+  'déplacement':  { emoji: '👣',  label: 'Déplacement'  },
+};
+
+function getGlossaireExcerpt(desc) {
+  if (!desc) return '';
+  // Remplace #id# par le terme réel (lisible dans l'extrait)
+  let plain = desc.replace(/#([a-z0-9-]+)#/g, (m, id) =>
+    window.GLOSSAIRE_MAP?.[id]?.terme || ''
+  );
+  // Nettoie la ponctuation orpheline et normalise les espaces
+  plain = plain.replace(/\s*[,:;]\s*(?=[,:;.])/g, '').replace(/\s+/g, ' ').trim();
+  return plain.length > 115 ? plain.slice(0, 112) + '…' : plain;
+}
+
+// ===== DAMAGE TYPES =====
+const DAMAGE_TYPE_PATTERNS = [
+  [/(?<![a-zA-ZÀ-ÿ])(acide)(?![a-zA-ZÀ-ÿ])/g,        'dmg-acide'     ],
+  [/(?<![a-zA-ZÀ-ÿ])(feu)(?![a-zA-ZÀ-ÿ])/g,          'dmg-feu'       ],
+  [/(?<![a-zA-ZÀ-ÿ])(froid)(?![a-zA-ZÀ-ÿ])/g,        'dmg-froid'     ],
+  [/(?<![a-zA-ZÀ-ÿ])(foudre)(?![a-zA-ZÀ-ÿ])/g,       'dmg-foudre'    ],
+  [/(?<![a-zA-ZÀ-ÿ])(tonnerre)(?![a-zA-ZÀ-ÿ])/g,     'dmg-tonnerre'  ],
+  [/(?<![a-zA-ZÀ-ÿ])(poison)(?![a-zA-ZÀ-ÿ])/g,       'dmg-poison'    ],
+  [/(?<![a-zA-ZÀ-ÿ])(nécrotiques?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-necrotique'],
+  [/(?<![a-zA-ZÀ-ÿ])(radiants?)(?![a-zA-ZÀ-ÿ])/g,    'dmg-radiant'   ],
+  [/(?<![a-zA-ZÀ-ÿ])(psychiques?)(?![a-zA-ZÀ-ÿ])/g,  'dmg-psychique' ],
+  [/dégâts\s+de\s+(force)/g,                           'dmg-force'     ],
+  [/(?<![a-zA-ZÀ-ÿ])(contondants?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-physique'  ],
+  [/(?<![a-zA-ZÀ-ÿ])(perforants?)(?![a-zA-ZÀ-ÿ])/g,  'dmg-physique'  ],
+  [/(?<![a-zA-ZÀ-ÿ])(tranchants?)(?![a-zA-ZÀ-ÿ])/g,  'dmg-physique'  ],
+];
+
+function buildSortTermsData() {
+  SORT_ETAT_MAP = {};
+  const data = window.DND_DATA?.glossaire;
+  if (!data) return;
+  // Les états de jeu (Charmé, Aveuglé, etc.) → cliquables et colorés en rouge
+  (data.etats || []).forEach(e => {
+    if (e.terme) SORT_ETAT_MAP[e.terme.toLowerCase()] = { id: e.id, terme: e.terme };
+  });
+}
+
+// Remplace uniquement dans les nœuds texte (pas dans les attributs HTML ni les balises)
+function replaceInTextNodes(html, replaceFn) {
+  return html.split(/(<[^>]+>)/).map(part =>
+    part.startsWith('<') ? part : replaceFn(part)
+  ).join('');
+}
+
+function highlightSortTerms(text) {
+  if (!text) return '';
+  let html = text;
+
+  // Étape 1 : états de jeu → rouge + cliquable vers modale glossaire
+  const sortedEtats = Object.values(SORT_ETAT_MAP).sort((a, b) => b.terme.length - a.terme.length);
+  for (const { id, terme } of sortedEtats) {
+    const esc = terme.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`(?<![a-zA-ZÀ-ÿ])(${esc})(?![a-zA-ZÀ-ÿ])`, 'gi');
+    html = replaceInTextNodes(html, txt =>
+      txt.replace(re, `<span class="term-etat" data-gloss="${id}">$1</span>`)
+    );
+  }
+
+  // Étape 2 : types de dégâts → étiquettes colorées
+  for (const [re, cls] of DAMAGE_TYPE_PATTERNS) {
+    re.lastIndex = 0; // reset global regex
+    html = replaceInTextNodes(html, txt =>
+      txt.replace(re, (match, g1) => {
+        const word = g1 !== undefined ? g1 : match;
+        const prefix = (g1 !== undefined && match !== g1) ? match.slice(0, match.lastIndexOf(g1)) : '';
+        return prefix + `<span class="dmg-type ${cls}">${word}</span>`;
+      })
+    );
+  }
+
+  // Étape 3 : termes mécaniques → gras doré
+  for (const term of SORT_BOLD_TERMS) {
+    const esc = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`(?<![a-zA-ZÀ-ÿ>])(${esc})(?![a-zA-ZÀ-ÿ])`, 'gi');
+    html = replaceInTextNodes(html, txt =>
+      txt.replace(re, `<strong class="term-mec">$1</strong>`)
+    );
+  }
+
+  // Étape 4 : dés type 1d8, 2d6 → gras doré
+  html = replaceInTextNodes(html, txt =>
+    txt.replace(SORT_DICE_REGEX, `<strong class="term-mec">$&</strong>`)
+  );
+
+  return html;
+}
+
+// Convertit description_resume (texte brut avec "- " et \n) en HTML structuré
+function formatSortDesc(text) {
+  if (!text) return '<p class="sort-desc-para" style="color:var(--text-subtle);font-style:italic">Description non disponible.</p>';
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+  let html = '';
+  let listItems = [];
+
+  const flushList = () => {
+    if (listItems.length) {
+      html += '<ul class="sort-desc-list">' +
+        listItems.map(li => `<li>${highlightSortTerms(li)}</li>`).join('') +
+        '</ul>';
+      listItems = [];
+    }
+  };
+
+  for (const line of lines) {
+    if (line.startsWith('- ')) {
+      listItems.push(line.slice(2));
+    } else {
+      flushList();
+      html += `<p class="sort-desc-para">${highlightSortTerms(line)}</p>`;
+    }
+  }
+  flushList();
+  return html;
 }
 
 // ===== MODULE-LEVEL VARS (sorts + fiche state) =====
@@ -622,9 +926,11 @@ let FICHE_PREP_LEVEL = 0;
 let CURRENT_FICHE_CLASS = null;
 
 function getStatKey(caract) {
-  return {'Intelligence':'int','Sagesse':'sag','Charisme':'cha',
-          'Force':'for','Dextérité':'dex','Constitution':'con'}[caract]
-    || (caract||'').toLowerCase().slice(0,3) || 'int';
+  return {
+    'Intelligence': 'int', 'Sagesse': 'sag', 'Charisme': 'cha',
+    'Force': 'for', 'Dextérité': 'dex', 'Constitution': 'con'
+  }[caract]
+    || (caract || '').toLowerCase().slice(0, 3) || 'int';
 }
 
 function calcMaxPrepared(cls) {
@@ -861,7 +1167,7 @@ function buildSkillsList() {
 }
 
 function statNom(s) {
-  return { for:'Force', dex:'Dextérité', con:'Constitution', int:'Intelligence', sag:'Sagesse', cha:'Charisme' }[s];
+  return { for: 'Force', dex: 'Dextérité', con: 'Constitution', int: 'Intelligence', sag: 'Sagesse', cha: 'Charisme' }[s];
 }
 
 function updateDerivedStats() {
@@ -940,7 +1246,7 @@ function updateClassInfo() {
 
 function buildSortsSlots(cls) {
   const container = document.getElementById('sorts-slots');
-  const niveaux = [1,2,3,4,5];
+  const niveaux = [1, 2, 3, 4, 5];
   container.innerHTML = niveaux.map(n => `
     <div class="slot-group">
       <div class="slot-label">Niv. ${n}</div>
@@ -954,7 +1260,7 @@ function buildSortsSlots(cls) {
 
 function updateSortsCalc(caract) {
   // caract = first 3 chars of stat key
-  const statKey = { 'int':'int', 'sag':'sag', 'cha':'cha', 'Intelligence':'int', 'Sagesse':'sag', 'Charisme':'cha' }[caract] || caract;
+  const statKey = { 'int': 'int', 'sag': 'sag', 'cha': 'cha', 'Intelligence': 'int', 'Sagesse': 'sag', 'Charisme': 'cha' }[caract] || caract;
   const score = parseInt(document.querySelector(`[data-stat="${statKey}"]`)?.value) || 10;
   const niveau = parseInt(document.getElementById('f-niveau')?.value) || 1;
   const bm = getBM(niveau);
