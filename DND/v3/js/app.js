@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initGlossaire();
   initFiche();
   initTooltip();
+  initModal();
 });
 
 // ===== NAVIGATION =====
@@ -358,8 +359,8 @@ function initSorts() {
     const container = document.getElementById('sorts-list');
     document.getElementById('sorts-count').textContent = `${list.length} sort${list.length > 1 ? 's' : ''} trouvé${list.length > 1 ? 's' : ''}`;
     container.innerHTML = list.map(s => buildSortItem(s)).join('');
-    container.querySelectorAll('.sort-header').forEach(h => {
-      h.addEventListener('click', () => h.closest('.sort-item').classList.toggle('open'));
+    container.querySelectorAll('.sort-item').forEach((item, i) => {
+      item.addEventListener('click', () => openSortModal(list[i]));
     });
   }
 
@@ -397,16 +398,6 @@ function buildSortItem(s) {
       </div>
       <span class="sort-chevron">▶</span>
     </div>
-    <div class="sort-body">
-      <div class="sort-meta">
-        <div class="sort-meta-item"><strong>Temps :</strong> ${s.temps}</div>
-        <div class="sort-meta-item"><strong>Portée :</strong> ${s.portee}</div>
-        <div class="sort-meta-item"><strong>Durée :</strong> ${s.duree}</div>
-        <div class="sort-meta-item"><strong>Composants :</strong> ${s.composants.join(', ')}</div>
-      </div>
-      <div class="sort-desc">${s.description.replace(/\n/g, '<br>')}</div>
-      <div class="sort-classes">${s.classes.map(c => `<span class="sort-class-tag">${c}</span>`).join('')}</div>
-    </div>
   </div>`;
 }
 
@@ -430,16 +421,8 @@ function initGlossaire() {
     const container = document.getElementById('glossaire-list');
     document.getElementById('glossaire-count').textContent = `${list.length} terme${list.length > 1 ? 's' : ''}`;
     container.innerHTML = list.map(g => buildGlossaireItem(g)).join('');
-    container.querySelectorAll('.glossaire-header').forEach(h => {
-      h.addEventListener('click', () => h.closest('.glossaire-item').classList.toggle('open'));
-    });
-    container.querySelectorAll('.glossaire-link').forEach(link => {
-      link.addEventListener('click', e => {
-        e.stopPropagation();
-        const targetId = link.dataset.target;
-        const el = document.querySelector(`.glossaire-item[data-id="${targetId}"]`);
-        if (el) { el.classList.add('open'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-      });
+    container.querySelectorAll('.glossaire-item').forEach((item, i) => {
+      item.addEventListener('click', () => openGlossaireModal(list[i]));
     });
   }
 
@@ -469,20 +452,14 @@ function initGlossaire() {
 }
 
 function buildGlossaireItem(g) {
-  const links = [...(g.voir_aussi || [])];
   return `<div class="glossaire-item" data-id="${g.id}">
     <div class="glossaire-header">
-      <span class="glossaire-terme">${g.terme}</span>
+      <div class="glossaire-header-row">
+        <span class="glossaire-terme">${g.terme}</span>
+        <span class="glossaire-cat ${g.cat}">${g.cat}</span>
+        <span class="sort-chevron">▶</span>
+      </div>
       ${g.anglais ? `<span class="glossaire-en">${g.anglais}</span>` : ''}
-      <span class="glossaire-cat ${g.cat}">${g.cat}</span>
-      <span class="sort-chevron">▶</span>
-    </div>
-    <div class="glossaire-body">
-      <div class="glossaire-desc">${linkifyGlossaire(g.description)}</div>
-      ${links.length ? `<div class="glossaire-links">
-        <span style="font-size:.7rem;color:var(--text-muted)">Voir aussi :</span>
-        ${links.map(id => `<span class="glossaire-link" data-target="${id}">${getTerme(id)}</span>`).join('')}
-      </div>` : ''}
     </div>
   </div>`;
 }
@@ -495,6 +472,77 @@ function linkifyGlossaire(text) {
   return text.replace(/#([a-z0-9-]+)#/g, (match, id) => {
     const terme = getTerme(id);
     return `<span class="gloss-term" data-gloss="${id}">${terme}</span>`;
+  });
+}
+
+// ===== MODALE FLOTTANTE =====
+function initModal() {
+  document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function showModal(html) {
+  document.getElementById('modal-content').innerHTML = html;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function openSortModal(s) {
+  const niv = s.niveau === '0' ? 'Sort mineur' : `Niveau ${s.niveau}`;
+  showModal(`
+    <div class="modal-badges">
+      <span class="sort-niveau-badge niveau-${s.niveau}">${niv}</span>
+      ${s.concentration ? `<span class="sort-tag-conc">Concentration</span>` : ''}
+    </div>
+    <div class="modal-title">${s.name}</div>
+    <div class="modal-subtitle">${s.ecole}</div>
+    <hr class="modal-divider">
+    <div class="sort-meta">
+      <div class="sort-meta-item"><strong>Temps :</strong> ${s.temps}</div>
+      <div class="sort-meta-item"><strong>Portée :</strong> ${s.portee}</div>
+      <div class="sort-meta-item"><strong>Durée :</strong> ${s.duree}</div>
+      <div class="sort-meta-item"><strong>Composants :</strong> ${s.composants.join(', ')}</div>
+    </div>
+    <hr class="modal-divider">
+    <div class="sort-desc">${s.description.replace(/\n/g, '<br>')}</div>
+    <div class="sort-classes" style="margin-top:1rem">
+      ${s.classes.map(c => `<span class="sort-class-tag">${c}</span>`).join('')}
+    </div>
+  `);
+}
+
+function openGlossaireModal(g) {
+  showModal(`
+    <div class="modal-badges">
+      <span class="glossaire-cat ${g.cat}">${g.cat}</span>
+    </div>
+    <div class="modal-title">${g.terme}</div>
+    ${g.anglais ? `<div class="modal-subtitle">${g.anglais}</div>` : ''}
+    <hr class="modal-divider">
+    <div class="glossaire-desc">${linkifyGlossaire(g.description)}</div>
+    ${g.voir_aussi?.length ? `
+      <div class="glossaire-links" style="margin-top:1rem">
+        <span style="font-size:.7rem;color:var(--text-muted)">Voir aussi :</span>
+        ${g.voir_aussi.map(id => `<span class="glossaire-link modal-voir-aussi" data-target="${id}">${getTerme(id)}</span>`).join('')}
+      </div>` : ''}
+  `);
+  // Liens "Voir aussi" dans la modale → ouvre directement la modale du terme cible
+  document.querySelectorAll('.modal-voir-aussi').forEach(link => {
+    link.addEventListener('click', e => {
+      e.stopPropagation();
+      const item = window.GLOSSAIRE_MAP?.[link.dataset.target];
+      if (item) openGlossaireModal(item);
+    });
   });
 }
 
