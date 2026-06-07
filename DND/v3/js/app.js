@@ -614,6 +614,187 @@ function getBM(niveau) {
   return Math.ceil(niveau / 4) + 1;
 }
 
+// ===== MODULE-LEVEL VARS (sorts + fiche state) =====
+let FICHE_PREP_SPELLS = new Set();
+let FICHE_PREP_CANTRIPS = new Set();
+let FICHE_CLASS_SORTS = [];
+let FICHE_PREP_LEVEL = 0;
+let CURRENT_FICHE_CLASS = null;
+
+function getStatKey(caract) {
+  return {'Intelligence':'int','Sagesse':'sag','Charisme':'cha',
+          'Force':'for','Dextérité':'dex','Constitution':'con'}[caract]
+    || (caract||'').toLowerCase().slice(0,3) || 'int';
+}
+
+function calcMaxPrepared(cls) {
+  const niveau = parseInt(document.getElementById('f-niveau')?.value) || 1;
+  const type = cls.sorts?.type || '';
+  const isPrepared = /prépar/i.test(type);
+  if (isPrepared) {
+    const key = getStatKey(cls.sorts?.caracteristique || 'Intelligence');
+    const val = parseInt(document.querySelector(`[data-stat="${key}"]`)?.value) || 10;
+    return Math.max(1, niveau + getMod(val));
+  }
+  const prog = cls.progression?.[niveau - 1] || {};
+  return prog.sorts_connus || prog.sorts_prepares || parseInt(cls.sorts?.sorts_prepares_niv1) || niveau;
+}
+
+function buildSortsPrep(cls) {
+  FICHE_PREP_SPELLS = new Set();
+  FICHE_PREP_CANTRIPS = new Set();
+  CURRENT_FICHE_CLASS = cls;
+  rebuildSortsPrepUI(cls);
+}
+
+function rebuildSortsPrepUI(cls) {
+  const allSorts = window.DND_DATA.sorts || [];
+  FICHE_CLASS_SORTS = allSorts.filter(s => s.classes.includes(cls.nom));
+  const container = document.getElementById('sorts-selector-container');
+  if (!container) return;
+  if (!FICHE_CLASS_SORTS.length) { container.innerHTML = ''; return; }
+
+  const niveau = parseInt(document.getElementById('f-niveau')?.value) || 1;
+  const prog = cls.progression?.[niveau - 1] || {};
+
+  const maxAccessLevel = (cls.sorts?.acces_niveaux_sorts?.[niveau - 1])
+    || (prog.emplacements?.length || Math.ceil(niveau / 2));
+
+  const levelSet = new Set(FICHE_CLASS_SORTS.map(s => parseInt(s.niveau)));
+  const levels = [...levelSet].sort((a, b) => a - b)
+    .filter(lv => lv === 0 || lv <= maxAccessLevel);
+  if (!levels.length) { container.innerHTML = ''; return; }
+
+  if (!levels.includes(FICHE_PREP_LEVEL)) FICHE_PREP_LEVEL = levels[0];
+
+  const isPrepared = /prépar/i.test(cls.sorts?.type || '');
+  const prepLabel = isPrepared ? 'Sorts préparés' : 'Sorts connus';
+  const hasCantrips = levels.includes(0);
+  const maxCantrips = prog.sorts_mineurs || parseInt(cls.sorts?.sorts_mineurs_niv1) || 3;
+  const maxPrep = calcMaxPrepared(cls);
+  const caractKey = getStatKey(cls.sorts?.caracteristique || 'Intelligence');
+  const statVal = parseInt(document.querySelector(`[data-stat="${caractKey}"]`)?.value) || 10;
+  const mod = getMod(statVal);
+
+  const prevSearch = document.getElementById('sorts-prep-search')?.value || '';
+
+  const tabs = levels.map(lv =>
+    `<button class="sort-level-tab${lv === FICHE_PREP_LEVEL ? ' active' : ''}" data-level="${lv}">
+      ${lv === 0 ? '✦ Mineurs' : `Niv.&nbsp;${lv}`}
+    </button>`).join('');
+
+  const formulaText = isPrepared
+    ? `<strong>${prepLabel}</strong> = niveau (${niveau}) + mod. ${cls.sorts?.caracteristique} (${fmtMod(mod)}) = <strong>${maxPrep}</strong>`
+    : `En tant que ${cls.nom} de niveau ${niveau}, vous connaissez <strong>${maxPrep} sort${maxPrep !== 1 ? 's' : ''}</strong>.`;
+
+  container.innerHTML = `
+    <div class="sorts-prep-wrap">
+      <div class="sorts-prep-topbar">
+        <div class="sorts-prep-counts">
+          ${hasCantrips ? `<div class="prep-badge cantrip-badge">
+            <span>Mineurs</span>
+            <strong><span id="cantrip-count">0</span>/<span id="cantrip-max">${maxCantrips}</span></strong>
+          </div>` : ''}
+          <div class="prep-badge spell-badge">
+            <span>${prepLabel}</span>
+            <strong><span id="prep-count" class="">0</span>/<span id="prep-max">${maxPrep}</span></strong>
+          </div>
+        </div>
+        <input type="text" id="sorts-prep-search" class="sorts-prep-search" placeholder="🔍 Filtrer les sorts…" value="${prevSearch}">
+      </div>
+      <div class="sorts-prep-formula">💡 ${formulaText}</div>
+      <div class="fiche-tip conc-tip">⚠️ Un seul sort de <strong>Concentration</strong> actif à la fois — un second sort de Concentration annule immédiatement le premier.</div>
+      <div class="sorts-level-tabs" id="sorts-level-tabs">${tabs}</div>
+      <div class="sorts-prep-list" id="sorts-prep-list"></div>
+    </div>`;
+
+  document.querySelectorAll('.sort-level-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.sort-level-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      FICHE_PREP_LEVEL = parseInt(tab.dataset.level);
+      renderSortsPrepList();
+    });
+  });
+  document.getElementById('sorts-prep-search').addEventListener('input', renderSortsPrepList);
+
+  updatePrepCounts();
+  renderSortsPrepList();
+}
+
+function renderSortsPrepList() {
+  const container = document.getElementById('sorts-prep-list');
+  if (!container) return;
+  const q = (document.getElementById('sorts-prep-search')?.value || '').toLowerCase().trim();
+
+  let filtered;
+  if (q) {
+    filtered = FICHE_CLASS_SORTS
+      .filter(s => s.name.toLowerCase().includes(q) || s.ecole.toLowerCase().includes(q))
+      .sort((a, b) => parseInt(a.niveau) - parseInt(b.niveau) || a.name.localeCompare(b.name));
+  } else {
+    filtered = FICHE_CLASS_SORTS
+      .filter(s => parseInt(s.niveau) === FICHE_PREP_LEVEL)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  if (!filtered.length) {
+    container.innerHTML = `<div class="sorts-prep-empty">Aucun sort trouvé</div>`;
+    return;
+  }
+
+  container.innerHTML = filtered.map(s => {
+    const lvl = parseInt(s.niveau);
+    const isC = lvl === 0;
+    const checked = (isC ? FICHE_PREP_CANTRIPS : FICHE_PREP_SPELLS).has(s.name);
+    const niv = lvl === 0 ? 'Min.' : `N.${lvl}`;
+    return `<label class="sort-prep-item${checked ? ' prepared' : ''}" data-name="${s.name}" data-cantrip="${isC}">
+      <input type="checkbox" class="sort-prep-cb"${checked ? ' checked' : ''}>
+      ${q ? `<span class="sort-niveau-badge niveau-${s.niveau}">${niv}</span>` : ''}
+      <span class="sort-prep-name">${s.name}</span>
+      <span class="sort-prep-school">${s.ecole}</span>
+      ${s.concentration ? `<span class="sort-tag-conc" title="Concentration">C</span>` : ''}
+    </label>`;
+  }).join('');
+
+  container.querySelectorAll('.sort-prep-cb').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const label = cb.closest('.sort-prep-item');
+      const name = label.dataset.name;
+      const isC = label.dataset.cantrip === 'true';
+      if (cb.checked) { (isC ? FICHE_PREP_CANTRIPS : FICHE_PREP_SPELLS).add(name); label.classList.add('prepared'); }
+      else { (isC ? FICHE_PREP_CANTRIPS : FICHE_PREP_SPELLS).delete(name); label.classList.remove('prepared'); }
+      updatePrepCounts();
+    });
+  });
+}
+
+function updatePrepCounts() {
+  const cc = document.getElementById('cantrip-count');
+  const pc = document.getElementById('prep-count');
+  const pm = document.getElementById('prep-max');
+  if (cc) cc.textContent = FICHE_PREP_CANTRIPS.size;
+  if (pc) {
+    pc.textContent = FICHE_PREP_SPELLS.size;
+    const max = pm ? parseInt(pm.textContent) : 99;
+    pc.classList.toggle('over-limit', FICHE_PREP_SPELLS.size > max);
+  }
+}
+
+function updatePVSuggestion(cls) {
+  const el = document.getElementById('pv-suggestion');
+  if (!el || !cls) return;
+  const niveau = parseInt(document.getElementById('f-niveau')?.value) || 1;
+  const conScore = parseInt(document.querySelector('[data-stat="con"]')?.value) || 10;
+  const conMod = getMod(conScore);
+  const dieVal = cls.de_vie?.valeur || 8;
+  const avg = Math.floor(dieVal / 2) + 1;
+  const suggested = (dieVal + conMod) + (niveau - 1) * (avg + conMod);
+  el.innerHTML = `💡 PV max suggérés : <strong>${Math.max(1, suggested)}</strong>
+    <span class="tip-note"> (1d${dieVal} max${fmtMod(conMod)} au niv.1, +${avg}${fmtMod(conMod)} par niveau suivant)</span>`;
+  el.style.display = '';
+}
+
 function initFiche() {
   // Populate class and race selects
   const classes = window.DND_DATA.classes?.classes || [];
@@ -651,6 +832,7 @@ function buildSkillsList() {
   skillsList.innerHTML = COMPETENCES.map(c => `
     <div class="skill-row">
       <input type="checkbox" id="comp-${c.nom}" data-comp="${c.nom}" data-stat="${c.stat}">
+      <span class="expertise-btn" data-comp="${c.nom}" title="Expertise : double le Bonus de Maîtrise">2×</span>
       <span class="skill-stat">${c.stat.toUpperCase()}</span>
       <span class="skill-name">${c.nom}</span>
       <span class="skill-bonus" id="comp-bonus-${c.nom}">+0</span>
@@ -658,6 +840,23 @@ function buildSkillsList() {
 
   document.querySelectorAll('[data-save],[data-comp]').forEach(cb => {
     cb.addEventListener('change', updateDerivedStats);
+  });
+
+  skillsList.querySelectorAll('.expertise-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const cb = document.getElementById('comp-' + btn.dataset.comp);
+      if (!cb?.checked) return;
+      btn.classList.toggle('active');
+      updateDerivedStats();
+    });
+  });
+
+  skillsList.querySelectorAll('[data-comp]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      if (!cb.checked) {
+        document.querySelector(`.expertise-btn[data-comp="${cb.dataset.comp}"]`)?.classList.remove('active');
+      }
+    });
   });
 }
 
@@ -691,10 +890,23 @@ function updateDerivedStats() {
   // Competences
   COMPETENCES.forEach(c => {
     const cb = document.getElementById('comp-' + c.nom);
-    const mod = getMod(scores[c.stat]) + (cb?.checked ? bm : 0);
+    const expertBtn = document.querySelector(`.expertise-btn[data-comp="${c.nom}"]`);
+    const isProf = cb?.checked || false;
+    const isExpert = isProf && (expertBtn?.classList.contains('active') || false);
+    const mult = isExpert ? 2 : 1;
+    const mod = getMod(scores[c.stat]) + (isProf ? bm * mult : 0);
     const el = document.getElementById('comp-bonus-' + c.nom);
     if (el) el.textContent = fmtMod(mod);
   });
+
+  // Mise à jour sorts et PV si classe sélectionnée
+  if (CURRENT_FICHE_CLASS) {
+    updatePVSuggestion(CURRENT_FICHE_CLASS);
+    if (CURRENT_FICHE_CLASS.sorts?.lanceur_de_sorts) {
+      rebuildSortsPrepUI(CURRENT_FICHE_CLASS);
+      updateSortsCalc(getStatKey(CURRENT_FICHE_CLASS.sorts.caracteristique).slice(0, 3));
+    }
+  }
 }
 
 function updateClassInfo() {
@@ -716,9 +928,14 @@ function updateClassInfo() {
     sortsInfo.textContent = `${cls.nom} · ${cls.sorts.type} · Récup : ${cls.sorts.recuperation}`;
     buildSortsSlots(cls);
     updateSortsCalc(caract);
+    buildSortsPrep(cls);
+    CURRENT_FICHE_CLASS = cls;
   } else {
     sortsSection.style.display = 'none';
+    CURRENT_FICHE_CLASS = cls;
+    document.getElementById('sorts-selector-container').innerHTML = '';
   }
+  updatePVSuggestion(cls);
 }
 
 function buildSortsSlots(cls) {
@@ -770,6 +987,11 @@ function removeAttack(id) {
 
 function resetFiche() {
   if (!confirm('Réinitialiser la fiche ? Toutes les données seront perdues.')) return;
+  FICHE_PREP_SPELLS = new Set();
+  FICHE_PREP_CANTRIPS = new Set();
+  CURRENT_FICHE_CLASS = null;
+  document.getElementById('sorts-selector-container').innerHTML = '';
+  document.getElementById('pv-suggestion').style.display = 'none';
   document.querySelectorAll('#tab-fiche input, #tab-fiche textarea, #tab-fiche select').forEach(el => {
     if (el.type === 'checkbox') el.checked = false;
     else if (el.tagName === 'SELECT') el.selectedIndex = 0;
