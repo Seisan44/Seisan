@@ -759,14 +759,14 @@ const SORT_BOLD_TERMS = [
 
 // ===== SCHOOLS CONFIG =====
 const ECOLE_CONFIG = {
-  'Abjuration':    { color: '#2e6dd4', bg: '#e8f0ff', emoji: '🛡️' },
-  'Invocation':    { color: '#1a8070', bg: '#dff4f2', emoji: '🌀' },
-  'Conjuration':   { color: '#1a8070', bg: '#dff4f2', emoji: '🌀' },
-  'Divination':    { color: '#8a6000', bg: '#fff8e0', emoji: '🔮' },
-  'Enchantement':  { color: '#b0184a', bg: '#fde4ec', emoji: '💫' },
-  'Évocation':     { color: '#c82020', bg: '#ffecec', emoji: '⚡' },
-  'Illusion':      { color: '#6a10a0', bg: '#f3e5f8', emoji: '👁️' },
-  'Nécromancie':   { color: '#2a4040', bg: '#e4eeee', emoji: '💀' },
+  'Abjuration': { color: '#2e6dd4', bg: '#e8f0ff', emoji: '🛡️' },
+  'Invocation': { color: '#1a8070', bg: '#dff4f2', emoji: '🌀' },
+  'Conjuration': { color: '#1a8070', bg: '#dff4f2', emoji: '🌀' },
+  'Divination': { color: '#8a6000', bg: '#fff8e0', emoji: '🔮' },
+  'Enchantement': { color: '#b0184a', bg: '#fde4ec', emoji: '💫' },
+  'Évocation': { color: '#c82020', bg: '#ffecec', emoji: '⚡' },
+  'Illusion': { color: '#6a10a0', bg: '#f3e5f8', emoji: '👁️' },
+  'Nécromancie': { color: '#2a4040', bg: '#e4eeee', emoji: '💀' },
   'Transmutation': { color: '#b84000', bg: '#fff2e0', emoji: '⚗️' },
 };
 
@@ -786,20 +786,20 @@ function formatDuration(duree) {
   if (duree.startsWith('Concentration')) return 'Conc.';
   if (duree.includes('prochain tour')) return 'Fin de tour';
   return duree.replace('minutes', 'min').replace('minute', 'min')
-              .replace('heures', 'h').replace('heure', 'h');
+    .replace('heures', 'h').replace('heure', 'h');
 }
 
 // ===== GLOSSAIRE CATEGORY CONFIG =====
 const CAT_CONFIG = {
-  'mécanique':    { emoji: '⚙️',  label: 'Mécanique'   },
-  'combat':       { emoji: '⚔️',  label: 'Combat'       },
-  'magie':        { emoji: '✨',  label: 'Magie'        },
-  'etat':         { emoji: '🔴',  label: 'État'         },
-  'action':       { emoji: '▶️',  label: 'Action'       },
-  'exploration':  { emoji: '🗺️', label: 'Exploration'  },
-  'repos':        { emoji: '💤',  label: 'Repos'        },
-  'zone-d-effet': { emoji: '💥',  label: 'Zone'         },
-  'déplacement':  { emoji: '👣',  label: 'Déplacement'  },
+  'mécanique': { emoji: '⚙️', label: 'Mécanique' },
+  'combat': { emoji: '⚔️', label: 'Combat' },
+  'magie': { emoji: '✨', label: 'Magie' },
+  'etat': { emoji: '🔴', label: 'État' },
+  'action': { emoji: '▶️', label: 'Action' },
+  'exploration': { emoji: '🗺️', label: 'Exploration' },
+  'repos': { emoji: '💤', label: 'Repos' },
+  'zone-d-effet': { emoji: '💥', label: 'Zone' },
+  'déplacement': { emoji: '👣', label: 'Déplacement' },
 };
 
 function getGlossaireExcerpt(desc) {
@@ -815,19 +815,20 @@ function getGlossaireExcerpt(desc) {
 
 // ===== DAMAGE TYPES =====
 const DAMAGE_TYPE_PATTERNS = [
-  [/(?<![a-zA-ZÀ-ÿ])(acide)(?![a-zA-ZÀ-ÿ])/g,        'dmg-acide'     ],
-  [/(?<![a-zA-ZÀ-ÿ])(feu)(?![a-zA-ZÀ-ÿ])/g,          'dmg-feu'       ],
-  [/(?<![a-zA-ZÀ-ÿ])(froid)(?![a-zA-ZÀ-ÿ])/g,        'dmg-froid'     ],
-  [/(?<![a-zA-ZÀ-ÿ])(foudre)(?![a-zA-ZÀ-ÿ])/g,       'dmg-foudre'    ],
-  [/(?<![a-zA-ZÀ-ÿ])(tonnerre)(?![a-zA-ZÀ-ÿ])/g,     'dmg-tonnerre'  ],
-  [/(?<![a-zA-ZÀ-ÿ])(poison)(?![a-zA-ZÀ-ÿ])/g,       'dmg-poison'    ],
+  [/(?<![a-zA-ZÀ-ÿ])(acide)(?![a-zA-ZÀ-ÿ])/g, 'dmg-acide'],
+  [/(?<![a-zA-ZÀ-ÿ])(feu)(?![a-zA-ZÀ-ÿ])/g, 'dmg-feu'],
+  [/(?<![a-zA-ZÀ-ÿ])(froid)(?![a-zA-ZÀ-ÿ])/g, 'dmg-froid'],
+  [/(?<![a-zA-ZÀ-ÿ])(foudre)(?![a-zA-ZÀ-ÿ])/g, 'dmg-foudre'],
+  [/(?<![a-zA-ZÀ-ÿ])(tonnerre)(?![a-zA-ZÀ-ÿ])/g, 'dmg-tonnerre'],
+  [/(?<![a-zA-ZÀ-ÿ])(poison)(?![a-zA-ZÀ-ÿ])/g, 'dmg-poison'],
   [/(?<![a-zA-ZÀ-ÿ])(nécrotiques?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-necrotique'],
-  [/(?<![a-zA-ZÀ-ÿ])(radiants?)(?![a-zA-ZÀ-ÿ])/g,    'dmg-radiant'   ],
-  [/(?<![a-zA-ZÀ-ÿ])(psychiques?)(?![a-zA-ZÀ-ÿ])/g,  'dmg-psychique' ],
-  [/dégâts\s+de\s+(force)/g,                           'dmg-force'     ],
-  [/(?<![a-zA-ZÀ-ÿ])(contondants?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-physique'  ],
-  [/(?<![a-zA-ZÀ-ÿ])(perforants?)(?![a-zA-ZÀ-ÿ])/g,  'dmg-physique'  ],
-  [/(?<![a-zA-ZÀ-ÿ])(tranchants?)(?![a-zA-ZÀ-ÿ])/g,  'dmg-physique'  ],
+  [/(?<![a-zA-ZÀ-ÿ])(radiants?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-radiant'],
+  [/(?<![a-zA-ZÀ-ÿ])(psychiques?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-psychique'],
+  [/dégâts\s+de\s+(force)/g, 'dmg-force'],
+  [/dégât\s+de\s+(force)/g, 'dmg-force'],
+  [/(?<![a-zA-ZÀ-ÿ])(contondants?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-physique'],
+  [/(?<![a-zA-ZÀ-ÿ])(perforants?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-physique'],
+  [/(?<![a-zA-ZÀ-ÿ])(tranchants?)(?![a-zA-ZÀ-ÿ])/g, 'dmg-physique'],
 ];
 
 function buildSortTermsData() {
