@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+	<base href="https://www.aidedd.org/">
+	<title>Error 404 &raquo; Donjons &amp; Dragons - D&amp;D 5e</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="robots" content="max-image-preview:large">
+	<meta name="generator" content="Silverstripe CMS 6.2">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="robots" content="noindex">
+	<link rel="stylesheet" href="/css/reset.css">
+	<link rel="stylesheet" href="/css/all.min.css?v=2">
+	<link rel="stylesheet" href="/css/layout.css?v=1">
+	<link rel="stylesheet" href="/css/typography.css?v=1">
+	<link rel="icon" href="/images/favicon-32.png" sizes="32x32">
+	<link rel="icon" href="/images/favicon-48.png" sizes="48x48">
+	<link rel="icon" href="/images/favicon-96.png" sizes="96x96">
+	<link rel="apple-touch-icon" href="/images/favicon-180.png" sizes="180x180">
+
+	<!-- Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-3N5TZKQ532"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+	  gtag('config', 'G-3N5TZKQ532', {'content_group':'Site'});
+	</script>
+
+	<!-- Refinery89 -->
+	<script src="https://tags.refinery89.com/aideddorg.js" async></script>
+</head>
+<body class="ErrorPage no-sidebar pushup" dir="ltr">
+<header class="header">
+	<!-- Google Search Engine -->
+	<script src="//code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="/javascript/script.js?m=1631072145"></script>
+<script async src="https://cse.google.com/cse.js?cx=9f52cfcad4924a74e"></script>
+
+	<div class="inner">
+		<div class="unit lastUnit">
+			<div class="brand">
+				<a href="https://www.aidedd.org/">AideDD</a>
+				<p>Un site sur le jeu de rôle Dungeons &amp; Dragons 5</p>
+			</div>
+			<span class="search-dropdown-icon"><i class="fa fa-search"></i></span>
+			<div class="search-bar"><div class="gcse-searchbox-only"></div></div>
+			<nav class="primary">
+	<span class="nav-open-button"><span class="fa fa-bars fa-inverse"></span></span>
+	<ul>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="/dnd-5/" title="D&amp;D 5">D&amp;D 5</a></li>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="/regles/" title="Introduction">Règles 2014</a></li>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="/regles-24/" title="Aux portes de l&#039;aventure">Règles 2024</a></li>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="/adj/" title="Aides de jeu">Aides de jeu</a></li>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="/univers/" title="Univers">Univers</a></li>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="/site/" title="Site">Site</a></li>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="/en/" title="Dungeons &amp; Dragons 5e">English</a></li>
+		
+			<li class="link"><span class="fa fa-caret-up fa-inverse"></span><a href="https://www.aidedd.org/forum/" title="Forum">Forum</a></li>
+		
+	</ul>
+</nav>
+
+		</div>
+	</div>
+</header>
+<div class="main" role="main">
+	<div class="inner typography line">
+		<aside class="sidebar unit size1of5">
+	
+</aside>
+
+<div class="content-container unit size4of5 lastUnit">
+	<article>
+		<h1>Error 404</h1>
+		<div class="content"><p>Fumble ! Vous tentez d'accéder à une page qui n'existe pas ou qui a changé de nom. Mais rien n'est perdu...</p><p>Pour reprendre l'initiative, vous pouvez utiliser la <strong>fonction de recherche</strong> en haut à droite ou bien repartir depuis la <strong>page d'accueil</strong> du site en cliquant sur le logo « AideDD ».</p><p class="text-center" style="font-size: 9rem; color: grey; font-weight: bold; line-height: 10rem;"><img width="177" height="175" alt="" src="/assets/site/fumble.jpg" loading="lazy" class="centerlite ss-htmleditorfield-file image">
+
+</p><p>Fumble! You are trying to access a page that does not exist or that has been renamed. But nothing is lost...</p><p>To regain the initiative, you can use the <strong>search function</strong> at the top right or start again from the site's <strong>home page</strong> by clicking on the “AideDD” logo.</p></div>
+	</article>
+	
+</div>
+	</div>
+</div>
+<footer class="footer">
+	<div class="inner">
+		<div class="left">
+</div><div class="right">Donjons et Dragons 5 - D&D 5</div>
+	</div>
+</footer>
+
+
+</body>
+</html>

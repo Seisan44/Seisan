@@ -1,0 +1,333 @@
+[
+  {
+    "nom": "Amulette d'antidétection",
+    "type": "Objet merveilleux",
+    "rarete": "peu commun",
+    "lien": "nécessite un lien",
+    "description": "Lorsque vous portez cette amulette, vous êtes protégé contre la divination magique. Vous ne pouvez pas être ciblé par une telle magie ou perçu par des capteurs de divination magique."
+  },
+  {
+    "nom": "Amulette de bonne santé",
+    "type": "Objet merveilleux",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Votre Constitution passe à 19 tant que vous portez cette amulette. L'amulette n'a aucun effet sur vous si votre Constitution est de 19 ou plus sans elle."
+  },
+  {
+    "nom": "Amulette de cicatrisation",
+    "type": "Objet merveilleux",
+    "rarete": "peu commun",
+    "lien": "nécessite un lien",
+    "description": "Lorsque vous portez ce pendentif, vous vous stabilisez chaque fois que vous êtes mourant au début de votre tour. En outre, chaque fois que vous lancez un dé de vie pour regagner des points de vie, vous doublez le nombre de points de vie récupéré."
+  },
+  {
+    "nom": "Amulette de protection contre le poison",
+    "type": "Objet merveilleux",
+    "rarete": "rare",
+    "lien": null,
+    "description": "Cette fine chaîne d'argent possède une gemme noire joliment taillée. Lorsque vous la portez, les poisons n'ont aucun effet sur vous. Vous êtes immunisé contre l'état empoisonné et contre les dégâts de poison."
+  },
+  {
+    "nom": "Amulette de santé",
+    "type": "Objet merveilleux",
+    "rarete": "peu commun",
+    "lien": null,
+    "description": "Vous êtes immunisé contre toutes les maladies tant que vous portez ce pendentif. Si vous êtes déjà infecté par une maladie, les effets de celle-ci disparaissent tant que vous portez le pendentif."
+  },
+  {
+    "nom": "Amulette de sombre éclat",
+    "type": "Objet merveilleux",
+    "rarete": "commun",
+    "lien": "nécessite un lien avec un occultiste",
+    "description": "Cette amulette est fabriquée à partir d'un éclat résistant de matériau extraplanaire provenant du royaume de votre patron d'occultiste. Tant que vous le portez, vous bénéficiez des avantages suivants : Vous pouvez utiliser l'amulette comme focaliseur d'incantation pour vos sorts d'occultiste. Vous pouvez essayer de lancer un sort mineur que vous ne connaissez pas. Celui-ci doit figurer sur la liste des sorts d'occultiste et vous devez effectuer un jet d'Intelligence (Arcanes) DD 10. En cas de réussite, vous lancez le sort. En cas d'échec, le sort échoue également et l'action utilisée pour lancer le sort est perdue. Dans les deux cas, vous ne pourrez plus utiliser cette propriété avant d'avoir terminé un repos long."
+  },
+  {
+    "nom": "Amulette des plans",
+    "type": "Objet merveilleux",
+    "rarete": "très rare",
+    "lien": "nécessite un lien",
+    "description": "Lorsque vous portez cette amulette, vous pouvez utiliser une action pour nommer un lieu qui vous est familier sur un autre plan d'existence. Ensuite, faites un jet d'Intelligence DD 15. En cas de réussite, vous lancez le sort changement de plan. En cas d'échec, vous et toute créature ou objet dans un rayon de 4,50 m voyagez vers une destination aléatoire. Lancez un d100. Sur 1-60, vous voyagez à un endroit aléatoire sur le plan que vous avez nommé. Sur 61-100, vous voyagez dans un plan d'existence déterminé au hasard."
+  },
+  {
+    "nom": "Amulette mécanique",
+    "type": "Objet merveilleux",
+    "rarete": "commun",
+    "lien": null,
+    "description": "Cette amulette en cuivre contient de minuscules engrenages imbriqués et est alimentée par la magie de Mechanus, un plan extérieur. Une créature qui colle son oreille à l'amulette peut entendre de faibles bruits de tic-tac et de vrombissement venant de l'intérieur. Lorsque vous effectuez un jet d'attaque tout en portant l'amulette, vous pouvez renoncer à lancer le d20 et obtenir automatiquement 10 au dé. Une fois utilisée, cette propriété ne peut être réutilisée avant l'aube suivante."
+  },
+  {
+    "nom": "Anneau d'action libre",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Tant que vous êtes équipé de cet anneau, les terrains difficiles ne vous coûtent pas de déplacement supplémentaire. De plus, aucune magie ne peut réduire votre vitesse de déplacement ni vous paralyser ou vous entraver."
+  },
+  {
+    "nom": "Anneau d'esquive totale",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Cet anneau possède 3 charges, et récupère 1d3 charges dépensées chaque jour à l'aube. Si vous échouez à un jet de sauvegarde de Dextérité alors que vous portez l'anneau, vous pouvez utiliser votre reaction pour dépenser 1 charge et ainsi réussir ce jet de sauvegarde."
+  },
+  {
+    "nom": "Anneau d'influence sur les animaux",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": null,
+    "description": "Cet anneau possède 3 charges, et il récupère 1d3 charges dépensées chaque jour à l'aube. Tant que vous êtes équipé de cet anneau, vous pouvez utiliser une action pour dépenser 1 de ses charges pour lancer l'un des sorts suivants : Amitié avec les animaux (sauvegarde DD 13), Peur (sauvegarde DD 13, uniquement sur les bêtes avec Intelligence <= 3), Communication avec les animaux."
+  },
+  {
+    "nom": "Anneau d'invisibilité",
+    "type": "Anneau",
+    "rarete": "légendaire",
+    "lien": "nécessite un lien",
+    "description": "Lorsque vous portez cet anneau, vous pouvez devenir invisible par une action. Tout ce que vous portez ou transportez devient invisible avec vous. Vous restez invisible jusqu'à ce que l'anneau soit retiré, jusqu'à ce que vous attaquiez ou lanciez un sort, ou jusqu'à ce que vous utilisiez une action bonus pour redevenir visible."
+  },
+  {
+    "nom": "Anneau de barrière mentale",
+    "type": "Anneau",
+    "rarete": "peu commun",
+    "lien": "nécessite un lien",
+    "description": "Tant que vous êtes équipé de cet anneau, vous êtes immunisé aux magies qui permettent à d'autres créatures de lire dans vos pensées, de déterminer si vous êtes en train de mentir, de connaître votre alignement ou de connaître votre type de créature. Les créatures ne peuvent communiquer avec vous par télépathie que si vous le leur permettez. Vous pouvez utiliser une action pour rendre l'anneau invisible. Si vous mourrez alors que vous portez l'anneau, votre âme pénètre à l'intérieur de l'anneau, à moins qu'une autre âme soit déjà à l'intérieur."
+  },
+  {
+    "nom": "Anneau de chaleur constante",
+    "type": "Anneau",
+    "rarete": "peu commun",
+    "lien": "nécessite un lien",
+    "description": "Tant que vous êtes équipé de cet anneau, vous avez la résistance aux dégâts de froid. De plus, vous et tout ce que vous portez et transportez êtes insensibles aux effets des basses températures, jusqu'à un négatif maximum de -45°C."
+  },
+  {
+    "nom": "Anneau de contrôle des élémentaires",
+    "type": "Anneau",
+    "rarete": "légendaire",
+    "lien": "nécessite un lien",
+    "description": "Cet anneau est relié à l'un des quatre plans Élémentaires (Air, Terre, Feu, Eau). Tant que vous êtes équipé de cet anneau, vous avez un avantage aux jets d'attaque effectués contre les élémentaires provenant du plan lié, tandis qu'eux ont un désavantage contre vous. L'anneau possède 5 charges et récupère 1d4 + 1 charges à l'aube. DD des sorts de 17. Tuer un élémentaire du plan lié débloque des propriétés supplémentaires (résistances, capacités de déplacement et sorts spécifiques).",
+    "details_elements": {
+      "Air": "Domination de monstre sur élémentaire d'air (2 charges). Chute ralentie à 18m/tour sans dégâts. Parler/comprendre l'aérien. Bonus post-mort de l'élémentaire : résistance foudre, vitesse de vol stationnaire, sorts (chaîne d'éclairs, bourrasque, mur de vent).",
+      "Terre": "Domination de monstre sur élémentaire de terre (2 charges). Déplacement normal sur terrains difficiles de gravats/boue. Parler/comprendre le terreux. Bonus post-mort de l'élémentaire : résistance acide, passage à travers la terre/roche, sorts (façonnage de la pierre, peau de pierre, mur de pierre).",
+      "Feu": "Domination de monstre sur élémentaire de feu (2 charges). Résistance feu. Parler/comprendre l'igné. Bonus post-mort de l'élémentaire : immunité feu, sorts (mains brûlantes, boule de feu, mur de feu).",
+      "Eau": "Domination de monstre sur élémentaire d'eau (2 charges). Marcher sur les liquides. Parler/comprendre l'aquatique. Bonus post-mort de l'élémentaire : respirer sous l'eau, vitesse de nage égale à la marche, sorts (création/destruction d'eau, contrôle de l'eau, tempête de grêle, mur de glace)."
+    }
+  },
+  {
+    "nom": "Anneau de convocation de djinn",
+    "type": "Anneau",
+    "rarete": "légendaire",
+    "lien": "nécessite un lien",
+    "description": "Permet d'invoquer un djinn du plan élémentaire de l'Air pendant 1 heure maximum (nécessite de la concentration). Le djinn est amical, obéit à vos ordres et se défend. S'il meurt, l'anneau devient non magique. Recharge après 24 heures."
+  },
+  {
+    "nom": "Anneau de feu d'étoiles",
+    "type": "Anneau",
+    "rarete": "très rare",
+    "lien": "nécessite un lien de nuit en extérieur",
+    "description": "Permet de lancer lumières dansantes et lumière à volonté dans le noir ou lumière faible. Possède 6 charges (1d6 récupérées à l'aube). Permet d'utiliser les propriétés : Lucioles (1 charge pour lueurs féeriques), Boule de foudre (2 charges, crée des sphères de foudre mobiles, sauvegarde Dex DD 15 pour des dégâts variant selon le nombre de sphères), Feu d'étoiles (1 à 3 charges, inflige 5d4 dégâts de feu par charge dans un cube de 4,50m, sauvegarde Dex DD 15 pour moitié)."
+  },
+  {
+    "nom": "Anneau de feuille morte",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Si vous tombez alors que vous portez cet anneau, vous descendez de 18 mètres par round et ne prenez aucun dégât de chute."
+  },
+  {
+    "nom": "Anneau de marche sur l'eau",
+    "type": "Anneau",
+    "rarete": "peu commun",
+    "lien": null,
+    "description": "Tant que vous portez cet anneau, vous pouvez vous déplacer et rester sur les surfaces liquides comme si vous vous trouviez sur la terre ferme."
+  },
+  {
+    "nom": "Anneau de nage",
+    "type": "Anneau",
+    "rarete": "peu commun",
+    "lien": null,
+    "description": "Vous avez une vitesse de nage de 12 mètres lorsque vous portez cet anneau."
+  },
+  {
+    "nom": "Anneau de protection",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Vous obtenez un bonus de +1 à la CA et aux jets de sauvegarde lorsque vous portez cet anneau."
+  },
+  {
+    "nom": "Anneau de rayons X",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Permet de voir à travers les matières solides pendant 1 minute sur un rayon de 9 mètres (jusqu'à 30 cm de pierre, 2,50 cm de métal, ou 90 cm de bois/terre). Le plomb bloque la vision. Toute utilisation supplémentaire avant un repos long nécessite un jet de sauvegarde de Con DD 15 sous peine de subir 1 niveau d'épuisement."
+  },
+  {
+    "nom": "Anneau de régénération",
+    "type": "Anneau",
+    "rarete": "très rare",
+    "lien": "nécessite un lien",
+    "description": "Tant que vous êtes équipé de cet anneau, vous récupérez 1d6 points de vie toutes les 10 minutes, à condition qu'il vous reste au moins 1 point de vie. Fait également repousser les membres manquants en 1d6 + 1 jours."
+  },
+  {
+    "nom": "Anneau de renvoi des sorts",
+    "type": "Anneau",
+    "rarete": "légendaire",
+    "lien": "nécessite un lien",
+    "description": "Avantage aux jets de sauvegarde contre les sorts dont vous êtes la cible unique (hors zone). Un 20 naturel au jet contre un sort de niveau 7 ou inférieur annule l'effet et renvoie le sort sur le lanceur d'origine avec ses propres statistiques."
+  },
+  {
+    "nom": "Anneau de résistance",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Vous obtenez la résistance à un type de dégâts déterminé par la gemme sertie sur l'anneau.",
+    "table_gemmes": [
+      { "d10": 1, "type": "Acide", "gemme": "Perle" },
+      { "d10": 2, "type": "Froid", "gemme": "Tourmaline" },
+      { "d10": 3, "type": "Feu", "gemme": "Grenat" },
+      { "d10": 4, "type": "Force", "gemme": "Saphir" },
+      { "d10": 5, "type": "Foudre", "gemme": "Citrine" },
+      { "d10": 6, "type": "Nécrotique", "gemme": "Jais" },
+      { "d10": 7, "type": "Poison", "gemme": "Améthyste" },
+      { "d10": 8, "type": "Psychique", "gemme": "Jade" },
+      { "d10": 9, "type": "Radiant", "gemme": "Topaze" },
+      { "d10": 10, "type": "Tonnerre", "gemme": "Spinelle" }
+    ]
+  },
+  {
+    "nom": "Anneau de résistance au poison",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Vous possédez la résistance aux dégâts de poison tant que vous portez cet anneau, lequel possède une améthyste sertie."
+  },
+  {
+    "nom": "Anneau de saut",
+    "type": "Anneau",
+    "rarete": "peu commun",
+    "lien": "nécessite un lien",
+    "description": "Lorsque vous portez cet anneau, vous pouvez lancer le sort saut depuis l'anneau par une action bonus, à volonté, mais vous ne pouvez cibler que vous-même."
+  },
+  {
+    "nom": "Anneau de stockage de sort",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Peut stocker jusqu'à 5 niveaux de sorts cumulés. N'importe quelle créature peut lancer un sort (niveau 1 à 5) dedans en le touchant. Le porteur peut ensuite lancer ces sorts en utilisant les statistiques (DD, bonus d'attaque, emplacement) du lanceur d'origine. Trouvé avec 1d6 - 1 niveaux de sorts déjà stockés."
+  },
+  {
+    "nom": "Anneau de télékinésie",
+    "type": "Anneau",
+    "rarete": "très rare",
+    "lien": "nécessite un lien",
+    "description": "Lorsque vous portez cet anneau, vous pouvez lancer le sort télékinésie à volonté, mais vous ne pouvez cibler que des objets qui ne sont pas portés ou transportés."
+  },
+  {
+    "nom": "Anneau de triple souhait",
+    "type": "Anneau",
+    "rarete": "légendaire",
+    "lien": null,
+    "description": "Lorsque vous portez cet anneau, vous pouvez utiliser une action pour dépenser une de ses 3 charges pour lancer le sort souhait depuis l'anneau. L'anneau devient non magique lorsque vous utilisez la dernière charge."
+  },
+  {
+    "nom": "Anneau du bélier",
+    "type": "Anneau",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Possède 3 charges (1d3 récupérées à l'aube). Permet de dépenser 1 à 3 charges pour faire une attaque de sort à distance (bonus de +7, portée 18m) infligeant 2d10 dégâts de force et repoussant de 1,50m par charge. Peut aussi être utilisé pour briser un objet (jet de Force avec +5 par charge dépensée)."
+  },
+  {
+    "nom": "Arc du serment",
+    "type": "Arme (arc long)",
+    "rarete": "très rare",
+    "lien": "nécessite un lien",
+    "description": "Permet de désigner un ennemi juré par round. Vous gagnez l'avantage aux attaques à distance contre lui, ignorez les abris partiels et la longue portée, et infligez +3d6 dégâts perforants. Tant qu'il est en vie, vous avez un désavantage sur toutes vos attaques avec d'autres armes."
+  },
+  {
+    "nom": "Arme +1, +2 ou +3",
+    "type": "Arme (toutes)",
+    "rarete": "peu commun (+1) rare (+2) ou très rare (+3)",
+    "lien": null,
+    "description": "Vous avez un bonus aux jets d'attaque et de dégâts effectués avec cette arme magique. Le bonus est déterminé par la rareté de l'arme."
+  },
+  {
+    "nom": "Arme vicieuse",
+    "type": "Arme (toutes)",
+    "rarete": "rare",
+    "lien": null,
+    "description": "Lorsque vous obtenez un 20 naturel à votre jet d'attaque avec cette arme magique, votre coup critique inflige 7 dégâts supplémentaires du type correspondant à l'arme."
+  },
+  {
+    "nom": "Arme vigilante",
+    "type": "Arme (toutes)",
+    "rarete": "peu commun",
+    "lien": "nécessite un lien",
+    "description": "Donne l'avantage aux jets d'initiative. Vous et vos compagnons dans un rayon de 9 mètres ne pouvez pas être surpris (sauf incapacité). Réveille les alliés endormis naturellement au début d'un combat."
+  },
+  {
+    "nom": "Armure +1, +2 ou +3",
+    "type": "Armure (légère intermédiaire ou lourde)",
+    "rarete": "rare (+1) très rare (+2) ou légendaire (+3)",
+    "lien": null,
+    "description": "Lorsque vous portez cette armure, vous obtenez un bonus à la CA. Le bonus est déterminé par sa rareté."
+  },
+  {
+    "nom": "Armure d'adamantium",
+    "type": "Armure (intermédiaire ou lourde mais pas de peau)",
+    "rarete": "peu commun",
+    "lien": null,
+    "description": "Cette armure est renforcée par de l'adamantium. Lorsque vous la portez, tout coup critique contre vous devient un coup normal."
+  },
+  {
+    "nom": "Armure d'écailles de dragon",
+    "type": "Armure (armure d'écailles)",
+    "rarete": "très rare",
+    "lien": "nécessite un lien",
+    "description": "Octroie un bonus de +1 à la CA, l'avantage aux sauvegardes contre la Présence terrifiante et les souffles des dragons, ainsi qu'une résistance aux dégâts liée à la couleur du dragon. Permet aussi de localiser le dragon du même type le plus proche dans un rayon de 45 km une fois par jour.",
+    "table_dragons": [
+      { "dragon": "Blanc", "resistance": "Froid" },
+      { "dragon": "Bleu", "resistance": "Foudre" },
+      { "dragon": "Noir", "resistance": "Acide" },
+      { "dragon": "Rouge", "resistance": "Feu" },
+      { "dragon": "Vert", "resistance": "Poison" },
+      { "dragon": "Airain", "resistance": "Feu" },
+      { "dragon": "Argent", "resistance": "Froid" },
+      { "dragon": "Bronze", "resistance": "Foudre" },
+      { "dragon": "Cuivre", "resistance": "Acide" },
+      { "dragon": "Or", "resistance": "Feu" }
+    ]
+  },
+  {
+    "nom": "Armure d'invulnérabilité",
+    "type": "Armure (harnois)",
+    "rarete": "légendaire",
+    "lien": "nécessite un lien",
+    "description": "Résistance contre les dégâts non magiques. Permet via une action de s'immuniser totalement aux dégâts non magiques pendant 10 minutes (une fois par aube)."
+  },
+  {
+    "nom": "Armure de cuir clouté enchantée",
+    "type": "Armure (cuir clouté)",
+    "rarete": "rare",
+    "lien": null,
+    "description": "Bonus de +1 à la CA. Permet d'utiliser une action bonus pour modifier l'apparence de l'armure en vêtements ou en un autre type d'armure (le poids et le volume restent inchangés)."
+  },
+  {
+    "nom": "Armure de matelot",
+    "type": "Armure (légère intermédiaire ou lourde)",
+    "rarete": "peu commun",
+    "lien": null,
+    "description": "Vitesse de nage égale à la vitesse de marche. Si vous commencez votre tour sous l'eau avec 0 PV, l'armure vous fait remonter de 18 mètres vers la surface. Décorée de motifs marins."
+  },
+  {
+    "nom": "Armure de mithral",
+    "type": "Armure (intermédiaire ou lourde mais pas de peau)",
+    "rarete": "peu commun",
+    "lien": null,
+    "description": "Armure conçue en mithral, métal très léger. Supprime le désavantage aux jets de Dextérité (Discrétion) et annule les prérequis de Force habituels de l'armure de base."
+  },
+  {
+    "nom": "Armure de résistance",
+    "type": "Armure (légère intermédiaire ou lourde)",
+    "rarete": "rare",
+    "lien": "nécessite un lien",
+    "description": "Vous avez la résistance à un type de dégâts (Acide, Froid, etc.) déterminé aléatoirement ou par le MD."
+  }
+]
