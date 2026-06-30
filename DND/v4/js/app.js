@@ -63,7 +63,7 @@ const RACE_ICONS = {
 // ============================================================
 
 const APP = {
-  data: { species: null, classes: null, dons: null, glossaire: null, sorts: null, races: null, armes: null, armures: null, materiels: null, outils: null, objetsMagiques: null },
+  data: { species: null, classes: null, dons: null, glossaire: null, sorts: null, races: null, armes: null, armures: null, materiels: null, outils: null, objetsMagiques: null, historiques: null },
   termRegistry: new Map(),    // slug → { type, id, data }
   glossaireById: new Map(),   // id → entry
   currentPage: null,
@@ -100,6 +100,11 @@ function truncate(str, len) {
   return s.length > len ? s.slice(0, len).trimEnd() + '…' : s;
 }
 
+function capitalize(str) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function tag(text, cls = 'tag-gray', extra = '') {
   return `<span class="tag ${cls}" ${extra}>${escHtml(text)}</span>`;
 }
@@ -121,6 +126,7 @@ async function loadData() {
     materiels:      'data/materiels_aventuriers.json',
     outils:         'data/outils.json',
     objetsMagiques: 'data/objets_magiques.json',
+    historiques:    'data/historiques.json',
   };
   const entries = Object.entries(files);
   const results = await Promise.all(entries.map(([, path]) => fetch(path).then(r => r.json()).catch(() => null)));
@@ -197,7 +203,7 @@ function enrichGlossaireText(text) {
 // ROUTER
 // ============================================================
 
-const PAGES = ['accueil', 'races', 'classes', 'dons', 'glossaire', 'sorts', 'equipements', 'combat', 'personnage'];
+const PAGES = ['accueil', 'races', 'classes', 'dons', 'glossaire', 'sorts', 'equipements', 'combat', 'historiques', 'personnage'];
 
 function navigate(page) {
   if (!PAGES.includes(page)) page = 'accueil';
@@ -220,6 +226,7 @@ function navigate(page) {
     sorts: renderSorts,
     equipements: renderEquipements,
     combat:      renderCombat,
+    historiques: renderHistoriques,
     personnage:  renderPersonnage,
   };
   if (renderers[page]) renderers[page](app);
@@ -690,6 +697,48 @@ function _enrichCls(m) {
   return i >= 0 ? ENRICH_RULES[i][1] : '';
 }
 
+const SORT_IMG_OVERRIDES = {
+  'amis':                                'faux_amis',
+  'lumieres_dansantes':                  'lumiere_dansantes',
+  'main_de_mage':                        'main_du_mage',
+  'armure_de_mage':                      'armure_du_mage',
+  'charme_personne':                     'charmepersonne',
+  'agrandissement_rapetissement':        'agrandissement__rapetissement',
+  'apaisement_des_emotions':             'apaisemment_des_emotions',
+  'cecite_surdite':                      'cecitesurdite',
+  'localisation_danimaux_ou_de_plantes': 'localisation_danimaux_ou_de_plante',
+  'verrou_arcanique':                    'verrou_magique',
+  'convocation_de_mort_vivant':          'convocation_de_mortvivant',
+  'invocation_de_projectiles':           'herissement_de_projectiles',
+  'marche_sur_leau':                     'marche_sur_londe',
+  'peur':                                'terreur',
+  'charme_monstre':                      'charmemonstre',
+  'fontaine_de_lune':                    'fontaine_de_la_lune',
+  'oeil_du_mage':                        'il_du_mage',
+  'sphere_resiliente_dotiluke':          'sphere_resiliente_d_otiluke',
+  'communion_avec_la_nature':            'communion',
+  'passe_muraille':                      'passemuraille',
+  'chaudron_bouillonnant_de_tasha':      'chaudron_bouillant_de_tasha',
+  'creation_de_mort_vivant':             'creation_de_mortvivant',
+  'mauvais_oeil':                        'mauvais_il',
+  'protections_et_sceaux':              'protection_et_sceaux',
+  'urne_magique':                        'possession',
+  'aversion_attirance':                  'aversion__attirance',
+  'demi_plan':                           'demiplan',
+};
+
+// Retourne l'URL de l'image d'un sort (img/sorts/<slug>.png)
+function getSortImgUrl(nom) {
+  const slug = nom
+    .split('|')[0].trim()
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/['']/g, '')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_|_$/g, '');
+  return `img/sorts/${SORT_IMG_OVERRIDES[slug] || slug}.png`;
+}
+
 // Pour les descriptions de sorts (texte brut → HTML enrichi)
 function enrichSortText(text) {
   if (!text) return '';
@@ -724,6 +773,33 @@ function sanitizeHtml(html) {
     const parent = a.parentNode;
     while (a.firstChild) parent.insertBefore(a.firstChild, a);
     parent.removeChild(a);
+  });
+  return div.innerHTML;
+}
+
+function enrichTraitHtml(html) {
+  if (!html) return '';
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  div.querySelectorAll('a').forEach(a => {
+    const href = a.getAttribute('href') || '';
+    const inner = a.innerHTML;
+    const span = document.createElement('span');
+    span.innerHTML = inner;
+    const spellM = href.match(/\/spell\/fr\/([^/?#]+)/);
+    const featM  = href.match(/\/feat\/fr\/([^/?#]+)/);
+    if (spellM && spellM[1] !== 'fr') {
+      span.className = 'trait-link trait-link--sort';
+      span.dataset.traitSort = spellM[1];
+      span.setAttribute('tabindex', '0');
+      span.setAttribute('role', 'button');
+    } else if (featM && featM[1] !== 'fr') {
+      span.className = 'trait-link trait-link--don';
+      span.dataset.traitDon = featM[1];
+      span.setAttribute('tabindex', '0');
+      span.setAttribute('role', 'button');
+    }
+    a.parentNode.replaceChild(span, a);
   });
   return div.innerHTML;
 }
@@ -1800,8 +1876,12 @@ function renderSortCard(s) {
   return `
   <article class="card sort-card" data-sort="${escHtml(s.mainName)}" data-school="${escHtml(s.ecole)}"
     role="listitem" tabindex="0" aria-label="${escHtml(s.mainName)}">
+    <div class="sort-card-img-wrap">
+      <img src="${getSortImgUrl(s.mainName)}" alt="" class="sort-card-img" loading="lazy"
+           onerror="this.closest('.sort-card-img-wrap').style.display='none'">
+    </div>
     <div class="card-header">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;width100%">
         <h3 class="card-title">${escHtml(s.mainName)}</h3>
         <span class="level-badge" title="${lvlLabel}">${s.niveau === '0' ? '✦' : s.niveau}</span>
       </div>
@@ -1846,6 +1926,10 @@ function renderSortModal(s) {
   const lvlLabel = s.niveau === '0' ? 'Tour de magie' : `Niveau ${s.niveau}`;
 
   return `
+    <div class="sort-modal-banner-wrap">
+      <img src="${getSortImgUrl(s.mainName)}" alt="" class="sort-modal-banner" loading="lazy"
+           onerror="this.closest('.sort-modal-banner-wrap').style.display='none'">
+    </div>
     <h2 class="modal-title" id="modal-title">${escHtml(s.mainName)}</h2>
     ${s.altName ? `<p style="font-size:.9rem;color:var(--text3);font-style:italic;margin-bottom:.75rem">${escHtml(s.altName)}</p>` : ''}
     <div class="modal-tags">
@@ -2876,15 +2960,2483 @@ function renderCombat(container) {
   showSection('tour');
 }
 
-function renderPersonnage(container) {
+// ============================================================
+// PAGE: HISTORIQUES
+// ============================================================
+
+function renderHistoriques(container) {
+  const list = APP.data.historiques || [];
+
   container.innerHTML = `
   <div class="page">
-    <div class="soon-page">
-      <span class="soon-icon" aria-hidden="true">♟</span>
-      <h1 class="soon-title">Fiche de personnage</h1>
-      <p class="soon-text">Cette section est en cours de développement et sera disponible prochainement.</p>
+    <div class="container">
+      <div class="page-header">
+        <h1 class="page-title">Historiques</h1>
+        <div class="page-ornament" aria-hidden="true">📜</div>
+        <p class="page-subtitle">${list.length} historiques disponibles — l'origine qui a façonné votre aventurier</p>
+      </div>
+      <div class="search-bar-wrap hist-search-wrap">
+        <span class="search-icon" aria-hidden="true">🔍</span>
+        <input class="search-input" id="hist-search" type="search" placeholder="Rechercher un historique…" autocomplete="off" aria-label="Rechercher un historique">
+      </div>
+      <div class="hist-grid" id="hist-grid">
+        ${list.map(h => renderHistoriqueCard(h)).join('')}
+      </div>
     </div>
   </div>`;
+
+  const grid = container.querySelector('#hist-grid');
+  container.querySelector('#hist-search').addEventListener('input', debounce(e => {
+    const q = normalize(e.target.value);
+    grid.querySelectorAll('.hist-card').forEach(card => {
+      card.hidden = q && !normalize(card.dataset.search).includes(q);
+    });
+  }, 180));
+
+  grid.addEventListener('click', e => {
+    const card = e.target.closest('.hist-card');
+    if (!card) return;
+    const name = card.dataset.nom;
+    const h = list.find(x => x.nom === name);
+    if (!h) return;
+    Modal.show(renderHistoriqueModal(h));
+  });
+}
+
+function renderHistoriqueCard(h) {
+  return `
+  <article class="hist-card" data-nom="${escHtml(h.nom)}" data-search="${escHtml(normalize(h.nom + ' ' + (h.description||'')))}">
+    <div class="hist-card-head">
+      <div class="hist-card-left">
+        <span class="hist-card-icon">📜</span>
+        <div class="hist-card-info">
+          <div class="hist-card-name">${escHtml(h.nom)}</div>
+          <div class="hist-card-tags">
+            ${(h.maitriser_competence||[]).map(c=>`<span class="tag tag-forest">${escHtml(c)}</span>`).join('')}
+            ${h.maitrise_outils ? `<span class="tag tag-bronze">${escHtml(h.maitrise_outils)}</span>` : ''}
+          </div>
+          ${h.equipement ? `<div class="hist-card-equip-preview">
+            ${h.equipement.choix_A ? `<div class="hist-equip-row"><span class="hist-equip-badge">(A)</span><span class="hist-equip-text">${escHtml(h.equipement.choix_A)}</span></div>` : ''}
+            ${h.equipement.choix_B ? `<div class="hist-equip-row"><span class="hist-equip-badge">(B)</span><span class="hist-equip-text">${escHtml(h.equipement.choix_B)}</span></div>` : ''}
+          </div>` : ''}
+        </div>
+      </div>
+      <span class="hist-card-arrow">›</span>
+    </div>
+  </article>`;
+}
+
+function renderHistoriqueModal(h) {
+  return `
+    <div class="modal-title">📜 ${escHtml(h.nom)}</div>
+    <div class="modal-tags">
+      ${(h.maitriser_competence||[]).map(c=>`<span class="tag tag-forest">${escHtml(c)}</span>`).join('')}
+      ${h.maitrise_outils ? `<span class="tag tag-bronze">${escHtml(h.maitrise_outils)}</span>` : ''}
+    </div>
+    ${h.description ? `<p class="hist-desc">${escHtml(h.description)}</p>` : ''}
+    <div class="modal-divider"></div>
+    <div class="hist-info-grid">
+      <div class="hist-info-item"><span class="hist-info-label">Maîtrises</span><span>${escHtml((h.maitriser_competence||[]).join(', '))}</span></div>
+      <div class="hist-info-item"><span class="hist-info-label">Outils</span><span>${escHtml(h.maitrise_outils || '—')}</span></div>
+      <div class="hist-info-item"><span class="hist-info-label">Don suggéré</span><span>${escHtml(h.don || '—')}</span></div>
+      <div class="hist-info-item"><span class="hist-info-label">Caractéristiques</span><span>${escHtml((h.valeurs_caracteristique||[]).join(', '))}</span></div>
+    </div>
+    ${h.equipement ? `
+    <div class="modal-divider"></div>
+    <div class="modal-section-title">Équipement de départ</div>
+    <div class="hist-equip">
+      ${h.equipement.choix_A ? `<div class="hist-equip-row"><span class="hist-equip-badge">(A)</span>${escHtml(h.equipement.choix_A)}</div>` : ''}
+      ${h.equipement.choix_B ? `<div class="hist-equip-row"><span class="hist-equip-badge">(B)</span>${escHtml(h.equipement.choix_B)}</div>` : ''}
+    </div>` : ''}
+  `;
+}
+
+// ============================================================
+// PERSONNAGE — CONSTANTES & HELPERS
+// ============================================================
+
+const CHAR_KEY = 'dnd-codex-character';
+
+const ABILITY_KEYS = ['FOR','DEX','CON','INT','SAG','CHA'];
+const ABILITY_NAMES = {FOR:'Force',DEX:'Dextérité',CON:'Constitution',INT:'Intelligence',SAG:'Sagesse',CHA:'Charisme'};
+const ABILITY_SHORT = {FOR:'For.',DEX:'Dex.',CON:'Con.',INT:'Int.',SAG:'Sag.',CHA:'Cha.'};
+
+const ALL_SKILLS = [
+  {nom:'Acrobaties',stat:'DEX'},{nom:'Arcanes',stat:'INT'},{nom:'Athlétisme',stat:'FOR'},
+  {nom:'Discrétion',stat:'DEX'},{nom:'Dressage',stat:'SAG'},{nom:'Escamotage',stat:'DEX'},
+  {nom:'Histoire',stat:'INT'},{nom:'Intimidation',stat:'CHA'},{nom:'Investigation',stat:'INT'},
+  {nom:'Intuition',stat:'SAG'},{nom:'Médecine',stat:'SAG'},{nom:'Nature',stat:'INT'},
+  {nom:'Perception',stat:'SAG'},{nom:'Persuasion',stat:'CHA'},{nom:'Religion',stat:'INT'},
+  {nom:'Représentation',stat:'CHA'},{nom:'Survie',stat:'SAG'},{nom:'Tromperie',stat:'CHA'},
+];
+
+const CLASS_DATA = {
+  'Barbare':    {hitDie:12,saves:['FOR','CON'],spellcaster:false,speed:9},
+  'Barde':      {hitDie:8, saves:['DEX','CHA'],spellcaster:'full',spellAbility:'CHA',speed:9},
+  'Clerc':      {hitDie:8, saves:['SAG','CHA'],spellcaster:'full',spellAbility:'SAG',speed:9},
+  'Druide':     {hitDie:8, saves:['INT','SAG'],spellcaster:'full',spellAbility:'SAG',speed:9},
+  'Guerrier':   {hitDie:10,saves:['FOR','CON'],spellcaster:false,speed:9},
+  'Moine':      {hitDie:8, saves:['FOR','DEX'],spellcaster:false,speed:9},
+  'Paladin':    {hitDie:10,saves:['SAG','CHA'],spellcaster:'half',spellAbility:'CHA',speed:9},
+  'Rodeur':     {hitDie:10,saves:['FOR','DEX'],spellcaster:'half',spellAbility:'SAG',speed:9},
+  'Roublard':   {hitDie:8, saves:['DEX','INT'],spellcaster:false,speed:9},
+  'Ensorceleur':{hitDie:6, saves:['CON','CHA'],spellcaster:'full',spellAbility:'CHA',speed:9},
+  'Occultiste': {hitDie:8, saves:['SAG','CHA'],spellcaster:'patron',spellAbility:'CHA',speed:9},
+  'Magicien':   {hitDie:6, saves:['INT','SAG'],spellcaster:'full',spellAbility:'INT',speed:9},
+};
+
+const CLASS_SKILLS_MAP = {
+  'Barbare':    {count:2,list:['Athlétisme','Dressage','Intimidation','Nature','Perception','Survie']},
+  'Barde':      {count:3,list:'any'},
+  'Clerc':      {count:2,list:['Histoire','Intuition','Médecine','Persuasion','Religion']},
+  'Druide':     {count:2,list:['Arcanes','Dressage','Intuition','Médecine','Nature','Perception','Religion','Survie']},
+  'Guerrier':   {count:2,list:['Acrobaties','Athlétisme','Dressage','Histoire','Intimidation','Intuition','Perception','Survie']},
+  'Moine':      {count:2,list:['Acrobaties','Athlétisme','Histoire','Intuition','Religion','Discrétion']},
+  'Paladin':    {count:2,list:['Athlétisme','Intuition','Intimidation','Médecine','Persuasion','Religion']},
+  'Rodeur':     {count:3,list:['Athlétisme','Discrétion','Dressage','Investigation','Nature','Perception','Intuition','Survie']},
+  'Roublard':   {count:4,list:['Acrobaties','Athlétisme','Tromperie','Discrétion','Intuition','Intimidation','Investigation','Perception','Représentation','Persuasion','Escamotage']},
+  'Ensorceleur':{count:2,list:['Arcanes','Tromperie','Intuition','Intimidation','Persuasion','Religion']},
+  'Occultiste': {count:2,list:['Arcanes','Tromperie','Histoire','Intimidation','Investigation','Nature','Religion']},
+  'Magicien':   {count:2,list:['Arcanes','Histoire','Intuition','Investigation','Médecine','Religion']},
+};
+
+const LANGUAGES_LIST = ['Elfique','Nain','Géant','Gnome','Gobelin','Halfelin','Orc','Abyssal','Céleste','Commun des profondeurs','Draconique','Infernal','Primordial','Sylvestre'];
+
+const CLASS_EQUIP = {
+  'Barbare':    { choix_A: 'Hache de guerre, 4 javelines, sac d\'explorateur', choix_B: '75 po' },
+  'Barde':      { choix_A: 'Rapière, cuir, instrument de musique, sac d\'artiste, 26 po', choix_B: '50 po' },
+  'Clerc':      { choix_A: 'Cotte de mailles, bouclier, fléau, symbole sacré, sac d\'explorateur, 7 po', choix_B: '110 po' },
+  'Druide':     { choix_A: 'Bâton de combat, cuir, sacoche de composants, trousse de soins, sac d\'explorateur, 9 po', choix_B: '50 po' },
+  'Guerrier':   { choix_A: 'Cotte de mailles, arc long, 20 flèches, carquois, épée longue', choix_B: '150 po' },
+  'Moine':      { choix_A: 'Bâton de combat, 5 dards, tenue de voyage, sac d\'aventurier, 11 po', choix_B: '50 po' },
+  'Occultiste': { choix_A: 'Arbalète légère, 20 carreaux, cuir, 2 dagues, sac d\'explorateur, sacoche de composants', choix_B: '100 po' },
+  'Paladin':    { choix_A: 'Cotte de mailles, bouclier, épée longue, 5 javelines, symbole sacré, sac d\'explorateur', choix_B: '150 po' },
+  'Rodeur':     { choix_A: 'Armure de peaux, arc long, 20 flèches, carquois, épée courte, sac d\'explorateur', choix_B: '50 po' },
+  'Roublard':   { choix_A: 'Rapière, arc court, 20 flèches, carquois, cuir, 2 dagues, outils de voleur, sac de cambrioleur', choix_B: '100 po' },
+  'Ensorceleur':{ choix_A: 'Arbalète légère, 20 carreaux, 2 dagues, sac d\'explorateur, sacoche de composants', choix_B: '50 po' },
+  'Magicien':   { choix_A: 'Bâton de combat, 2 dagues, livre de sorts, sac de chercheur, sacoche de composants', choix_B: '50 po' },
+};
+
+// Cantrips connus par classe et par niveau (index 0 = niveau 1)
+const CANTRIPS_BY_LEVEL = {
+  Barde:      [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
+  Clerc:      [3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5],
+  Druide:     [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
+  Ensorceleur:[4,4,4,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,6],
+  Magicien:   [3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5],
+  Occultiste: [2,2,2,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4],
+};
+// Sorts préparés max par classe (table par niveau ou formule)
+const PREPARED_BY_LEVEL = {
+  Barde:      { table: [4,5,6,7,8,9,10,11,12,14,15,15,16,18,19,19,20,22,22,22] },
+  Clerc:      { formula: (lvl, mods) => Math.max(1, lvl + mods.SAG) },
+  Druide:     { formula: (lvl, mods) => Math.max(1, lvl + mods.SAG) },
+  Ensorceleur:{ table: [2,3,4,5,6,7,8,9,10,11,12,12,13,13,14,14,15,15,15,15] },
+  Magicien:   { formula: (lvl, mods) => Math.max(1, lvl + mods.INT) },
+  Occultiste: { table: [2,3,4,4,5,5,6,6,7,7,7,7,7,7,7,7,7,7,7,7] },
+  Paladin:    { formula: (lvl, mods) => Math.max(1, Math.floor(lvl/2) + mods.CHA) },
+  Rodeur:     { table: [2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,9,10,10,10,10] },
+};
+
+function getSpellLimits(char) {
+  const lvl  = Math.max(1, Math.min(20, char.niveau||1));
+  const idx  = lvl - 1;
+  const cls  = char.classe;
+  const mods = { SAG: statMod(char.stats?.SAG||10), INT: statMod(char.stats?.INT||10), CHA: statMod(char.stats?.CHA||10) };
+  const maxCantrips  = (CANTRIPS_BY_LEVEL[cls]?.[idx]) || 0;
+  const prepDef      = PREPARED_BY_LEVEL[cls];
+  let   maxPrepares  = 0;
+  if (prepDef?.table)   maxPrepares = prepDef.table[idx] || 0;
+  if (prepDef?.formula) maxPrepares = prepDef.formula(lvl, mods);
+  return { maxCantrips, maxPrepares };
+}
+
+const SPELL_SLOTS_TABLE = {
+  1:[2,0,0,0,0,0,0,0,0], 2:[3,0,0,0,0,0,0,0,0], 3:[4,2,0,0,0,0,0,0,0],
+  4:[4,3,0,0,0,0,0,0,0], 5:[4,3,2,0,0,0,0,0,0], 6:[4,3,3,0,0,0,0,0,0],
+  7:[4,3,3,1,0,0,0,0,0], 8:[4,3,3,2,0,0,0,0,0], 9:[4,3,3,3,1,0,0,0,0],
+  10:[4,3,3,3,2,0,0,0,0],11:[4,3,3,3,2,1,0,0,0],12:[4,3,3,3,2,1,0,0,0],
+  13:[4,3,3,3,2,1,1,0,0],14:[4,3,3,3,2,1,1,0,0],15:[4,3,3,3,2,1,1,1,0],
+  16:[4,3,3,3,2,1,1,1,0],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],
+  19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1],
+};
+
+const STAT_HELP = {
+  'CA':{title:'Classe d\'Armure',formula:'10 + Mod.Dex (+ armure)',desc:'Mesure votre protection. Une attaque touche si son jet ≥ votre CA.'},
+  'Initiative':{title:'Initiative',formula:'= Mod.Dextérité',desc:'Ordre de jeu en combat. Plus c\'est haut, plus vous jouez tôt.'},
+  'Maîtrise':{title:'Bonus de Maîtrise',formula:'+2 (niv.1-4) → +6 (niv.17+)',desc:'S\'ajoute aux jets des compétences, sauvegardes et attaques maîtrisées.'},
+  'Vitesse':{title:'Vitesse de déplacement',formula:'9 m par défaut',desc:'Distance max en un tour. Terrain difficile : 2 m de mouvement pour 1 m parcouru.'},
+  'Perc.passive':{title:'Perception Passive',formula:'10 + bonus Perception',desc:'Le MJ l\'utilise pour voir si vous détectez quelque chose sans chercher.'},
+  'DD Sorts':{title:'Difficulté des Sorts',formula:'8 + Maîtrise + Mod.Caractéristique',desc:'Score que les cibles doivent battre pour résister à vos sorts.'},
+  'Att.Sort':{title:'Bonus d\'Attaque de Sort',formula:'Maîtrise + Mod.Caractéristique',desc:'S\'ajoute au d20 quand un sort nécessite un jet d\'attaque.'},
+  'FOR':{title:'Force',formula:'Mod = ⌊(score−10)/2⌋',desc:'Puissance physique. Attaques CàC, Athlétisme, charges de poids.'},
+  'DEX':{title:'Dextérité',formula:'Mod = ⌊(score−10)/2⌋',desc:'Agilité et précision. CA de base, Initiative, attaques à distance, Discrétion.'},
+  'CON':{title:'Constitution',formula:'Mod = ⌊(score−10)/2⌋',desc:'Endurance. Détermine PV max et jets de Concentration pour maintenir un sort.'},
+  'INT':{title:'Intelligence',formula:'Mod = ⌊(score−10)/2⌋',desc:'Mémoire et logique. Magie du Magicien, Arcanes, Investigation, Histoire.'},
+  'SAG':{title:'Sagesse',formula:'Mod = ⌊(score−10)/2⌋',desc:'Perception et instinct. Magie divine (Clerc/Druide), Perception, Intuition.'},
+  'CHA':{title:'Charisme',formula:'Mod = ⌊(score−10)/2⌋',desc:'Personnalité et influence. Magie de Barde/Ensorceleur, Persuasion, Tromperie.'},
+  'PV':{title:'Points de Vie',formula:'Max = Dé de vie + Mod.Con × niveau',desc:'Votre vitalité. À 0 PV : inconscient. 3 échecs aux jets de mort = mort.'},
+};
+
+function getChar() { try { return JSON.parse(localStorage.getItem(CHAR_KEY)||'null'); } catch { return null; } }
+function saveChar(c) { localStorage.setItem(CHAR_KEY, JSON.stringify(c)); }
+function delChar()  { localStorage.removeItem(CHAR_KEY); }
+function statMod(s) { return Math.floor((s-10)/2); }
+function profBonus(lvl) { return 1+Math.ceil(lvl/4); }
+function fmtMod(n) { return (n>=0?'+':'')+n; }
+
+function computeCharDerived(c) {
+  const cls = CLASS_DATA[c.classe] || {};
+  const lvl = c.niveau || 1;
+  const pb = profBonus(lvl);
+  const dexMod = statMod(c.stats.DEX||10);
+  const conMod = statMod(c.stats.CON||10);
+  const hitDie = cls.hitDie || 8;
+  const hpMax = hitDie + conMod + (lvl-1)*(Math.floor(hitDie/2)+1+conMod);
+  const ca = 10 + dexMod; // base (no armor)
+  const speed = (c.espece === 'Nain' ? 7.5 : 9);
+  const spellAb = cls.spellAbility;
+  const spellMod = spellAb ? statMod(c.stats[spellAb]||10) : 0;
+  const spellDC = spellAb ? 8+pb+spellMod : null;
+  const spellAtk = spellAb ? pb+spellMod : null;
+  const percPassive = 10 + (ALL_SKILLS.find(s=>s.nom==='Perception')
+    ? statMod(c.stats.SAG||10) + ((c.competences||[]).includes('Perception') ? pb : 0) : 0);
+  return { pb, ca, speed, hpMax, spellDC, spellAtk, percPassive };
+}
+
+function showStatHelp(key, anchorEl) {
+  const h = STAT_HELP[key]; if (!h) return;
+  const t = document.getElementById('tooltip');
+  const ti = document.getElementById('tooltip-inner');
+  ti.innerHTML = `<strong>${escHtml(h.title)}</strong><br><em style="color:var(--gold);font-size:.8em">${escHtml(h.formula)}</em><br>${escHtml(h.desc)}`;
+  const r = anchorEl.getBoundingClientRect();
+  const left = Math.min(r.left+window.scrollX, window.innerWidth-240);
+  t.style.left = Math.max(8,left)+'px';
+  t.style.top = (r.bottom+window.scrollY+6)+'px';
+  t.style.maxWidth = '230px';
+  t.classList.remove('hidden');
+  t.removeAttribute('aria-hidden');
+}
+function hideStatHelp() {
+  const t = document.getElementById('tooltip');
+  t.classList.add('hidden');
+  t.setAttribute('aria-hidden','true');
+}
+function wireHelp(container) {
+  container.querySelectorAll('[data-help]').forEach(el => {
+    el.addEventListener('mouseenter', () => showStatHelp(el.dataset.help, el));
+    el.addEventListener('mouseleave', hideStatHelp);
+    el.addEventListener('focus',      () => showStatHelp(el.dataset.help, el));
+    el.addEventListener('blur',       hideStatHelp);
+  });
+}
+
+// ============================================================
+// PERSONNAGE — WIZARD
+// ============================================================
+
+let WIZ = null;
+
+function wizReset() {
+  WIZ = {
+    step: 0,
+    espece: null,
+    classe: null,
+    classeSkills: [],
+    classeEquipChoix: 'A',
+    histEquipChoix: 'A',
+    histOutilChoix: '',
+    historique: null,
+    pool: [15,14,13,12,10,8],
+    assignments: {FOR:null,DEX:null,CON:null,INT:null,SAG:null,CHA:null},
+    nom: '', age: '', description: '', histoire: '',
+    langues: ['Commun'],
+    extraLang: [],
+  };
+}
+
+const WIZ_STEPS = ['Espèce','Classe','Historique','Caractéristiques','Informations','Résumé'];
+
+function wizProgressBar() {
+  return `<div class="wiz-progress">
+    ${WIZ_STEPS.map((s,i)=>`<div class="wiz-step-dot${i===WIZ.step?' active':i<WIZ.step?' done':''}">
+      <span class="wiz-dot-num">${i<WIZ.step?'✓':(i+1)}</span>
+      <span class="wiz-dot-label">${escHtml(s)}</span>
+    </div>${i<WIZ_STEPS.length-1?'<div class="wiz-step-line'+(i<WIZ.step?' done':'')+'"></div>':''}`).join('')}
+  </div>`;
+}
+
+function renderWizard(container) {
+  if (!WIZ) wizReset();
+  const steps = [wizStepEspece, wizStepClasse, wizStepHistorique, wizStepStats, wizStepInfo, wizStepResume];
+  const stepFn = steps[WIZ.step] || wizStepResume;
+
+  container.innerHTML = `
+  <div class="page">
+    <div class="container">
+      <div class="wiz-header">
+        <h1 class="page-title">Créer mon Aventurier</h1>
+        <p class="page-subtitle">Étape ${WIZ.step+1} sur ${WIZ_STEPS.length} — ${WIZ_STEPS[WIZ.step]}</p>
+        ${wizProgressBar()}
+      </div>
+      <div class="wiz-body" id="wiz-body">
+        ${stepFn()}
+      </div>
+      <div class="wiz-nav" id="wiz-nav">
+        ${WIZ.step > 0 ? `<button class="wiz-btn wiz-btn--back" id="wiz-back">← Retour</button>` : '<span></span>'}
+        ${WIZ.step < WIZ_STEPS.length-1
+          ? `<button class="wiz-btn wiz-btn--next" id="wiz-next" ${!canAdvance()?'disabled':''}>Suivant →</button>`
+          : `<button class="wiz-btn wiz-btn--create" id="wiz-create">⚔ Créer mon personnage</button>`}
+      </div>
+    </div>
+  </div>`;
+
+  wireWizardEvents(container);
+}
+
+function canAdvance() {
+  if (WIZ.step===0) return !!WIZ.espece;
+  if (WIZ.step===1) {
+    const cs = CLASS_SKILLS_MAP[WIZ.classe?.classe_title||''];
+    const needed = cs?.count || 0;
+    return !!WIZ.classe && WIZ.classeSkills.length >= needed;
+  }
+  if (WIZ.step===2) return !!WIZ.historique;
+  if (WIZ.step===3) return ABILITY_KEYS.every(k=>WIZ.assignments[k]!==null);
+  if (WIZ.step===4) return WIZ.nom.trim().length > 0;
+  return true;
+}
+
+function wireWizardEvents(container) {
+  const back = container.querySelector('#wiz-back');
+  const next = container.querySelector('#wiz-next');
+  const create = container.querySelector('#wiz-create');
+
+  if (back) back.addEventListener('click', () => { WIZ.step--; renderWizard(container); });
+  if (next) next.addEventListener('click', () => { if (canAdvance()) { WIZ.step++; renderWizard(container); } });
+  if (create) create.addEventListener('click', () => finalizeCharacter(container));
+
+  // Step-specific wiring
+  if (WIZ.step===0) wireStepEspece(container);
+  if (WIZ.step===1) wireStepClasse(container);
+  if (WIZ.step===2) wireStepHistorique(container);
+  if (WIZ.step===3) wireStepStats(container);
+  if (WIZ.step===4) wireStepInfo(container);
+}
+
+// ── Weapon lookup helper ──────────────────────────────────────
+function getWeaponData(nom) {
+  const cats = APP.data.armes?.armes || [];
+  const key = normalize(nom);
+  for (const cat of cats) {
+    const found = (cat.armes||[]).find(a => normalize(a.nom) === key || normalize(a.nom).includes(key) || key.includes(normalize(a.nom)));
+    if (found) return found;
+  }
+  return null;
+}
+
+// ── Wizard modal helpers ──────────────────────────────────────
+
+function wizEspeceModalHtml(s) {
+  const infos = s.infos ? Object.entries(s.infos) : [];
+  const caps = (s.capacites||[]).filter(c=>c&&c.nom);
+  const sousEspeces = s.sous_especes || [];
+  return `
+  <div class="wiz-modal-content">
+    <div class="wiz-modal-portrait">
+      <img src="${speciesImagePath(s.espece,'full')}" alt="${escHtml(s.espece)}" onerror="this.closest('.wiz-modal-portrait').style.display='none'">
+    </div>
+    <h2 class="wiz-modal-title">${escHtml(s.espece)}</h2>
+    ${infos.length ? `<div class="wiz-modal-infos">
+      ${infos.map(([k,v])=>`<div class="wiz-modal-info-row"><span class="wiz-modal-info-key">${escHtml(k)}</span><span>${escHtml(String(v))}</span></div>`).join('')}
+    </div>` : ''}
+    ${sousEspeces.length ? `<div class="wiz-modal-section">
+      <h3 class="wiz-modal-sh">Sous-espèces</h3>
+      ${sousEspeces.map(se=>`<div class="wiz-modal-trait"><strong>${escHtml(se.nom||'')}</strong>${se.description?` — <span class="wiz-modal-trait-desc">${escHtml(String(se.description).replace(/<[^>]*>/g,'').slice(0,160))}…</span>`:''}</div>`).join('')}
+    </div>` : ''}
+    ${caps.length ? `<div class="wiz-modal-section">
+      <h3 class="wiz-modal-sh">Traits raciaux</h3>
+      ${caps.map(c=>`
+      <details class="wiz-modal-detail">
+        <summary>${escHtml(c.nom)}</summary>
+        <p>${escHtml(String(c.description||'').replace(/<[^>]*>/g,''))}</p>
+      </details>`).join('')}
+    </div>` : ''}
+    <div class="wiz-modal-footer">
+      <button class="wiz-modal-choose-btn" data-choose-espece="${escHtml(s.espece)}">
+        ✓ Je choisis cette espèce
+      </button>
+    </div>
+  </div>`;
+}
+
+function wizClasseModalHtml(cls, tempSkills, choixEquip) {
+  const map = CLASS_SKILLS_MAP[cls.classe_title];
+  const count = map?.count || 0;
+  const list = map?.list === 'any' ? ALL_SKILLS.map(s=>s.nom) : (map?.list || []);
+  const cd = CLASS_DATA[cls.classe_title] || {};
+  const saves = (cd.saves||[]).map(k=>ABILITY_NAMES[k]||k).join(', ');
+  const feats = (cls.capacites||[]).filter(f=>f.niveau===1).slice(0,4);
+  const equip = CLASS_EQUIP[cls.classe_title];
+  return `
+  <div class="wiz-modal-content">
+    ${cls.image?`<div class="wiz-modal-portrait"><img src="${escHtml(cls.image)}" alt="${escHtml(cls.classe_title)}" onerror="this.closest('.wiz-modal-portrait').style.display='none'"></div>`:''}
+    <h2 class="wiz-modal-title">${escHtml(cls.classe_title)}</h2>
+    <div class="wiz-modal-infos">
+      <div class="wiz-modal-info-row"><span class="wiz-modal-info-key">Dé de vie</span><span><strong>d${cd.hitDie||8}</strong></span></div>
+      <div class="wiz-modal-info-row"><span class="wiz-modal-info-key">Sauvegardes</span><span>${escHtml(saves)}</span></div>
+      ${cd.spellcaster?`<div class="wiz-modal-info-row"><span class="wiz-modal-info-key">Incantation</span><span>${ABILITY_NAMES[cd.spellAbility]||''}</span></div>`:''}
+    </div>
+    <div class="wiz-modal-section">
+      <p class="wiz-modal-desc">${escHtml(truncate(cls.classe_description||'',400))}</p>
+    </div>
+    ${feats.length ? `<div class="wiz-modal-section">
+      <h3 class="wiz-modal-sh">Capacités de niveau 1</h3>
+      ${feats.map(f=>`
+      <details class="wiz-modal-detail">
+        <summary>${escHtml(f.capacite_name)}</summary>
+        <div>${f.description_html||''}</div>
+      </details>`).join('')}
+    </div>` : ''}
+    ${count > 0 ? `<div class="wiz-modal-section">
+      <h3 class="wiz-modal-sh">Choisissez ${count} compétence${count>1?'s':''}</h3>
+      <div class="wiz-skill-chips" id="modal-skill-chips">
+        ${list.map(sk=>`
+        <div class="wiz-skill-chip${tempSkills.includes(sk)?' checked':''}" data-skill="${escHtml(sk)}" tabindex="0" role="checkbox" aria-checked="${tempSkills.includes(sk)}">
+          ${escHtml(sk)}
+        </div>`).join('')}
+      </div>
+      <div class="wiz-skill-count" id="modal-skill-count">${tempSkills.length}/${count} sélectionnée${tempSkills.length>1?'s':''}</div>
+    </div>` : ''}
+    ${equip ? `<div class="wiz-modal-section">
+      <h3 class="wiz-modal-sh">Équipement de départ (classe)</h3>
+      <div class="wiz-equip-radios" id="modal-cls-equip-radios">
+        ${equip.choix_A ? `<div class="wiz-equip-radio${choixEquip==='A'?' chosen':''}" data-cls-equip="A">
+          <div class="wiz-equip-radio-card">
+            <span class="wiz-equip-badge">Choix (A)</span>
+            <span>${escHtml(equip.choix_A)}</span>
+          </div>
+        </div>` : ''}
+        ${equip.choix_B ? `<div class="wiz-equip-radio${choixEquip==='B'?' chosen':''}" data-cls-equip="B">
+          <div class="wiz-equip-radio-card">
+            <span class="wiz-equip-badge">Choix (B)</span>
+            <span>${escHtml(equip.choix_B)}</span>
+          </div>
+        </div>` : ''}
+      </div>
+    </div>` : ''}
+    <div class="wiz-modal-footer">
+      <button class="wiz-modal-choose-btn" id="modal-choose-classe" data-choose-classe="${escHtml(cls.classe_title)}" ${tempSkills.length < count ? 'disabled' : ''}>
+        ✓ Je choisis cette classe
+      </button>
+    </div>
+  </div>`;
+}
+
+const OUTILS_NON_ARTISAN = new Set([
+  'Accessoires de déguisement','Boîte de jeux','Instrument de musique',
+  'Instruments de navigateur',"Matériel d'empoisonneur","Matériel d'herboriste",
+  'Matériel de contrefaçon','Outils de voleur'
+]);
+const INSTRUMENTS = ['Cornemuse','Cor','Flûte','Flûte de pan','Luth','Lyre','Tambour','Viole'];
+const JEUX = ["Cartes à jouer","Dés","Jeu d'échecs des dragons","Dominos","Jeu de dés truqués"];
+
+function getOutilChoices(maitrise_outils) {
+  if (!maitrise_outils) return [];
+  const txt = maitrise_outils.toLowerCase();
+  if (txt.includes('artisan')) return (APP.data.outils||[]).filter(o=>!OUTILS_NON_ARTISAN.has(o.nom)).map(o=>o.nom);
+  if (txt.includes('instrument')) return INSTRUMENTS;
+  if (txt.includes('jeu') || txt.includes('boîte')) return JEUX;
+  return [];
+}
+
+function wizHistModalHtml(h, choixEquip, choixOutil) {
+  const hasEquip = h.equipement?.choix_A || h.equipement?.choix_B;
+  const outilChoices = getOutilChoices(h.maitrise_outils);
+  const needsOutilChoice = outilChoices.length > 0;
+  return `
+  <div class="wiz-modal-content">
+    <h2 class="wiz-modal-title">${escHtml(h.nom)}</h2>
+    <div class="wiz-modal-infos">
+      <div class="wiz-modal-info-row"><span class="wiz-modal-info-key">Maîtrises</span><span>${escHtml((h.maitriser_competence||[]).join(', '))}</span></div>
+      ${h.maitrise_outils?`<div class="wiz-modal-info-row"><span class="wiz-modal-info-key">Outils</span><span>${escHtml(needsOutilChoice ? (choixOutil||h.maitrise_outils) : h.maitrise_outils)}</span></div>`:''}
+      ${h.don?`<div class="wiz-modal-info-row"><span class="wiz-modal-info-key">Don suggéré</span><span>${escHtml(h.don)}</span></div>`:''}
+      ${h.valeurs_caracteristique?.length?`<div class="wiz-modal-info-row"><span class="wiz-modal-info-key">Caractéristiques</span><span>${escHtml(h.valeurs_caracteristique.join(', '))}</span></div>`:''}
+    </div>
+    <div class="wiz-modal-section">
+      <p class="wiz-modal-desc">${escHtml(h.description||'')}</p>
+    </div>
+    ${needsOutilChoice ? `<div class="wiz-modal-section">
+      <h3 class="wiz-modal-sh">Maîtrise d'outil</h3>
+      <p class="wiz-outil-hint">${escHtml(h.maitrise_outils)}</p>
+      <select class="wiz-outil-select" id="hist-outil-select">
+        <option value="">— Choisissez un outil —</option>
+        ${outilChoices.map(c=>`<option value="${escHtml(c)}"${choixOutil===c?' selected':''}>${escHtml(c)}</option>`).join('')}
+      </select>
+    </div>` : ''}
+    ${h.equipement?.choix_A || h.equipement?.choix_B ? `<div class="wiz-modal-section">
+      <h3 class="wiz-modal-sh">Équipement de départ</h3>
+      <div class="wiz-equip-radios">
+        ${h.equipement.choix_A ? `<label class="wiz-equip-radio${choixEquip==='A'?' chosen':''}">
+          <input type="radio" name="hist-equip" value="A" ${choixEquip==='A'?'checked':''}>
+          <div class="wiz-equip-radio-card">
+            <span class="wiz-equip-badge">Choix (A)</span>
+            <span>${escHtml(h.equipement.choix_A)}</span>
+          </div>
+        </label>` : ''}
+        ${h.equipement.choix_B ? `<label class="wiz-equip-radio${choixEquip==='B'?' chosen':''}">
+          <input type="radio" name="hist-equip" value="B" ${choixEquip==='B'?'checked':''}>
+          <div class="wiz-equip-radio-card">
+            <span class="wiz-equip-badge">Choix (B)</span>
+            <span>${escHtml(h.equipement.choix_B)}</span>
+          </div>
+        </label>` : ''}
+      </div>
+    </div>` : ''}
+    <div class="wiz-modal-footer">
+      <button class="wiz-modal-choose-btn" data-choose-hist="${escHtml(h.nom)}">
+        ✓ Je choisis cet historique
+      </button>
+    </div>
+  </div>`;
+}
+
+// Step 1 — Espèce
+function wizStepEspece() {
+  const species = APP.data.species || [];
+  return `
+  <div class="wiz-step-espece">
+    <p class="wiz-step-intro">Cliquez sur une espèce pour découvrir ses traits et la choisir.</p>
+    <div class="wiz-cards-grid" id="wiz-species-grid">
+      ${species.map(s=>`
+      <button class="wiz-card${WIZ.espece?.espece===s.espece?' selected':''}" data-open-espece="${escHtml(s.espece)}">
+        <div class="wiz-card-img" style="background-image:url('${speciesImagePath(s.espece,'thumb')}')"></div>
+        <div class="wiz-card-name">${escHtml(s.espece)}</div>
+        ${WIZ.espece?.espece===s.espece?'<div class="wiz-card-check">✓</div>':''}
+      </button>`).join('')}
+    </div>
+    ${WIZ.espece ? `<p class="wiz-selection-confirm">✓ <strong>${escHtml(WIZ.espece.espece)}</strong> sélectionnée — cliquez sur une autre pour changer</p>` : ''}
+  </div>`;
+}
+
+function wireStepEspece(container) {
+  container.querySelector('#wiz-species-grid')?.addEventListener('click', e => {
+    const card = e.target.closest('[data-open-espece]');
+    if (!card) return;
+    const name = card.dataset.openEspece;
+    const s = (APP.data.species||[]).find(x=>x.espece===name);
+    if (!s) return;
+    Modal.show(wizEspeceModalHtml(s));
+    Modal.body.querySelector('[data-choose-espece]')?.addEventListener('click', () => {
+      WIZ.espece = s;
+      Modal.hide();
+      renderWizard(container);
+    });
+  });
+}
+
+// Step 2 — Classe
+function wizStepClasse() {
+  const classes = (APP.data.classes||[]).map(g=>g[0]);
+  return `
+  <div class="wiz-step-classe">
+    <p class="wiz-step-intro">Cliquez sur une classe pour en découvrir les capacités et choisir vos compétences.</p>
+    <div class="wiz-cards-grid wiz-cards-grid--classes" id="wiz-class-grid">
+      ${classes.map(cls=>{
+        const cd = CLASS_DATA[cls.classe_title]||{};
+        const sel = WIZ.classe?.classe_title===cls.classe_title;
+        return `
+        <button class="wiz-card wiz-card--cls${sel?' selected':''}" data-open-classe="${escHtml(cls.classe_title)}">
+          ${cls.image?`<img class="wiz-card-img-obj" src="${escHtml(cls.image)}" alt="" onerror="this.style.display='none'">` : '<div class="wiz-card-img wiz-card-img--cls"></div>'}
+          <div class="wiz-card-name">${escHtml(cls.classe_title)}</div>
+          <div class="wiz-card-die">d${cd.hitDie||8}</div>
+          ${sel?'<div class="wiz-card-check">✓</div>':''}
+        </button>`;
+      }).join('')}
+    </div>
+    ${WIZ.classe ? `<p class="wiz-selection-confirm">✓ <strong>${escHtml(WIZ.classe.classe_title)}</strong> — ${escHtml(WIZ.classeSkills.join(', ')||'aucune compétence sélectionnée')}</p>` : ''}
+  </div>`;
+}
+
+function wireStepClasse(container) {
+  const classes = (APP.data.classes||[]).map(g=>g[0]);
+  container.querySelector('#wiz-class-grid')?.addEventListener('click', e => {
+    const card = e.target.closest('[data-open-classe]');
+    if (!card) return;
+    const name = card.dataset.openClasse;
+    const cls = classes.find(c=>c.classe_title===name);
+    if (!cls) return;
+
+    let tempSkills = WIZ.classe?.classe_title===name ? [...WIZ.classeSkills] : [];
+    let tempEquipChoix = WIZ.classe?.classe_title===name ? WIZ.classeEquipChoix : 'A';
+    const map = CLASS_SKILLS_MAP[name];
+    const count = map?.count || 0;
+
+    Modal.show(wizClasseModalHtml(cls, tempSkills, tempEquipChoix));
+
+    const body = Modal.body;
+    const content = body.querySelector('.wiz-modal-content') || body;
+    const chooseBtn = body.querySelector('#modal-choose-classe');
+    const updateChooseBtn = () => { if (chooseBtn) chooseBtn.disabled = tempSkills.length < count; };
+
+    // Skill chip clicks (direct click, no hidden checkbox)
+    content.querySelectorAll('.wiz-skill-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        const val = chip.dataset.skill;
+        if (chip.classList.contains('checked')) {
+          chip.classList.remove('checked');
+          chip.setAttribute('aria-checked', 'false');
+          tempSkills = tempSkills.filter(s => s !== val);
+        } else {
+          if (tempSkills.length >= count) return;
+          chip.classList.add('checked');
+          chip.setAttribute('aria-checked', 'true');
+          tempSkills.push(val);
+        }
+        const cnt = body.querySelector('#modal-skill-count');
+        if (cnt) cnt.textContent = `${tempSkills.length}/${count} sélectionnée${tempSkills.length>1?'s':''}`;
+        updateChooseBtn();
+      });
+      chip.addEventListener('keydown', e2 => { if (e2.key===' '||e2.key==='Enter') { e2.preventDefault(); chip.click(); } });
+    });
+
+    // Class equipment choice clicks
+    content.querySelectorAll('[data-cls-equip]').forEach(opt => {
+      opt.addEventListener('click', () => {
+        tempEquipChoix = opt.dataset.clsEquip;
+        content.querySelectorAll('[data-cls-equip]').forEach(o => o.classList.toggle('chosen', o.dataset.clsEquip === tempEquipChoix));
+      });
+    });
+
+    chooseBtn?.addEventListener('click', () => {
+      WIZ.classe = cls;
+      WIZ.classeSkills = [...tempSkills];
+      WIZ.classeEquipChoix = tempEquipChoix;
+      Modal.hide();
+      renderWizard(container);
+    });
+  });
+}
+
+// Step 3 — Historique
+function wizStepHistorique() {
+  const hists = APP.data.historiques || [];
+  return `
+  <div class="wiz-step-historique">
+    <p class="wiz-step-intro">Cliquez sur un historique pour le découvrir et choisir votre équipement de départ.</p>
+    <div class="wiz-hist-cards" id="wiz-hist-grid">
+      ${hists.map(h=>`
+      <button class="wiz-hist-card${WIZ.historique?.nom===h.nom?' selected':''}" data-open-hist="${escHtml(h.nom)}">
+        <div class="wiz-hist-card-head">
+          <span class="wiz-hist-card-name">${escHtml(h.nom)}</span>
+          ${WIZ.historique?.nom===h.nom?'<span class="wiz-card-check-inline">✓</span>':''}
+        </div>
+        <div class="wiz-hist-card-tags">
+          ${(h.maitriser_competence||[]).map(c=>`<span class="tag tag-forest">${escHtml(c)}</span>`).join('')}
+        </div>
+      </button>`).join('')}
+    </div>
+    ${WIZ.historique ? `<p class="wiz-selection-confirm">✓ <strong>${escHtml(WIZ.historique.nom)}</strong> — équipement (${WIZ.histEquipChoix})${WIZ.histOutilChoix && WIZ.histOutilChoix !== WIZ.historique.maitrise_outils ? ` · outil : ${escHtml(WIZ.histOutilChoix)}` : ''}</p>` : ''}
+  </div>`;
+}
+
+function wireStepHistorique(container) {
+  const hists = APP.data.historiques || [];
+  container.querySelector('#wiz-hist-grid')?.addEventListener('click', e => {
+    const card = e.target.closest('[data-open-hist]');
+    if (!card) return;
+    const name = card.dataset.openHist;
+    const h = hists.find(x=>x.nom===name);
+    if (!h) return;
+
+    let choix = WIZ.historique?.nom===name ? WIZ.histEquipChoix : 'A';
+    let outilChoix = WIZ.historique?.nom===name ? WIZ.histOutilChoix : '';
+    Modal.show(wizHistModalHtml(h, choix, outilChoix));
+
+    const body = Modal.body;
+    const content = body.querySelector('.wiz-modal-content') || body;
+
+    // Wire outil select
+    content.querySelector('#hist-outil-select')?.addEventListener('change', e => {
+      outilChoix = e.target.value;
+    });
+
+    // Wire hist equip radios directly (avoid persistent listener accumulation)
+    content.querySelectorAll('.wiz-equip-radio').forEach(el => {
+      el.addEventListener('click', () => {
+        const inp = el.querySelector('input');
+        if (inp) {
+          choix = inp.value;
+          content.querySelectorAll('.wiz-equip-radio').forEach(o => o.classList.toggle('chosen', o.querySelector('input')?.value === choix));
+        }
+      });
+    });
+
+    content.querySelector('[data-choose-hist]')?.addEventListener('click', () => {
+      WIZ.historique = h;
+      WIZ.histEquipChoix = choix;
+      WIZ.histOutilChoix = outilChoix || h.maitrise_outils || '';
+      Modal.hide();
+      renderWizard(container);
+    });
+  });
+}
+
+// Step 4 — Stats (Standard Array)
+function wizStepStats() {
+  const used = Object.values(WIZ.assignments).filter(v=>v!==null);
+  const available = WIZ.pool.filter(v=> {
+    const usedCount = used.filter(u=>u===v).length;
+    const poolCount = WIZ.pool.filter(p=>p===v).length;
+    return usedCount < poolCount;
+  });
+
+  const speciesBonuses = getSpeciesBonuses();
+  const histBonuses = getHistBonuses();
+
+  return `
+  <div class="wiz-step-stats">
+    <p class="wiz-step-intro">Répartissez ces valeurs entre vos 6 caractéristiques. Les bonus d'espèce et d'historique seront appliqués automatiquement.</p>
+    <div class="wiz-pool">
+      <div class="wiz-pool-title">Valeurs disponibles (Standard Array)</div>
+      <div class="wiz-pool-chips">
+        ${WIZ.pool.map((v,i)=>{
+          const alreadyUsed = Object.values(WIZ.assignments).filter(a=>a===v).length;
+          const poolOccurrences = WIZ.pool.filter(p=>p===v).length;
+          const consumed = alreadyUsed >= poolOccurrences;
+          return `<span class="wiz-pool-chip${consumed?' used':''}">${v}</span>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="wiz-stats-grid">
+      ${ABILITY_KEYS.map(key=>{
+        const base = WIZ.assignments[key];
+        const sb = speciesBonuses[key]||0;
+        const hb = histBonuses[key]||0;
+        const total = base!==null ? base+sb+hb : null;
+        const mod = total!==null ? statMod(total) : null;
+        return `
+        <div class="wiz-stat-block" data-stat="${key}">
+          <div class="wiz-stat-name" data-help="${key}">${ABILITY_NAMES[key]}</div>
+          <select class="wiz-stat-select" data-key="${key}">
+            <option value="">—</option>
+            ${WIZ.pool.map(v=>`<option value="${v}" ${WIZ.assignments[key]===v?'selected':''}>${v}</option>`).join('')}
+          </select>
+          <div class="wiz-stat-bonuses">
+            ${sb?`<span class="wiz-bonus-tag">Espèce +${sb}</span>`:''}
+            ${hb?`<span class="wiz-bonus-tag">Hist. +${hb}</span>`:''}
+          </div>
+          ${total!==null?`
+          <div class="wiz-stat-total">${total}</div>
+          <div class="wiz-stat-mod">${fmtMod(mod)}</div>`:`<div class="wiz-stat-empty">—</div>`}
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="wiz-stats-preview">
+      <div class="wiz-preview-title">Aperçu des jets de sauvegarde</div>
+      <div class="wiz-preview-saves">
+        ${ABILITY_KEYS.map(key=>{
+          const cls = CLASS_DATA[WIZ.classe?.classe_title||''];
+          const hasSave = cls?.saves?.includes(key);
+          const base = WIZ.assignments[key];
+          const sb = speciesBonuses[key]||0;
+          const hb = histBonuses[key]||0;
+          const total = base!==null ? base+sb+hb : 10;
+          const pb = 2;
+          const saveVal = statMod(total)+(hasSave?pb:0);
+          return `<div class="wiz-save-chip${hasSave?' prof':''}">
+            <span>${ABILITY_SHORT[key]}</span>
+            <span>${base!==null?fmtMod(saveVal):'—'}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function getSpeciesBonuses() {
+  // D&D 2024: flexible bonuses — for wizard step, all +1 to species' typical stats
+  // We'll show a generic +1 hint but let user choose with selects
+  return {};
+}
+
+function getHistBonuses() {
+  if (!WIZ.historique) return {};
+  // historique gives +2 to one and +1 to another from valeurs_caracteristique
+  // map French names to keys
+  return {};
+}
+
+const STAT_FR_KEY = {'Force':'FOR','Dextérité':'DEX','Constitution':'CON','Intelligence':'INT','Sagesse':'SAG','Charisme':'CHA'};
+
+function wireStepStats(container) {
+  container.querySelectorAll('.wiz-stat-select').forEach(sel => {
+    sel.addEventListener('change', e => {
+      const key = sel.dataset.key;
+      const val = sel.value ? parseInt(sel.value) : null;
+      WIZ.assignments[key] = val;
+      // Re-render just the stats section
+      const body = container.querySelector('#wiz-body');
+      if (body) {
+        body.innerHTML = wizStepStats();
+        wireStepStats(container);
+        wireHelp(container);
+      }
+      const nxt = container.querySelector('#wiz-next');
+      if (nxt) nxt.disabled = !canAdvance();
+    });
+  });
+  wireHelp(container);
+}
+
+// Step 5 — Informations
+function wizStepInfo() {
+  const langOptions = LANGUAGES_LIST.map(l => wizStepInfoLangChipHtml(l)).join('');
+  return `
+  <div class="wiz-step-info">
+    <p class="wiz-step-intro">Donnez vie à votre aventurier avec son nom, son apparence et son histoire personnelle.</p>
+    <div class="wiz-info-form">
+      <div class="wiz-field">
+        <label class="wiz-label">Nom du personnage <span class="wiz-required">*</span></label>
+        <input type="text" class="wiz-input" id="wiz-nom" value="${escHtml(WIZ.nom)}" placeholder="Ex : Aiden Forgebrise">
+      </div>
+      <div class="wiz-field-row">
+        <div class="wiz-field">
+          <label class="wiz-label">Âge</label>
+          <input type="text" class="wiz-input" id="wiz-age" value="${escHtml(WIZ.age)}" placeholder="Ex : 24 ans">
+        </div>
+      </div>
+      <div class="wiz-field">
+        <label class="wiz-label">Description physique</label>
+        <textarea class="wiz-textarea" id="wiz-description" placeholder="Apparence, traits distinctifs…">${escHtml(WIZ.description)}</textarea>
+      </div>
+      <div class="wiz-field">
+        <label class="wiz-label">Histoire personnelle</label>
+        <textarea class="wiz-textarea" id="wiz-histoire" placeholder="Votre passé, vos motivations, ce qui vous a poussé à l'aventure…">${escHtml(WIZ.histoire)}</textarea>
+      </div>
+      <div class="wiz-field">
+        <label class="wiz-label">Langues</label>
+        <div class="wiz-lang-known">
+          <span class="wiz-lang-fixed">Commun (automatique)</span>
+          ${WIZ.historique ? `<span class="wiz-lang-note">+ bonus de votre historique selon la classe</span>` : ''}
+        </div>
+        <div class="wiz-lang-title">Choisissez 2 langues supplémentaires :</div>
+        <div class="wiz-skill-chips">${langOptions}</div>
+        <div class="wiz-lang-count" id="lang-count">${WIZ.extraLang.length}/2 sélectionnées</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function wizStepInfoLangChipHtml(l) {
+  const checked = WIZ.extraLang.includes(l);
+  return `<div class="wiz-lang-chip${checked?' checked':''}" data-lang="${escHtml(l)}" tabindex="0" role="checkbox" aria-checked="${checked}">${escHtml(l)}</div>`;
+}
+
+function wireStepInfo(container) {
+  const nomEl = container.querySelector('#wiz-nom');
+  const ageEl = container.querySelector('#wiz-age');
+  const descEl = container.querySelector('#wiz-description');
+  const histEl = container.querySelector('#wiz-histoire');
+  const nxt = container.querySelector('#wiz-next');
+
+  const sync = () => {
+    WIZ.nom = nomEl?.value || '';
+    WIZ.age = ageEl?.value || '';
+    WIZ.description = descEl?.value || '';
+    WIZ.histoire = histEl?.value || '';
+    if (nxt) nxt.disabled = !canAdvance();
+  };
+  [nomEl,ageEl,descEl,histEl].forEach(el=>el?.addEventListener('input',sync));
+
+  // Wire lang chips directly on the fresh elements (no listener accumulation)
+  const stepEl = container.querySelector('.wiz-step-info') || container;
+  stepEl.querySelectorAll('.wiz-lang-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      const val = chip.dataset.lang;
+      if (chip.classList.contains('checked')) {
+        chip.classList.remove('checked');
+        chip.setAttribute('aria-checked', 'false');
+        WIZ.extraLang = WIZ.extraLang.filter(l => l !== val);
+      } else {
+        if (WIZ.extraLang.length >= 2) return;
+        chip.classList.add('checked');
+        chip.setAttribute('aria-checked', 'true');
+        WIZ.extraLang.push(val);
+      }
+      const cnt = stepEl.querySelector('#lang-count');
+      if (cnt) cnt.textContent = `${WIZ.extraLang.length}/2 sélectionnées`;
+    });
+    chip.addEventListener('keydown', e => { if (e.key===' '||e.key==='Enter') { e.preventDefault(); chip.click(); } });
+  });
+}
+
+// Step 6 — Résumé
+function wizStepResume() {
+  const cls = CLASS_DATA[WIZ.classe?.classe_title||''] || {};
+  const speciesBonuses = getSpeciesBonuses();
+  const histBonuses = getHistBonuses();
+  const stats = ABILITY_KEYS.map(k=>{
+    const base = WIZ.assignments[k]||10;
+    const total = base+(speciesBonuses[k]||0)+(histBonuses[k]||0);
+    return `<div class="wiz-resume-stat"><span>${ABILITY_SHORT[k]}</span><strong>${total}</strong><span>${fmtMod(statMod(total))}</span></div>`;
+  }).join('');
+  return `
+  <div class="wiz-step-resume">
+    <div class="wiz-resume-card">
+      <div class="wiz-resume-portrait">
+        ${WIZ.espece ? `<img src="${speciesImagePath(WIZ.espece.espece,'full')}" alt="${escHtml(WIZ.espece.espece)}" onerror="this.closest('.wiz-resume-portrait').style.display='none'">` : ''}
+      </div>
+      <div class="wiz-resume-info">
+        <h2 class="wiz-resume-name">${WIZ.nom?escHtml(WIZ.nom):'<em>Sans nom</em>'}</h2>
+        <div class="wiz-resume-line">${WIZ.classe?escHtml(WIZ.classe.classe_title):''} · ${WIZ.espece?escHtml(WIZ.espece.espece):''} · ${WIZ.historique?escHtml(WIZ.historique.nom):''}</div>
+        ${WIZ.age?`<div class="wiz-resume-line">${escHtml(WIZ.age)}</div>`:''}
+        <div class="wiz-resume-stats">${stats}</div>
+        <div class="wiz-resume-badges">
+          ${WIZ.classeSkills.map(s=>`<span class="tag tag-forest">${escHtml(s)}</span>`).join('')}
+          ${(WIZ.historique?.maitriser_competence||[]).map(s=>`<span class="tag tag-bronze">${escHtml(s)}</span>`).join('')}
+        </div>
+        <div class="wiz-resume-langs">
+          🌐 Langues : ${['Commun',...WIZ.extraLang].join(', ')}
+        </div>
+      </div>
+    </div>
+    <div class="wiz-resume-note">Vous pourrez modifier tous ces éléments ultérieurement depuis votre fiche.</div>
+  </div>`;
+}
+
+function finalizeCharacter(container) {
+  const speciesBonuses = getSpeciesBonuses();
+  const histBonuses = getHistBonuses();
+  const stats = {};
+  ABILITY_KEYS.forEach(k=>{
+    const base = WIZ.assignments[k]||10;
+    stats[k] = base+(speciesBonuses[k]||0)+(histBonuses[k]||0);
+  });
+  const cls = CLASS_DATA[WIZ.classe?.classe_title||''] || {hitDie:8};
+  const conMod = statMod(stats.CON||10);
+  const hpMax = cls.hitDie + conMod;
+  const allCompetences = [...WIZ.classeSkills, ...(WIZ.historique?.maitriser_competence||[])];
+
+  const starterEquip = buildStarterEquipment();
+  const char = {
+    version: 1,
+    nom: WIZ.nom.trim()||'Aventurier',
+    age: WIZ.age,
+    description: WIZ.description,
+    histoire: WIZ.histoire,
+    espece: WIZ.espece?.espece||'',
+    classe: WIZ.classe?.classe_title||'',
+    historique: WIZ.historique?.nom||'',
+    niveau: 1,
+    experience: 0,
+    stats,
+    hp: { max: hpMax, current: hpMax, temp: 0 },
+    inspiration: 0,
+    concentration: null,
+    competences: allCompetences,
+    expertise: [],
+    outils_maitrise: WIZ.histOutilChoix || WIZ.historique?.maitrise_outils || '',
+    langues: ['Commun',...WIZ.extraLang],
+    equipement: starterEquip.items,
+    argent: { po: starterEquip.po, pa: 0, pc: 0, pp: 0 },
+    sorts_mineurs: [],
+    sorts_connus: [],
+    sorts_prepares: [],
+    emplacements_uses: {},
+    notes: '',
+    homebrew_capacites: [],
+    homebrew_sorts: [],
+    homebrew_items: [],
+    created: new Date().toISOString(),
+  };
+  saveChar(char);
+  WIZ = null;
+  renderPersonnage(container);
+}
+
+function parseEquipmentString(raw, items, goldAcc, baseTime) {
+  if (!raw) return;
+  const PO_RE = /^(\d+(?:[.,]\d+)?)\s*po$/i;
+  raw.split(',').forEach((part, i) => {
+    const trimmed = part.trim();
+    const poMatch = trimmed.match(PO_RE);
+    if (poMatch) { goldAcc.po += parseInt(poMatch[1]) || 0; return; }
+
+    const leadMatch = trimmed.match(/^(\d+)\s+/);
+    const quantite = leadMatch ? parseInt(leadMatch[1]) : 1;
+    const clean = trimmed
+      .replace(/^\d+\s*x?\s*/,'')
+      .replace(/\s*\(.*?\)\s*$/, '')
+      .trim();
+    if (clean.length > 1) {
+      const nom = capitalize(clean);
+      const weaponData = getWeaponData(clean);
+      const uid = (baseTime + i).toString(36);
+      items.push({
+        id: uid,
+        nom,
+        quantite,
+        equipe: false,
+        type: weaponData ? 'arme' : 'misc',
+        degats: weaponData?.degats || null,
+      });
+    }
+  });
+}
+
+function buildStarterEquipment() {
+  const items = [];
+  const goldAcc = { po: 0 };
+  const base = Date.now();
+
+  // Historique equipment
+  const hist = WIZ.historique;
+  const histChoix = WIZ.histEquipChoix || 'A';
+  const histRaw = hist?.equipement?.[`choix_${histChoix}`] || hist?.equipement?.choix_A || '';
+  parseEquipmentString(histRaw, items, goldAcc, base);
+
+  // Class equipment
+  const classEquip = CLASS_EQUIP[WIZ.classe?.classe_title];
+  const clsChoix = WIZ.classeEquipChoix || 'A';
+  const clsRaw = classEquip?.[`choix_${clsChoix}`] || '';
+  parseEquipmentString(clsRaw, items, goldAcc, base + 1000);
+
+  return { items, po: goldAcc.po };
+}
+
+// ============================================================
+// CUSTOM DIALOGS (no native prompt/confirm/alert)
+// ============================================================
+
+function showConfirmModal(msg, onYes, btnLabel='Confirmer') {
+  Modal.show(`
+  <div class="ps-dialog">
+    <div class="ps-dialog-icon">⚠</div>
+    <p class="ps-dialog-msg">${escHtml(msg)}</p>
+    <div class="ps-dialog-btns">
+      <button class="ps-dialog-btn ps-dialog-btn--cancel" id="dlg-cancel">Annuler</button>
+      <button class="ps-dialog-btn ps-dialog-btn--danger" id="dlg-confirm">${escHtml(btnLabel)}</button>
+    </div>
+  </div>`);
+  Modal.body.querySelector('#dlg-confirm')?.addEventListener('click', () => { Modal.hide(); onYes?.(); });
+  Modal.body.querySelector('#dlg-cancel')?.addEventListener('click', () => Modal.hide());
+}
+
+function showPromptModal(label, defVal, onConfirm, opts) {
+  const title = opts?.title || '';
+  const textarea = opts?.textarea || false;
+  const inputType = opts?.number ? 'number' : 'text';
+  const min = opts?.min !== undefined ? `min="${opts.min}"` : '';
+  const max = opts?.max !== undefined ? `max="${opts.max}"` : '';
+  Modal.show(`
+  <div class="ps-dialog">
+    ${title ? `<h3 class="ps-dialog-title">${escHtml(title)}</h3>` : ''}
+    <label class="ps-dialog-label">${escHtml(label)}</label>
+    ${textarea
+      ? `<textarea class="ps-dialog-input ps-dialog-textarea" id="dlg-input">${escHtml(String(defVal||''))}</textarea>`
+      : `<input type="${inputType}" class="ps-dialog-input" id="dlg-input" value="${escHtml(String(defVal||''))}" ${min} ${max}>`}
+    <div class="ps-dialog-btns">
+      <button class="ps-dialog-btn ps-dialog-btn--cancel" id="dlg-cancel">Annuler</button>
+      <button class="ps-dialog-btn ps-dialog-btn--ok" id="dlg-ok">Valider</button>
+    </div>
+  </div>`);
+  const inp = Modal.body.querySelector('#dlg-input');
+  inp?.focus();
+  if (!textarea) inp?.select();
+  const submit = () => {
+    const v = opts?.number ? parseInt(inp?.value)||0 : (inp?.value ?? '');
+    Modal.hide();
+    onConfirm?.(opts?.number ? v : (v.trim() || null));
+  };
+  Modal.body.querySelector('#dlg-ok')?.addEventListener('click', submit);
+  Modal.body.querySelector('#dlg-cancel')?.addEventListener('click', () => { Modal.hide(); onConfirm?.(null); });
+  inp?.addEventListener('keydown', e => { if (e.key==='Enter' && !textarea) submit(); if (e.key==='Escape') { Modal.hide(); onConfirm?.(null); } });
+}
+
+// ============================================================
+// HP — INLINE UPDATE (no full re-render)
+// ============================================================
+
+function updateHPInPlace(container, char, delta, type) {
+  const curEl  = container.querySelector('#ps-hp-cur');
+  const bar    = container.querySelector('#ps-hp-bar');
+  const tempEl = container.querySelector('#ps-hp-temp-display');
+  const widget = container.querySelector('.ps-hp-widget');
+
+  if (curEl) curEl.textContent = char.hp.current;
+
+  if (bar) {
+    const pct   = Math.max(0, Math.min(100, (char.hp.current / char.hp.max) * 100));
+    const color = char.hp.current <= 0 ? '#7a1a1a'
+                : char.hp.current < char.hp.max * 0.3 ? '#c0602a'
+                : '#2a7a3a';
+    bar.style.width = pct + '%';
+    bar.style.background = color;
+  }
+
+  if (tempEl) {
+    tempEl.hidden = !char.hp.temp;
+    if (char.hp.temp) tempEl.textContent = `+${char.hp.temp} PV temporaires`;
+  }
+
+  if (widget && delta > 0) {
+    const flashCls = type === 'dmg' ? 'ps-flash-dmg' : 'ps-flash-heal';
+    widget.classList.remove('ps-flash-dmg', 'ps-flash-heal');
+    void widget.offsetWidth; // reflow
+    widget.classList.add(flashCls);
+    setTimeout(() => widget.classList.remove(flashCls), 700);
+
+    const floater = document.createElement('div');
+    floater.className = `ps-hp-floater ps-hp-floater--${type}`;
+    floater.textContent = type === 'dmg' ? `-${delta}` : `+${delta}`;
+    widget.appendChild(floater);
+    requestAnimationFrame(() => floater.classList.add('ps-hp-floater--fly'));
+    setTimeout(() => floater.remove(), 800);
+  }
+}
+
+// ============================================================
+// PERSONNAGE — CHARACTER SHEET
+// ============================================================
+
+function psHpWidget(char) {
+  const pct = Math.max(0, Math.min(100, (char.hp.current / char.hp.max) * 100));
+  const color = char.hp.current <= 0 ? '#7a1a1a' : char.hp.current < char.hp.max * 0.3 ? '#c0602a' : '#2a7a3a';
+  return `
+  <div class="ps-widget-title" data-help="PV">❤ Points de Vie</div>
+  <div class="ps-hp-display">
+    <span class="ps-hp-current" id="ps-hp-cur" tabindex="0">${char.hp.current}</span>
+    <span class="ps-hp-sep">/</span>
+    <span class="ps-hp-max" id="ps-hp-max">${char.hp.max}</span>
+    <span class="ps-hp-state">${char.hp.current<=0?'<span class="ps-hp-ko">K.O.</span>':''}</span>
+  </div>
+  <div class="ps-hp-bar-wrap">
+    <div class="ps-hp-bar" id="ps-hp-bar" style="width:${pct}%;background:${color}"></div>
+  </div>
+  <div class="ps-hp-temp-display" id="ps-hp-temp-display" ${char.hp.temp?'':'hidden'}>+${char.hp.temp||0} PV temporaires</div>
+  <div class="ps-hp-controls">
+    <div class="ps-hp-ctrl-group">
+      <input type="number" class="ps-hp-input" id="ps-dmg-val" placeholder="0" min="0">
+      <button class="ps-hp-ctrl-btn ps-hp-dmg" id="ps-apply-dmg">🗡 Dégâts</button>
+    </div>
+    <div class="ps-hp-ctrl-group">
+      <input type="number" class="ps-hp-input" id="ps-heal-val" placeholder="0" min="0">
+      <button class="ps-hp-ctrl-btn ps-hp-heal" id="ps-apply-heal">💚 Soins</button>
+    </div>
+    <div class="ps-hp-ctrl-group">
+      <input type="number" class="ps-hp-input" id="ps-temp-val" placeholder="0" min="0">
+      <button class="ps-hp-ctrl-btn ps-hp-temp" id="ps-apply-temp">🛡 PV temp</button>
+    </div>
+  </div>`;
+}
+
+function psAbilitiesWidget(char, clsData, d) {
+  return `
+  <div class="ps-widget-title">Caractéristiques</div>
+  <div class="ps-abilities-grid">
+    ${ABILITY_KEYS.map(key => {
+      const score = char.stats[key] || 10;
+      const mod = statMod(score);
+      const hasSave = (clsData.saves || []).includes(key);
+      const saveVal = mod + (hasSave ? d.pb : 0);
+      const saveTitle = hasSave
+        ? `Sauvegarde maîtrisée : Mod.${key} (${fmtMod(mod)}) + Maîtrise (${fmtMod(d.pb)}) = ${fmtMod(saveVal)}`
+        : `Sauvegarde : Mod.${key} (${fmtMod(mod)}) = ${fmtMod(saveVal)}`;
+      const modTitle = `Modificateur = ⌊(${score} − 10) / 2⌋ = ${fmtMod(mod)}`;
+      return `
+      <div class="ps-ability-block" data-key="${key}">
+        <div class="ps-ab-name" data-help="${key}" tabindex="0">${ABILITY_NAMES[key]}</div>
+        <div class="ps-ab-mod" title="${escHtml(modTitle)}">${fmtMod(mod)}</div>
+        <div class="ps-ab-score" data-editable-stat="${key}" tabindex="0" title="Score ${ABILITY_NAMES[key]} — cliquer pour modifier">${score}</div>
+        <div class="ps-ab-save${hasSave ? ' proficient' : ''}" title="${escHtml(saveTitle)}">
+          <span class="ps-save-dot"></span>
+          <span>${fmtMod(saveVal)}</span>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function psSkillsWidget(char, d) {
+  return `
+  <div class="ps-widget-title">Compétences</div>
+  <div class="ps-skills-list" id="ps-skills-list">
+    ${ALL_SKILLS.map(sk => {
+      const base = statMod(char.stats[sk.stat] || 10);
+      const hasMait = (char.competences || []).includes(sk.nom);
+      const hasExp  = (char.expertise   || []).includes(sk.nom);
+      const mult    = hasExp ? 2 : hasMait ? 1 : 0;
+      const bonus   = base + mult * d.pb;
+      return `
+      <div class="ps-skill-row${hasMait ? ' ps-has-mait' : ''}" data-skill="${escHtml(sk.nom)}" title="${escHtml(sk.nom)} : Mod.${ABILITY_SHORT[sk.stat]} (${fmtMod(base)})${mult>0?` + Maîtrise×${mult} (${fmtMod(mult*d.pb)})`:''} = ${fmtMod(bonus)}">
+        <span class="ps-skill-dot${hasExp ? ' expert' : hasMait ? ' mait' : ''}"></span>
+        <span class="ps-skill-ab">${ABILITY_SHORT[sk.stat]}</span>
+        <span class="ps-skill-name">${escHtml(sk.nom)}</span>
+        <span class="ps-skill-val">${fmtMod(bonus)}</span>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderPersonnage(container) {
+  const char = getChar();
+  if (!char) {
+    if (!WIZ) wizReset();
+    renderWizard(container);
+    return;
+  }
+
+  const d = computeCharDerived(char);
+  const clsData = CLASS_DATA[char.classe] || {};
+  const isSpellcaster = !!clsData.spellcaster;
+
+  container.innerHTML = `
+  <div class="page perso-page">
+    <div class="ps-wrap">
+
+      <!-- LIGNE 1 : HEADER — inchangé -->
+      <header class="ps-header">
+        <div class="ps-portrait-wrap">
+          <img class="ps-portrait-img" src="${speciesImagePath(char.espece,'thumb')}" alt="${escHtml(char.espece)}" onerror="this.src='';this.style.display='none'">
+        </div>
+        <div class="ps-identity">
+          <h1 class="ps-char-name" data-editable="nom" tabindex="0">${escHtml(char.nom)}</h1>
+          <div class="ps-char-sub">${escHtml(char.classe)} · ${escHtml(char.espece)} · ${escHtml(char.historique)}</div>
+          <div class="ps-level-row">
+            <span class="ps-level-badge">Niveau ${char.niveau}</span>
+            <div class="ps-xp-bar"><div class="ps-xp-fill" style="width:${Math.min(100,(char.experience||0)/300*100)}%"></div></div>
+            <span class="ps-xp-label">${char.experience||0} XP</span>
+          </div>
+        </div>
+        <div class="ps-quick-stats">
+          <div class="ps-qs-item" data-help="CA" tabindex="0"><span class="ps-qs-val">${d.ca}</span><span class="ps-qs-label">CA</span></div>
+          <div class="ps-qs-item" data-help="Initiative" tabindex="0"><span class="ps-qs-val">${fmtMod(statMod(char.stats.DEX||10))}</span><span class="ps-qs-label">Initiative</span></div>
+          <div class="ps-qs-item" data-help="Vitesse" tabindex="0"><span class="ps-qs-val">${d.speed}m</span><span class="ps-qs-label">Vitesse</span></div>
+          <div class="ps-qs-item" data-help="Maîtrise" tabindex="0"><span class="ps-qs-val">${fmtMod(d.pb)}</span><span class="ps-qs-label">Maîtrise</span></div>
+          ${isSpellcaster?`
+          <div class="ps-qs-item" data-help="DD Sorts" tabindex="0" title="DD = 8 + Maîtrise (${fmtMod(d.pb)}) + Mod.Carac = ${d.spellDC}"><span class="ps-qs-val">${d.spellDC}</span><span class="ps-qs-label">DD Sorts</span></div>
+          <div class="ps-qs-item" data-help="Att.Sort" tabindex="0" title="Att. Sort = Maîtrise (${fmtMod(d.pb)}) + Mod.Carac = ${fmtMod(d.spellAtk)}"><span class="ps-qs-val">${fmtMod(d.spellAtk)}</span><span class="ps-qs-label">Att.Sort</span></div>`:''}
+          <div class="ps-qs-item" data-help="Perc.passive" tabindex="0"><span class="ps-qs-val">${d.percPassive}</span><span class="ps-qs-label">Perc.pas.</span></div>
+        </div>
+        <div class="ps-header-actions">
+          <button class="ps-action-btn" id="ps-rest-long">🌙 Repos long</button>
+          <button class="ps-action-btn" id="ps-rest-short">☀ Repos court</button>
+          <div class="ps-inspiration-row">
+            <span class="ps-insp-label">Inspiration</span>
+            <div class="ps-insp-pip${char.inspiration?' active':''}" id="ps-inspiration" tabindex="0">${char.inspiration?'★':'☆'}</div>
+          </div>
+          <button class="ps-danger-btn" id="ps-delete-char">✕ Nouveau perso</button>
+        </div>
+      </header>
+
+      <!-- LIGNE 2 : PV (gauche) + CARACTÉRISTIQUES (droite) -->
+      <div class="ps-row2">
+        <div class="ps-widget ps-hp-widget" id="ps-hp-block">
+          ${psHpWidget(char)}
+        </div>
+        <div class="ps-widget ps-abilities-widget">
+          ${psAbilitiesWidget(char, clsData, d)}
+        </div>
+      </div>
+
+      <!-- LIGNE 3 : COMPÉTENCES (gauche) + ONGLETS (droite) -->
+      <div class="ps-row3">
+        <div class="ps-widget ps-skills-col">
+          ${psSkillsWidget(char, d)}
+        </div>
+        <main class="ps-main">
+          <div class="ps-tabs" role="tablist">
+            <button class="ps-tab active" data-tab="actions" role="tab">⚔ Actions</button>
+            <button class="ps-tab" data-tab="classe" role="tab">🌟 Traits</button>
+            ${isSpellcaster?`<button class="ps-tab" data-tab="sorts" role="tab">🪄 Sorts</button>`:''}
+            <button class="ps-tab" data-tab="inventaire" role="tab">🎒 Inventaire</button>
+            <button class="ps-tab" data-tab="or" role="tab">💰 Or</button>
+            <button class="ps-tab" data-tab="profil" role="tab">📋 Profil</button>
+            <button class="ps-tab" data-tab="notes" role="tab">📝 Notes</button>
+          </div>
+          <div class="ps-tab-panels" id="ps-tab-panels">
+            ${psTabActions(char, d)}
+          </div>
+        </main>
+      </div>
+
+    </div><!-- /ps-wrap -->
+  </div>`;
+
+  wireSheet(container, char, d);
+  wireHelp(container);
+}
+
+const STD_ACTIONS = [
+  {icon:'⚔',label:'Attaque',sub:'Action',desc:'Attaquez avec une arme ou à mains nues.'},
+  {icon:'🏃',label:'Foncer',sub:'Action',desc:'Doublez votre vitesse de déplacement ce tour.'},
+  {icon:'🛡',label:'Esquiver',sub:'Action',desc:'Les attaques contre vous ont Désavantage jusqu\'à votre prochain tour.'},
+  {icon:'💨',label:'Se désengager',sub:'Action',desc:'Votre déplacement ne provoque pas d\'attaques d\'opportunité ce tour.'},
+  {icon:'🤝',label:'Aider',sub:'Action',desc:'Une créature alliée gagne Avantage à son prochain jet d\'attaque ou compétence.'},
+  {icon:'👁',label:'Chercher',sub:'Action',desc:'Effectuez un test de Perception ou Investigation pour trouver quelque chose.'},
+  {icon:'⏸',label:'Se tenir prêt',sub:'Action',desc:'Préparez une action à déclencher sur une condition précise (Réaction).'},
+  {icon:'🎒',label:'Utiliser un objet',sub:'Action',desc:'Utilisez un objet magique ou activez un item de l\'inventaire.'},
+  {icon:'🫥',label:'Se cacher',sub:'Action Bonus',desc:'Effectuez un test de Discrétion pour devenir Invisible à vos ennemis.'},
+];
+
+function psTabActions(char, d) {
+  const cls = CLASS_DATA[char.classe]||{};
+  const isSpellcaster = !!cls.spellcaster;
+  const pb = d.pb;
+  const forMod = statMod(char.stats.FOR||10);
+  const dexMod = statMod(char.stats.DEX||10);
+
+  // Unarmed strike
+  const unarmedBonus = forMod + pb;
+  const unarmedAtk = `<span class="ps-dice">1d4</span> + ${forMod} contondants`;
+  const unarmedTitle = `Bonus d'attaque : Mod.FOR (${fmtMod(forMod)}) + Maîtrise (${fmtMod(pb)}) = ${fmtMod(unarmedBonus)}`;
+
+  // Equipped weapons with JSON lookup
+  const equipped = (char.equipement||[]).filter(i=>i.equipe&&i.type==='arme');
+  const weaponRows = equipped.map(w=>{
+    const data = getWeaponData(w.nom) || { degats: w.degats||'1d6', proprietes:[] };
+    const isFinesse = (data.proprietes||[]).some(p=>p.toLowerCase().includes('finesse'));
+    const isRanged = (data.proprietes||[]).some(p=>p.toLowerCase().includes('portée')||p.toLowerCase().includes('munitions'));
+    const statMd = isFinesse ? Math.max(forMod,dexMod) : isRanged ? dexMod : forMod;
+    const atkBonus = statMd + pb;
+    const degats = data.degats || w.degats || '1d6';
+    const propTags = (data.proprietes||[]).slice(0,3).map(p=>`<span class="ps-prop-tag">${escHtml(p.split('(')[0].trim())}</span>`).join('');
+    const statName = isFinesse ? 'FOR/DEX (meilleur)' : isRanged ? 'DEX' : 'FOR';
+    const atkTitle = `Bonus d'attaque : Mod.${statName} (${fmtMod(statMd)}) + Maîtrise (${fmtMod(pb)}) = ${fmtMod(atkBonus)}`;
+    return `
+    <div class="ps-attack-card">
+      <div class="ps-atk-icon">🗡</div>
+      <div class="ps-atk-info">
+        <div class="ps-atk-name">${escHtml(capitalize(w.nom))}</div>
+        <div class="ps-atk-dice" title="${escHtml(atkTitle)}">${fmtMod(atkBonus)} att · <span class="ps-dice">${escHtml(degats)}</span>${statMd!==0?` ${fmtMod(statMd)}`:''}${data.botte?` · <em>${escHtml(data.botte)}</em>`:''}</div>
+        ${propTags?`<div class="ps-atk-props">${propTags}</div>`:''}
+      </div>
+    </div>`;
+  });
+
+  // Available class features (usable in combat / at-will)
+  const clsFeats = getAllClassFeats(char).filter(f=>f.niveau<=char.niveau);
+  const combatFeats = clsFeats.filter(f=>{
+    const n = f.capacite_name.toLowerCase();
+    return n.includes('rage')||n.includes('souffle')||n.includes('second souffle')||
+           n.includes('déferlement')||n.includes('fureur')||n.includes('inspiration')||
+           n.includes('forme sauvage')||n.includes('ki')||n.includes('attaque')||
+           n.includes('action bonus')||n.includes('volée');
+  }).slice(0,5);
+
+  return `
+  <div class="ps-actions-tab">
+
+    <h3 class="ps-tab-section-title">⚔ Attaquer</h3>
+    <div class="ps-attack-card">
+      <div class="ps-atk-icon">👊</div>
+      <div class="ps-atk-info">
+        <div class="ps-atk-name">Attaque à mains nues</div>
+        <div class="ps-atk-dice" title="${escHtml(unarmedTitle)}">${fmtMod(unarmedBonus)} att · ${unarmedAtk}</div>
+      </div>
+    </div>
+    ${weaponRows.length ? weaponRows.join('') : '<p class="ps-empty">Équipez des armes depuis l\'onglet <em>Inventaire</em> pour les voir ici.</p>'}
+    ${isSpellcaster ? `
+    <div class="ps-attack-card ps-attack-card--spell">
+      <div class="ps-atk-icon">🪄</div>
+      <div class="ps-atk-info">
+        <div class="ps-atk-name">Attaque de sort</div>
+        <div class="ps-atk-dice">${fmtMod(d.spellAtk||0)} · DD ${d.spellDC||8}</div>
+      </div>
+    </div>` : ''}
+
+    ${combatFeats.length ? `
+    <h3 class="ps-tab-section-title">🌟 Capacités utilisables</h3>
+    ${combatFeats.map(f=>`
+    <div class="ps-feat-action-card" data-feat-name="${escHtml(f.capacite_name)}">
+      <div class="ps-fa-icon">✦</div>
+      <div class="ps-fa-info">
+        <div class="ps-fa-name">${escHtml(f.capacite_name)}</div>
+        <div class="ps-fa-detail">${escHtml((f.description_html||'').replace(/<[^>]*>/g,'').slice(0,90))}…</div>
+      </div>
+    </div>`).join('')}` : ''}
+
+    <h3 class="ps-tab-section-title">Actions de combat</h3>
+    <div class="ps-std-grid">
+      ${STD_ACTIONS.map(a=>`
+      <div class="ps-std-card" title="${escHtml(a.desc)}">
+        <span class="ps-std-icon">${a.icon}</span>
+        <div class="ps-std-body">
+          <span class="ps-std-label">${escHtml(a.label)}</span>
+          <span class="ps-std-sub">${escHtml(a.sub)}</span>
+        </div>
+      </div>`).join('')}
+      ${isSpellcaster?`<div class="ps-std-card"><span class="ps-std-icon">🪄</span><div class="ps-std-body"><span class="ps-std-label">Lancer un sort</span><span class="ps-std-sub">Action</span></div></div>`:''}
+    </div>
+
+  </div>`;
+}
+
+function psTabClasse(char) {
+  const clsGroup = (APP.data.classes||[]).find(g=>g[0].classe_title===char.classe);
+  const clsObj = clsGroup?.[0];
+  const species = (APP.data.species||[]).find(s=>s.espece===char.espece);
+  const hist = (APP.data.historiques||[]).find(h=>h.nom===char.historique);
+  const feats = getAllClassFeats(char).filter(f=>f.niveau<=char.niveau);
+
+  const speciesTraits = species?.capacites?.filter(c=>c&&typeof c==='object'&&c.nom) || [];
+
+  return `
+  <div class="ps-classe-tab">
+    <h3 class="ps-tab-section-title">Capacités de classe — ${escHtml(char.classe)}</h3>
+    ${feats.length?feats.map(f=>`
+    <details class="ps-feat-item">
+      <summary class="ps-feat-summary">
+        <span class="ps-feat-name">${escHtml(f.capacite_name)}</span>
+        <span class="ps-feat-level">Niv. ${f.niveau}</span>
+      </summary>
+      <div class="ps-feat-body">${enrichTraitHtml(f.description_html||'')}</div>
+    </details>`).join(''):'<p class="ps-empty">Aucune capacité de classe trouvée.</p>'}
+
+    <h3 class="ps-tab-section-title">Traits raciaux — ${escHtml(char.espece)}</h3>
+    ${speciesTraits.length?speciesTraits.map(t=>`
+    <details class="ps-feat-item">
+      <summary class="ps-feat-summary"><span class="ps-feat-name">${escHtml(t.nom)}</span></summary>
+      <div class="ps-feat-body">${typeof t.description==='string'?escHtml(t.description):''}</div>
+    </details>`).join(''):'<p class="ps-empty">—</p>'}
+
+    ${hist?`
+    <h3 class="ps-tab-section-title">Historique — ${escHtml(hist.nom)}</h3>
+    <div class="ps-hist-block">
+      <p class="ps-hist-desc">${escHtml(hist.description||'')}</p>
+      <div class="ps-hist-tags">
+        ${(hist.maitriser_competence||[]).map(c=>`<span class="tag tag-forest">${escHtml(c)}</span>`).join('')}
+        ${hist.maitrise_outils?`<span class="tag tag-bronze">${escHtml(char.outils_maitrise || hist.maitrise_outils)}</span>`:''}
+        ${hist.don?`<span class="tag tag-gold">Don : ${escHtml(hist.don)}</span>`:''}
+      </div>
+    </div>` : ''}
+
+    ${(char.homebrew_capacites||[]).length?`
+    <h3 class="ps-tab-section-title">Capacités personnalisées (Homebrew)</h3>
+    ${char.homebrew_capacites.map((cap,i)=>`
+    <details class="ps-feat-item ps-feat--homebrew">
+      <summary class="ps-feat-summary">
+        <span class="ps-feat-name">${escHtml(cap.nom)}</span>
+        <span class="ps-feat-badge">Homebrew</span>
+        <button class="ps-feat-del" data-del-cap="${i}" title="Supprimer">✕</button>
+      </summary>
+      <div class="ps-feat-body">${escHtml(cap.description)}</div>
+    </details>`).join('')}` : ''}
+
+    <button class="ps-add-btn" id="ps-add-cap">+ Ajouter une capacité Homebrew</button>
+  </div>`;
+}
+
+function sortCardHtml(nom, type, idx) {
+  const sort = (APP.data.sorts||[]).find(s => {
+    const n = s.name || '';
+    const mainN = n.includes('|') ? n.split('|')[0].trim() : n;
+    return mainN === nom || n === nom;
+  });
+  const ecole = sort?.ecole || '';
+  const niveau = sort?.niveau != null ? String(sort.niveau) : '';
+  const dot = SCHOOL_DOTS[ecole] || '#888';
+  const lvlLabel = niveau === '0' ? 'Mineur' : niveau ? `Niv. ${niveau}` : '';
+  const conc = sort?.concentration ? '<span class="ps-sc-conc" title="Concentration">C</span>' : '';
+  const delBtn = idx !== undefined
+    ? `<button class="ps-sort-del ps-sc-del" data-sort-type="${escHtml(type)}" data-sort-idx="${idx}" title="Retirer">✕</button>`
+    : '';
+  return `<div class="ps-sc-card" data-sort-name="${escHtml(nom)}" data-sort-type="${escHtml(type||'')}" data-sort-idx="${idx !== undefined ? idx : ''}" tabindex="0" role="button">
+    <div class="ps-sc-top">
+      <span class="ps-sc-dot" style="background:${dot}"></span>
+      <span class="ps-sc-name">${escHtml(nom)}</span>
+      ${conc}${delBtn}
+    </div>
+    ${lvlLabel||ecole ? `<div class="ps-sc-meta">${escHtml(lvlLabel)}${lvlLabel&&ecole?' · ':''}${escHtml(ecole)}</div>` : ''}
+  </div>`;
+}
+
+function psTabSorts(char, d) {
+  const slots     = SPELL_SLOTS_TABLE[char.niveau]||[];
+  const usedSlots = char.emplacements_uses || {};
+  const mineurs   = char.sorts_mineurs||[];
+  const prepares  = char.sorts_prepares||[];
+  const connus    = char.sorts_connus||[];
+  const limits    = getSpellLimits(char);
+
+  const slotsHtml = slots.map((total,i)=>{
+    if (!total) return '';
+    const lvl  = i+1;
+    const used = usedSlots[lvl]||0;
+    const pips = Array.from({length:total},(_,j)=>
+      `<button class="ps-slot-pip${j<(total-used)?'':' used'}" data-slot-lvl="${lvl}" data-slot-idx="${j}" title="N${lvl}: ${j<(total-used)?'disponible':'utilisé'}">${j<(total-used)?'◉':'◯'}</button>`
+    ).join('');
+    return `<div class="ps-slot-row"><span class="ps-slot-label">N${lvl}</span><div class="ps-slot-pips">${pips}</div></div>`;
+  }).filter(Boolean).join('');
+
+  const minFull  = limits.maxCantrips  && mineurs.length  >= limits.maxCantrips;
+  const prepFull = limits.maxPrepares  && prepares.length >= limits.maxPrepares;
+
+  const limitBadge = (cur, max) => max
+    ? `<span class="ps-sort-limit${cur>=max?' ps-sort-limit--full':''}">${cur}/${max}</span>`
+    : '';
+
+  return `
+  <div class="ps-sorts-tab">
+    ${slotsHtml ? `<div class="ps-slots-panel">${slotsHtml}</div>` : ''}
+
+    <div class="ps-sort-section-row">
+      <span class="ps-sort-section-lbl">Mineurs</span>
+      ${limitBadge(mineurs.length, limits.maxCantrips)}
+      <button class="ps-sort-section-add" id="ps-add-mineur" title="Ajouter un sort mineur"${minFull?' disabled':''}>+</button>
+    </div>
+    <div class="ps-sc-grid">
+      ${mineurs.length ? mineurs.map((s,i) => sortCardHtml(s,'mineur',i)).join('') : '<span class="ps-empty-inline">Aucun sort mineur.</span>'}
+    </div>
+
+    <div class="ps-sort-section-row">
+      <span class="ps-sort-section-lbl">Préparés</span>
+      ${limitBadge(prepares.length, limits.maxPrepares)}
+      <button class="ps-sort-section-add" id="ps-add-prepare" title="Préparer un sort"${prepFull?' disabled':''}>+</button>
+    </div>
+    <div class="ps-sc-grid">
+      ${prepares.length ? prepares.map((s,i) => sortCardHtml(s,'prepare',i)).join('') : '<span class="ps-empty-inline">Aucun sort préparé.</span>'}
+    </div>
+
+    ${connus.length ? `
+    <div class="ps-sort-section-row">
+      <span class="ps-sort-section-lbl">Connus</span>
+    </div>
+    <div class="ps-sc-grid">${connus.map((s,i) => sortCardHtml(s,'connu',i)).join('')}</div>` : ''}
+  </div>`;
+}
+
+function psTabInventaire(char) {
+  const items = char.equipement||[];
+  const armes = items.filter(i=>i.type==='arme');
+  const armures = items.filter(i=>i.type==='armure');
+  const misc = items.filter(i=>i.type!=='arme'&&i.type!=='armure');
+
+  const renderItem = it => `
+  <div class="ps-inv-item" data-item-id="${escHtml(it.id)}">
+    <div class="ps-inv-equip-btn${it.equipe?' equipped':''}" data-equip="${escHtml(it.id)}" title="${it.equipe?'Déséquiper':'Équiper'}">${it.equipe?'●':'○'}</div>
+    <div class="ps-inv-name" data-inv-tooltip="${escHtml(it.nom)}" data-inv-type="${escHtml(it.type||'misc')}">${escHtml(capitalize(it.nom))}</div>
+    <div class="ps-inv-qty-ctrl">
+      <button class="ps-inv-qty-btn" data-qty-dec="${escHtml(it.id)}">−</button>
+      <span class="ps-inv-qty" data-qty-val="${escHtml(it.id)}">${it.quantite||1}</span>
+      <button class="ps-inv-qty-btn" data-qty-inc="${escHtml(it.id)}">+</button>
+    </div>
+    <button class="ps-inv-del" data-del="${escHtml(it.id)}" title="Supprimer">✕</button>
+  </div>`;
+
+  return `
+  <div class="ps-inventaire-tab">
+    ${armes.length?`<div class="ps-inv-section"><div class="ps-inv-section-title">⚔ Armes</div>${armes.map(renderItem).join('')}</div>`:''}
+    ${armures.length?`<div class="ps-inv-section"><div class="ps-inv-section-title">🛡 Armures</div>${armures.map(renderItem).join('')}</div>`:''}
+    ${misc.length?`<div class="ps-inv-section"><div class="ps-inv-section-title">🎒 Objets</div>${misc.map(renderItem).join('')}</div>`:''}
+    ${!items.length?'<p class="ps-empty">Inventaire vide.</p>':''}
+    <div class="ps-inv-add-row">
+      <button class="ps-add-btn" id="ps-add-item">+ Ajouter un objet</button>
+    </div>
+  </div>`;
+}
+
+function psTabOr(char) {
+  const a = char.argent||{po:0,pa:0,pc:0,pp:0};
+  const coins = [
+    {key:'pp',label:'Platine',color:'#c8d8e8'},
+    {key:'po',label:'Or',color:'#c9a84c'},
+    {key:'pe',label:'Électrum',color:'#7ab0a0'},
+    {key:'pa',label:'Argent',color:'#c0c0c0'},
+    {key:'pc',label:'Cuivre',color:'#b87040'},
+  ];
+  return `
+  <div class="ps-or-tab">
+    <div class="ps-coins-grid">
+      ${coins.map(c=>`
+      <div class="ps-coin-block" style="--coin-color:${c.color}">
+        <div class="ps-coin-disc">${c.label[0]}</div>
+        <div class="ps-coin-label">${c.label}</div>
+        <div class="ps-coin-value" data-coin="${c.key}" tabindex="0" title="Cliquer pour modifier">${a[c.key]||0}</div>
+        <div class="ps-coin-btns">
+          <button class="ps-coin-btn" data-coin-delta="${c.key}" data-delta="-1">-</button>
+          <button class="ps-coin-btn" data-coin-delta="${c.key}" data-delta="1">+</button>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div class="ps-or-equiv">
+      Équivalent total : <strong>${((a.pp||0)*10+(a.po||0)+(a.pe||0)*0.5+(a.pa||0)*0.1+(a.pc||0)*0.01).toFixed(2)} pièces d'or</strong>
+    </div>
+  </div>`;
+}
+
+function psTabProfil(char) {
+  return `
+  <div class="ps-profil-tab">
+    <div class="ps-profil-grid">
+      <div class="ps-profil-field">
+        <label class="ps-profil-label">Nom</label>
+        <div class="ps-profil-val" data-editable="nom" tabindex="0">${escHtml(char.nom)}</div>
+      </div>
+      <div class="ps-profil-field">
+        <label class="ps-profil-label">Âge</label>
+        <div class="ps-profil-val" data-editable="age" tabindex="0">${escHtml(char.age||'—')}</div>
+      </div>
+      <div class="ps-profil-field ps-profil-wide">
+        <label class="ps-profil-label">Description physique</label>
+        <div class="ps-profil-val" data-editable="description" tabindex="0">${escHtml(char.description||'—')}</div>
+      </div>
+      <div class="ps-profil-field ps-profil-wide">
+        <label class="ps-profil-label">Histoire</label>
+        <div class="ps-profil-val" data-editable="histoire" tabindex="0">${escHtml(char.histoire||'—')}</div>
+      </div>
+    </div>
+    <div class="ps-profil-langs">
+      <div class="ps-profil-label">Langues connues</div>
+      <div class="ps-lang-chips">
+        ${(char.langues||['Commun']).map(l=>`<span class="tag tag-slate">${escHtml(l)}</span>`).join('')}
+        <button class="ps-add-btn-sm" id="ps-add-lang">+ Langue</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function psTabNotes(char) {
+  return `
+  <div class="ps-notes-tab">
+    <textarea class="ps-notes-area" id="ps-notes-area" placeholder="Notes de campagne, liens importants, PNJ mémorables…">${escHtml(char.notes||'')}</textarea>
+    <div class="ps-notes-saved" id="ps-notes-saved" hidden>✔ Sauvegardé</div>
+  </div>`;
+}
+
+function getAllClassFeats(char) {
+  const groups = APP.data.classes || [];
+  const group = groups.find(g=>g[0].classe_title===char.classe);
+  if (!group) return [];
+  return group[0].capacites || [];
+}
+
+// ============================================================
+// SHEET — EVENTS
+// ============================================================
+
+function wireSheet(container, char, d) {
+  // Tab switching
+  const tabs = container.querySelectorAll('.ps-tab');
+  const panel = container.querySelector('#ps-tab-panels');
+  const isSpellcaster = !!(CLASS_DATA[char.classe]||{}).spellcaster;
+
+  const TAB_RENDERS = {
+    actions:    () => psTabActions(getChar() || char, d),
+    classe:     () => psTabClasse(getChar() || char),
+    sorts:      () => psTabSorts(getChar() || char, d),
+    inventaire: () => psTabInventaire(getChar() || char),
+    or:         () => psTabOr(getChar() || char),
+    profil:     () => psTabProfil(getChar() || char),
+    notes:      () => psTabNotes(getChar() || char),
+  };
+
+  function switchTab(name) {
+    tabs.forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+    const fresh = getChar() || char;
+    panel.innerHTML = TAB_RENDERS[name]?.() || '';
+    wireTabEvents(container, name, fresh, d);
+    wireHelp(container);
+  }
+
+  tabs.forEach(tab => tab.addEventListener('click', () => switchTab(tab.dataset.tab)));
+  wireTabEvents(container, 'actions', char, d);
+
+  // ── HP controls (in-place, no full re-render) ──────────────────────────────
+  const applyHPChange = (delta, type) => {
+    const fresh = getChar(); if (!fresh) return;
+    if (type === 'temp') {
+      fresh.hp.temp = Math.max(0, parseInt(delta) || 0);
+    } else if (type === 'dmg') {
+      const actual = Math.min(fresh.hp.current, Math.max(0, parseInt(delta) || 0));
+      fresh.hp.current = Math.max(0, fresh.hp.current - actual);
+      saveChar(fresh);
+      updateHPInPlace(container, fresh, actual, 'dmg');
+      return;
+    } else {
+      const actual = Math.min(fresh.hp.max - fresh.hp.current, Math.max(0, parseInt(delta) || 0));
+      fresh.hp.current = Math.min(fresh.hp.max, fresh.hp.current + actual);
+      saveChar(fresh);
+      updateHPInPlace(container, fresh, actual, 'heal');
+      return;
+    }
+    saveChar(fresh);
+    updateHPInPlace(container, fresh, 0, 'temp');
+  };
+
+  container.querySelector('#ps-apply-dmg')?.addEventListener('click', () => {
+    const v = parseInt(container.querySelector('#ps-dmg-val')?.value || '0');
+    if (v > 0) { applyHPChange(v, 'dmg'); container.querySelector('#ps-dmg-val').value=''; }
+  });
+  container.querySelector('#ps-apply-heal')?.addEventListener('click', () => {
+    const v = parseInt(container.querySelector('#ps-heal-val')?.value || '0');
+    if (v > 0) { applyHPChange(v, 'heal'); container.querySelector('#ps-heal-val').value=''; }
+  });
+  container.querySelector('#ps-apply-temp')?.addEventListener('click', () => {
+    const v = parseInt(container.querySelector('#ps-temp-val')?.value || '0');
+    applyHPChange(v, 'temp');
+    container.querySelector('#ps-temp-val').value = '';
+  });
+
+  [['#ps-dmg-val','#ps-apply-dmg'],['#ps-heal-val','#ps-apply-heal'],['#ps-temp-val','#ps-apply-temp']].forEach(([inp,btn])=>{
+    container.querySelector(inp)?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') container.querySelector(btn)?.click();
+    });
+  });
+
+  // ── Inspiration ────────────────────────────────────────────────────────────
+  container.querySelector('#ps-inspiration')?.addEventListener('click', () => {
+    const fresh = getChar(); if (!fresh) return;
+    fresh.inspiration = fresh.inspiration ? 0 : 1;
+    saveChar(fresh);
+    const pip = container.querySelector('#ps-inspiration');
+    if (pip) { pip.textContent = fresh.inspiration ? '★' : '☆'; pip.classList.toggle('active', !!fresh.inspiration); }
+  });
+
+  // ── Rest ───────────────────────────────────────────────────────────────────
+  container.querySelector('#ps-rest-long')?.addEventListener('click', () => {
+    const fresh = getChar(); if (!fresh) return;
+    const prev = fresh.hp.current;
+    fresh.hp.current = fresh.hp.max;
+    fresh.hp.temp = 0;
+    fresh.emplacements_uses = {};
+    fresh.concentration = null;
+    saveChar(fresh);
+    updateHPInPlace(container, fresh, fresh.hp.max - prev, 'heal');
+    showNotif(container, '🌙 Repos long — PV et ressources récupérés !');
+  });
+  container.querySelector('#ps-rest-short')?.addEventListener('click', () => {
+    showNotif(container, '☀ Repos court effectué.');
+  });
+
+  // ── Delete character ───────────────────────────────────────────────────────
+  container.querySelector('#ps-delete-char')?.addEventListener('click', () => {
+    showConfirmModal(
+      'Supprimer ce personnage et en créer un nouveau ? Cette action est irréversible.',
+      () => { delChar(); WIZ = null; renderPersonnage(container); },
+      'Supprimer'
+    );
+  });
+
+  // ── Inline stat editing ────────────────────────────────────────────────────
+  container.querySelectorAll('[data-editable-stat]').forEach(el => {
+    el.addEventListener('click', () => {
+      const key = el.dataset.editableStat;
+      const fresh = getChar(); if (!fresh) return;
+      showPromptModal(
+        `${ABILITY_NAMES[key]} (1–30)`,
+        fresh.stats[key] || 10,
+        val => {
+          if (val === null) return;
+          const n = Math.max(1, Math.min(30, parseInt(val) || 10));
+          fresh.stats[key] = n;
+          saveChar(fresh);
+          renderPersonnage(container);
+        },
+        { title: 'Modifier la caractéristique', number: true, min: 1, max: 30 }
+      );
+    });
+  });
+
+  // ── Inline name editing (header) ───────────────────────────────────────────
+  container.querySelectorAll('[data-editable]').forEach(el => {
+    el.addEventListener('click', () => {
+      const field = el.dataset.editable;
+      const fresh = getChar(); if (!fresh) return;
+      showPromptModal(
+        `Nouveau ${field}`,
+        fresh[field] || '',
+        val => {
+          if (val === null) return;
+          fresh[field] = val.trim();
+          saveChar(fresh);
+          el.textContent = fresh[field] || '—';
+        },
+        { title: `Modifier : ${field}` }
+      );
+    });
+  });
+}
+
+function showSortFloat(nom, type, idx) {
+  const sort = (APP.data.sorts||[]).find(s => {
+    const n = s.name || '';
+    const mainN = n.includes('|') ? n.split('|')[0].trim() : n;
+    return mainN === nom || n === nom;
+  });
+  if (!sort) return;
+  const mainName = (sort.name||nom).includes('|') ? (sort.name||nom).split('|')[0].trim() : (sort.name||nom);
+  const altName  = (sort.name||nom).includes('|') ? (sort.name||nom).split('|')[1]?.trim() : null;
+  Modal.show(renderSortModal({ ...sort, mainName, altName }));
+}
+
+function wireTabEvents(container, tabName, char, d) {
+  const panel = container.querySelector('#ps-tab-panels');
+  if (!panel) return;
+  // Abort any previous panel-level listener before adding a new one
+  if (panel._tabAC) panel._tabAC.abort();
+  panel._tabAC = new AbortController();
+  const { signal } = panel._tabAC;
+
+  if (tabName === 'notes') {
+    const area = panel.querySelector('#ps-notes-area');
+    const saved = panel.querySelector('#ps-notes-saved');
+    let saveTimer;
+    area?.addEventListener('input', () => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        const fresh = getChar(); if (!fresh) return;
+        fresh.notes = area.value; saveChar(fresh);
+        if (saved) { saved.hidden = false; setTimeout(() => saved.hidden = true, 1500); }
+      }, 1000);
+    });
+  }
+
+  if (tabName === 'or') {
+    panel.addEventListener('click', e => {
+      const btn = e.target.closest('[data-coin-delta]');
+      if (!btn) return;
+      const fresh = getChar(); if (!fresh) return;
+      if (!fresh.argent) fresh.argent = { po:0, pa:0, pc:0, pp:0 };
+      const key = btn.dataset.coinDelta;
+      const delta = parseInt(btn.dataset.delta) || 0;
+      fresh.argent[key] = Math.max(0, (fresh.argent[key] || 0) + delta);
+      saveChar(fresh);
+      const valEl = panel.querySelector(`[data-coin="${key}"]`);
+      if (valEl) valEl.textContent = fresh.argent[key];
+      const equiv = panel.querySelector('.ps-or-equiv strong');
+      if (equiv) {
+        const a = fresh.argent;
+        equiv.textContent = ((a.pp||0)*10+(a.po||0)+(a.pe||0)*0.5+(a.pa||0)*0.1+(a.pc||0)*0.01).toFixed(2) + ' po';
+      }
+    }, { signal });
+    panel.querySelectorAll('[data-coin]').forEach(el => {
+      el.addEventListener('click', () => {
+        const key = el.dataset.coin;
+        const fresh = getChar(); if (!fresh) return;
+        if (!fresh.argent) fresh.argent = { po:0, pa:0, pc:0, pp:0 };
+        showPromptModal(
+          `Montant en ${key.toUpperCase()}`,
+          fresh.argent[key] || 0,
+          val => {
+            if (val === null) return;
+            fresh.argent[key] = Math.max(0, parseInt(val) || 0);
+            saveChar(fresh);
+            el.textContent = fresh.argent[key];
+          },
+          { title: 'Modifier la monnaie', number: true, min: 0 }
+        );
+      });
+    });
+  }
+
+  if (tabName === 'inventaire') {
+    wireInvTooltips(panel);
+    panel.addEventListener('click', e => {
+      const equipBtn = e.target.closest('[data-equip]');
+      const delBtn   = e.target.closest('[data-del]');
+      const addBtn   = e.target.closest('#ps-add-item');
+      const qtyDec   = e.target.closest('[data-qty-dec]');
+      const qtyInc   = e.target.closest('[data-qty-inc]');
+
+      if (equipBtn) {
+        const id = equipBtn.dataset.equip;
+        const fresh = getChar(); if (!fresh) return;
+        const it = fresh.equipement.find(i => i.id === id);
+        if (it) { it.equipe = !it.equipe; saveChar(fresh); }
+        panel.innerHTML = psTabInventaire(fresh);
+        wireInvTooltips(panel);
+      }
+      if (delBtn) {
+        const id = delBtn.dataset.del;
+        const fresh = getChar(); if (!fresh) return;
+        const it = fresh.equipement.find(i => i.id === id);
+        showConfirmModal(
+          `Supprimer "${capitalize(it?.nom) || 'cet objet'}" de l'inventaire ?`,
+          () => {
+            const f2 = getChar(); if (!f2) return;
+            f2.equipement = f2.equipement.filter(i => i.id !== id);
+            saveChar(f2);
+            panel.innerHTML = psTabInventaire(f2);
+            wireInvTooltips(panel);
+          },
+          'Supprimer'
+        );
+      }
+      if (qtyDec) {
+        const id = qtyDec.dataset.qtyDec;
+        const fresh = getChar(); if (!fresh) return;
+        const it = fresh.equipement.find(i => i.id === id);
+        if (it && (it.quantite||1) > 1) { it.quantite = (it.quantite||1) - 1; saveChar(fresh); }
+        const span = panel.querySelector(`[data-qty-val="${id}"]`);
+        if (span && it) span.textContent = it.quantite;
+      }
+      if (qtyInc) {
+        const id = qtyInc.dataset.qtyInc;
+        const fresh = getChar(); if (!fresh) return;
+        const it = fresh.equipement.find(i => i.id === id);
+        if (it) { it.quantite = (it.quantite||1) + 1; saveChar(fresh); }
+        const span = panel.querySelector(`[data-qty-val="${id}"]`);
+        if (span && it) span.textContent = it.quantite;
+      }
+      if (addBtn) {
+        showAddItemModal(container, d);
+      }
+    }, { signal });
+  }
+
+  if (tabName === 'sorts') {
+    panel.addEventListener('click', e => {
+      const pip      = e.target.closest('.ps-slot-pip');
+      const addMin   = e.target.closest('#ps-add-mineur');
+      const addPre   = e.target.closest('#ps-add-prepare');
+      const delBtn   = e.target.closest('.ps-sort-del');
+      const sortCard = e.target.closest('.ps-sc-card');
+
+      if (delBtn) {
+        const type = delBtn.dataset.sortType;
+        const idx  = parseInt(delBtn.dataset.sortIdx);
+        const fresh = getChar(); if (!fresh) return;
+        if (type === 'mineur')   fresh.sorts_mineurs.splice(idx, 1);
+        else if (type === 'prepare') fresh.sorts_prepares.splice(idx, 1);
+        else if (type === 'connu')   (fresh.sorts_connus||[]).splice(idx, 1);
+        saveChar(fresh);
+        panel.innerHTML = psTabSorts(fresh, d);
+        return;
+      }
+
+      if (sortCard) {
+        const nom  = sortCard.dataset.sortName;
+        const type = sortCard.dataset.sortType;
+        const idx  = sortCard.dataset.sortIdx !== undefined ? parseInt(sortCard.dataset.sortIdx) : undefined;
+        if (nom) showSortFloat(nom, type, idx);
+        return;
+      }
+
+      if (pip) {
+        const lvl = parseInt(pip.dataset.slotLvl);
+        const idx = parseInt(pip.dataset.slotIdx);
+        const fresh = getChar(); if (!fresh) return;
+        if (!fresh.emplacements_uses) fresh.emplacements_uses = {};
+        const total = SPELL_SLOTS_TABLE[fresh.niveau]?.[lvl-1] || 0;
+        const used  = fresh.emplacements_uses[lvl] || 0;
+        if (idx < total - used) fresh.emplacements_uses[lvl] = used + 1;
+        else fresh.emplacements_uses[lvl] = Math.max(0, used - 1);
+        saveChar(fresh);
+        panel.innerHTML = psTabSorts(fresh, d);
+        return;
+      }
+
+      if (addMin || addPre) {
+        showSortBrowserModal(container, d, addMin ? 'mineur' : 'prepare');
+      }
+    }, { signal });
+
+    // Float closed via its own backdrop — no extra listener needed here
+  }
+
+  if (tabName === 'classe') {
+    panel.querySelector('#ps-add-cap')?.addEventListener('click', () => {
+      Modal.show(`
+      <div class="ps-dialog ps-dialog--wide">
+        <h3 class="ps-dialog-title">Ajouter une capacité</h3>
+        <label class="ps-dialog-label">Nom</label>
+        <input type="text" class="ps-dialog-input" id="dlg-cap-nom" placeholder="Nom de la capacité">
+        <label class="ps-dialog-label" style="margin-top:.75rem">Description</label>
+        <textarea class="ps-dialog-input ps-dialog-textarea" id="dlg-cap-desc" placeholder="Description (optionnel)"></textarea>
+        <div class="ps-dialog-btns">
+          <button class="ps-dialog-btn ps-dialog-btn--cancel" id="dlg-cancel">Annuler</button>
+          <button class="ps-dialog-btn ps-dialog-btn--ok" id="dlg-ok">Ajouter</button>
+        </div>
+      </div>`);
+      const nomEl  = Modal.body.querySelector('#dlg-cap-nom');
+      const descEl = Modal.body.querySelector('#dlg-cap-desc');
+      nomEl?.focus();
+      Modal.body.querySelector('#dlg-ok')?.addEventListener('click', () => {
+        const nom  = nomEl?.value?.trim();
+        if (!nom) { nomEl?.focus(); return; }
+        const desc = descEl?.value?.trim() || '';
+        Modal.hide();
+        const fresh = getChar(); if (!fresh) return;
+        if (!fresh.homebrew_capacites) fresh.homebrew_capacites = [];
+        fresh.homebrew_capacites.push({ nom, description: desc });
+        saveChar(fresh);
+        panel.innerHTML = psTabClasse(fresh);
+        wireTabEvents(container, 'classe', fresh, d);
+      });
+      Modal.body.querySelector('#dlg-cancel')?.addEventListener('click', () => Modal.hide());
+    });
+
+    panel.addEventListener('click', e => {
+      const delBtn = e.target.closest('[data-del-cap]');
+      if (!delBtn) return;
+      const i = parseInt(delBtn.dataset.delCap);
+      const fresh = getChar(); if (!fresh) return;
+      const nom = fresh.homebrew_capacites?.[i]?.nom || 'cette capacité';
+      showConfirmModal(`Supprimer "${nom}" ?`, () => {
+        const f2 = getChar(); if (!f2) return;
+        f2.homebrew_capacites.splice(i, 1);
+        saveChar(f2);
+        panel.innerHTML = psTabClasse(f2);
+        wireTabEvents(container, 'classe', f2, d);
+      }, 'Supprimer');
+    }, { signal });
+
+    panel.addEventListener('click', e => {
+      const link = e.target.closest('.trait-link');
+      if (!link) return;
+      if (link.classList.contains('trait-link--sort')) {
+        const slug = link.dataset.traitSort;
+        const normSlug = normalize(slug.replace(/-/g, ' '));
+        const sort = (APP.data.sorts || []).find(s => {
+          const main = s.name.includes('|') ? s.name.split('|')[0].trim() : s.name;
+          return normalize(main) === normSlug;
+        });
+        if (sort) {
+          const mainName = sort.name.includes('|') ? sort.name.split('|')[0].trim() : sort.name;
+          const altName  = sort.name.includes('|') ? sort.name.split('|')[1].trim() : null;
+          Modal.show(renderSortModal({ ...sort, mainName, altName }));
+        }
+      } else if (link.classList.contains('trait-link--don')) {
+        const slug = link.dataset.traitDon;
+        const normSlug = normalize(slug.replace(/-/g, ' '));
+        const don = (APP.data.dons || []).find(d => {
+          const main = d.name.includes('|') ? d.name.split('|')[0].trim() : d.name;
+          return normalize(main) === normSlug;
+        });
+        if (don) Modal.show(renderDonModal(don));
+      }
+    }, { signal });
+
+    panel.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const link = e.target.closest('.trait-link');
+      if (link) { e.preventDefault(); link.click(); }
+    }, { signal });
+  }
+
+  if (tabName === 'profil') {
+    panel.querySelectorAll('[data-editable]').forEach(el => {
+      el.addEventListener('click', () => {
+        const field  = el.dataset.editable;
+        const fresh  = getChar(); if (!fresh) return;
+        const isLong = ['description', 'histoire'].includes(field);
+        const label  = { nom:'Nom', age:'Âge', description:'Description', histoire:'Histoire', apparence:'Apparence' }[field] || field;
+        showPromptModal(
+          label,
+          fresh[field] || '',
+          val => {
+            if (val === null) return;
+            fresh[field] = val.trim();
+            saveChar(fresh);
+            el.textContent = fresh[field] || '—';
+          },
+          { title: `Modifier : ${label}`, textarea: isLong }
+        );
+      });
+    });
+
+    panel.querySelector('#ps-add-lang')?.addEventListener('click', () => {
+      const fresh = getChar(); if (!fresh) return;
+      Modal.show(`
+      <div class="ps-dialog">
+        <h3 class="ps-dialog-title">Ajouter une langue</h3>
+        <label class="ps-dialog-label">Langue connue</label>
+        <select class="wiz-stat-select" id="dlg-lang-sel">
+          <option value="">— Choisir dans la liste —</option>
+          ${LANGUAGES_LIST.map(l=>`<option value="${escHtml(l)}">${escHtml(l)}</option>`).join('')}
+          <option value="__custom__">Autre (saisir manuellement)</option>
+        </select>
+        <input type="text" class="ps-dialog-input" id="dlg-lang-custom" placeholder="Nom de la langue" style="display:none;margin-top:.5rem">
+        <div class="ps-dialog-btns">
+          <button class="ps-dialog-btn ps-dialog-btn--cancel" id="dlg-cancel">Annuler</button>
+          <button class="ps-dialog-btn ps-dialog-btn--ok" id="dlg-ok">Ajouter</button>
+        </div>
+      </div>`);
+      const sel    = Modal.body.querySelector('#dlg-lang-sel');
+      const custom = Modal.body.querySelector('#dlg-lang-custom');
+      sel?.addEventListener('change', () => {
+        custom.style.display = sel.value === '__custom__' ? '' : 'none';
+        if (sel.value !== '__custom__') custom.value = '';
+      });
+      Modal.body.querySelector('#dlg-ok')?.addEventListener('click', () => {
+        const lang = sel?.value === '__custom__' ? custom?.value?.trim() : sel?.value;
+        if (!lang) return;
+        Modal.hide();
+        const f2 = getChar(); if (!f2) return;
+        if (!f2.langues) f2.langues = ['Commun'];
+        if (!f2.langues.includes(lang)) f2.langues.push(lang);
+        saveChar(f2);
+        panel.innerHTML = psTabProfil(f2);
+        wireTabEvents(container, 'profil', f2, d);
+      });
+      Modal.body.querySelector('#dlg-cancel')?.addEventListener('click', () => Modal.hide());
+    });
+
+    panel.addEventListener('click', e => {
+      const delLang = e.target.closest('[data-del-lang]');
+      if (!delLang) return;
+      const lang = delLang.dataset.delLang;
+      const fresh = getChar(); if (!fresh) return;
+      fresh.langues = (fresh.langues || []).filter(l => l !== lang);
+      saveChar(fresh);
+      const langList = panel.querySelector('.ps-profil-langs');
+      if (langList) {
+        langList.innerHTML = (fresh.langues||[]).map(l =>
+          `<span class="ps-lang-chip">${escHtml(l)} <button class="ps-lang-del" data-del-lang="${escHtml(l)}" title="Retirer">✕</button></span>`
+        ).join('');
+      }
+    });
+  }
+}
+
+function showSpellDetail(s, nom) {
+  // Backdrop
+  let backdrop = document.getElementById('sdp-backdrop');
+  if (!backdrop) {
+    backdrop = document.createElement('div');
+    backdrop.id = 'sdp-backdrop';
+    document.body.appendChild(backdrop);
+  }
+
+  let popup = document.getElementById('sdp-popup');
+  if (!popup) {
+    popup = document.createElement('div');
+    popup.id = 'sdp-popup';
+    document.body.appendChild(popup);
+  }
+
+  const niv  = parseInt(s.niveau) || 0;
+  const dot  = SCHOOL_DOTS[s.ecole||''] || '#888';
+  const lvl  = niv === 0 ? 'Tour de magie' : `Niveau ${niv}`;
+  const comp = (s.composants||[]).join(', ');
+  const desc = (s.description||'').replace(/<[^>]*>/g,'').trim();
+  const rows = [
+    ['Temps d\'incantation', s.temps],
+    ['Portée',               s.portee],
+    ['Durée',                s.duree],
+    ['Composantes',          comp],
+  ].filter(([,v]) => v);
+
+  popup.innerHTML = `
+    <div class="sdp-img-wrap">
+      <img src="${getSortImgUrl(nom)}" alt="" class="sdp-img" loading="lazy"
+           onerror="this.closest('.sdp-img-wrap').style.display='none'">
+    </div>
+    <div class="sdp-head">
+      <div class="sdp-head-left">
+        <span class="sdp-dot" style="background:${dot}"></span>
+        <div>
+          <div class="sdp-name">${escHtml(nom)}</div>
+          <div class="sdp-meta">${escHtml(lvl)}${s.ecole ? ' · ' + escHtml(s.ecole) : ''}${s.concentration ? ' · <em>Concentration</em>' : ''}</div>
+        </div>
+      </div>
+      <button class="sdp-close" id="sdp-close" title="Fermer">✕</button>
+    </div>
+    ${rows.length ? `<table class="sdp-table"><tbody>${rows.map(([k,v]) =>
+      `<tr><td class="sdp-k">${escHtml(k)}</td><td class="sdp-v">${escHtml(v)}</td></tr>`
+    ).join('')}</tbody></table>` : ''}
+    ${desc ? `<div class="sdp-desc">${enrichSortText(desc)}</div>` : ''}
+    ${s.amelioration ? `<div class="sdp-upcast"><strong>Niveaux supérieurs :</strong> ${enrichSortText(s.amelioration)}</div>` : ''}`;
+
+  const close = () => {
+    popup.classList.remove('sdp-open');
+    backdrop.classList.remove('sdp-open');
+  };
+
+  backdrop.classList.add('sdp-open');
+  popup.classList.add('sdp-open');
+  document.getElementById('sdp-close').onclick = close;
+  backdrop.onclick = close;
+}
+
+function showSortBrowserModal(container, d, addType) {
+  const char = getChar(); if (!char) return;
+
+  const allSorts   = APP.data.sorts || [];
+  const clsNorm    = normalize(char.classe);
+  const classSorts = allSorts.filter(s =>
+    (s.classes||[]).some(c => normalize(c).includes(clsNorm) || clsNorm.includes(normalize(c)))
+  );
+  const maxSlot   = Math.ceil(char.niveau / 2);
+  const limits    = getSpellLimits(char);
+  const isCantrip = addType === 'mineur';
+
+  const getName  = s => { const n = s.name||''; return n.includes('|') ? n.split('|')[0].trim() : n; };
+  const getNiv   = s => parseInt(s.niveau) || 0;
+  const getAdded = () => isCantrip ? (getChar()?.sorts_mineurs||[]) : (getChar()?.sorts_prepares||[]);
+  const getMax   = () => isCantrip ? limits.maxCantrips : limits.maxPrepares;
+
+  const pool0 = isCantrip
+    ? classSorts.filter(s => getNiv(s) === 0)
+    : classSorts.filter(s => getNiv(s) > 0 && getNiv(s) <= maxSlot);
+
+  const cardHtml = s => {
+    const nom   = getName(s);
+    const niv   = getNiv(s);
+    const dot   = SCHOOL_DOTS[s.ecole||''] || '#888';
+    const sub   = `${niv === 0 ? 'Mineur' : `Niv. ${niv}`}${s.ecole ? ' · ' + s.ecole : ''}`;
+    const conc  = s.concentration ? ' ©' : '';
+    const added = getAdded().includes(nom);
+    return `<div class="sbr-card${added ? ' sbr-card--added' : ''}" data-nom="${escHtml(nom)}" tabindex="0">
+      <div class="sbr-img-wrap">
+        <img src="${getSortImgUrl(nom)}" alt="" class="sbr-img" loading="lazy"
+             onerror="this.closest('.sbr-img-wrap').style.display='none'">
+      </div>
+      <div class="sbr-card-top">
+        <span class="sbr-dot" style="background:${dot}"></span>
+        <span class="sbr-name">${escHtml(nom)}${conc}</span>
+        ${added ? `<span class="sbr-added">✓</span>` : `<button class="sbr-add" title="Ajouter">+</button>`}
+      </div>
+      <div class="sbr-sub">${escHtml(sub)}</div>
+    </div>`;
+  };
+
+  const renderGrid = items =>
+    items.map(cardHtml).join('') ||
+    `<p style="color:var(--text3);font-style:italic;font-size:.85rem;padding:.25rem">Aucun sort trouvé</p>`;
+
+  const cnt0 = getAdded().length, max0 = getMax();
+  const title = isCantrip ? 'Sorts mineurs' : 'Sorts préparés';
+
+  Modal.show(`<div class="sbr-modal">
+    <div class="sbr-header">
+      <span class="sbr-title">${escHtml(title)}</span>
+      ${max0 ? `<span class="sbr-count${cnt0>=max0?' sbr-count--full':''}" id="sbr-count">${cnt0}/${max0}</span>` : ''}
+    </div>
+    <div class="sbr-search-row">
+      <input type="search" class="sbr-search" id="sbr-search" placeholder="Filtrer les sorts…" autocomplete="off">
+      <div class="sbr-hint" id="sbr-hint">${escHtml(char.classe)} · ${pool0.length} sort${pool0.length>1?'s':''}</div>
+    </div>
+    <div class="sbr-grid-wrap">
+      <div class="sbr-grid" id="sbr-grid">${renderGrid(pool0)}</div>
+    </div>
+    <p class="sbr-tip">Cliquez sur une carte pour lire le sort en détail</p>
+  </div>`);
+
+  const gridEl   = Modal.body.querySelector('#sbr-grid');
+  const searchEl = Modal.body.querySelector('#sbr-search');
+  const hintEl   = Modal.body.querySelector('#sbr-hint');
+
+  const wireCards = () => {
+    gridEl.querySelectorAll('.sbr-card').forEach(card => {
+      const nom  = card.dataset.nom;
+      const sort = allSorts.find(s => getName(s) === nom);
+
+      card.addEventListener('click', e => {
+        if (e.target.closest('.sbr-add')) return;
+        if (sort) showSpellDetail(sort, nom);
+      });
+
+      card.querySelector('.sbr-add')?.addEventListener('click', e => {
+        e.stopPropagation();
+        const fresh = getChar(); if (!fresh) return;
+        const max  = getMax();
+        const list = isCantrip ? (fresh.sorts_mineurs ??= []) : (fresh.sorts_prepares ??= []);
+        if (max && list.length >= max) return;
+        if (!list.includes(nom)) list.push(nom);
+        saveChar(fresh);
+        card.classList.add('sbr-card--added');
+        card.style.pointerEvents = 'none';
+        card.querySelector('.sbr-add').outerHTML = `<span class="sbr-added">✓</span>`;
+        const countEl = Modal.body.querySelector('#sbr-count');
+        if (countEl) {
+          const c = getAdded().length, m = getMax();
+          countEl.textContent = `${c}/${m}`;
+          countEl.classList.toggle('sbr-count--full', c >= m);
+        }
+        const panel = container.querySelector('#ps-tab-panels');
+        if (panel) { panel.innerHTML = psTabSorts(fresh, d); wireTabEvents(container, 'sorts', fresh, d); }
+      });
+    });
+  };
+
+  searchEl.addEventListener('input', debounce(e => {
+    const q    = normalize(e.target.value.trim());
+    const pool = q
+      ? classSorts.filter(s => normalize(getName(s)).includes(q) || normalize(s.ecole||'').includes(q))
+      : pool0;
+    gridEl.innerHTML = renderGrid(pool);
+    if (hintEl) hintEl.textContent = `${char.classe} · ${pool.length} sort${pool.length>1?'s':''}`;
+    wireCards();
+  }, 150));
+
+  wireCards();
+  searchEl.focus();
+}
+
+function lookupItemData(nom) {
+  const key = normalize(nom);
+  // Armes
+  for (const cat of (APP.data.armes?.armes || [])) {
+    const found = (cat.armes||[]).find(a => normalize(a.nom) === key || key.includes(normalize(a.nom)) || normalize(a.nom).includes(key));
+    if (found) return { ...found, _cat: cat.categorie, _type: 'Arme' };
+  }
+  // Armures
+  for (const cat of (APP.data.armures?.armures || [])) {
+    const found = (cat.armures||[]).find(a => a?.nom && (normalize(a.nom) === key || key.includes(normalize(a.nom)) || normalize(a.nom).includes(key)));
+    if (found) return { ...found, _cat: cat.categorie, _type: 'Armure' };
+  }
+  // Matériels
+  const mat = (APP.data.materiels||[]).find(m => normalize(m.nom) === key || key.includes(normalize(m.nom)) || normalize(m.nom).includes(key));
+  if (mat) return { ...mat, _type: 'Matériel' };
+  // Outils
+  const out = (APP.data.outils||[]).find(o => normalize(o.nom) === key || key.includes(normalize(o.nom)));
+  if (out) return { ...out, _type: 'Outil' };
+  return null;
+}
+
+function buildItemTooltipHtml(nom) {
+  const data = lookupItemData(nom);
+  if (!data) return `<div class="tooltip-title">${escHtml(capitalize(nom))}</div><div class="tooltip-desc" style="color:var(--text3);font-size:.8rem">Objet divers</div>`;
+  const parts = [];
+  if (data._type) parts.push(`<div class="tooltip-cat">${escHtml(data._type)}${data._cat ? ` · ${escHtml(data._cat)}` : ''}</div>`);
+  if (data.degats) parts.push(`<div class="tooltip-desc"><strong>Dégâts :</strong> ${escHtml(data.degats)}</div>`);
+  if (data.ca) parts.push(`<div class="tooltip-desc"><strong>CA :</strong> ${escHtml(data.ca)}</div>`);
+  if (data.botte) parts.push(`<div class="tooltip-desc"><strong>Botte :</strong> ${escHtml(data.botte)}</div>`);
+  if (data.proprietes?.length) parts.push(`<div class="tooltip-desc">${data.proprietes.map(p=>escHtml(p)).join(', ')}</div>`);
+  if (data.description) parts.push(`<div class="tooltip-desc" style="font-style:italic;font-size:.8rem;color:var(--text2)">${escHtml(data.description.slice(0, 160))}${data.description.length>160?'…':''}</div>`);
+  if (data.prix||data.cout) parts.push(`<div class="tooltip-desc" style="color:var(--gold);font-size:.78rem">Prix : ${escHtml(data.prix||data.cout||'—')}</div>`);
+  return `<div class="tooltip-title">${escHtml(capitalize(nom))}</div>${parts.join('')}`;
+}
+
+function wireInvTooltips(panel) {
+  panel.querySelectorAll('[data-inv-tooltip]').forEach(el => {
+    el.style.cursor = 'help';
+    el.addEventListener('mouseenter', e => {
+      const html = buildItemTooltipHtml(el.dataset.invTooltip);
+      clearTimeout(APP.tooltipTimer);
+      APP.tooltipTimer = setTimeout(() => Tooltip.show(html, e.clientX, e.clientY), 150);
+    });
+    el.addEventListener('mousemove', e => {
+      if (!Tooltip.el.classList.contains('hidden')) Tooltip.position(e.clientX, e.clientY);
+    });
+    el.addEventListener('mouseleave', () => { clearTimeout(APP.tooltipTimer); Tooltip.hide(); });
+  });
+}
+
+function showAddItemModal(container, d) {
+  // Compile all inventory items from all data files
+  const allItems = [];
+  (APP.data.armes?.armes || []).forEach(cat => {
+    (cat.armes||[]).forEach(a => allItems.push({ nom: a.nom, type:'arme',   detail: a.degats||'', prix: a.prix||'', cat: cat.categorie }));
+  });
+  (APP.data.armures?.armures || []).forEach(cat => {
+    (cat.armures||[]).forEach(a => { if (a?.nom) allItems.push({ nom: a.nom, type:'armure', detail: a.ca ? `CA ${a.ca}` : '', prix: a.cout||'', cat: cat.categorie||'Armure' }); });
+  });
+  (APP.data.materiels||[]).forEach(m => allItems.push({ nom: m.nom, type:'misc', detail: (m.description||'').slice(0,50), prix: m.prix||'', cat: 'Matériel' }));
+  (APP.data.outils||[]).forEach(o => allItems.push({ nom: o.nom, type:'misc', detail:'', prix: o.prix||'', cat: 'Outil' }));
+
+  const typeBadge = t => ({ arme:'Arme', armure:'Armure', misc:'Divers' }[t] || t);
+  const typeColor  = { arme:'#c9442c', armure:'#3a7bc8', misc:'#6a8a6a' };
+
+  const renderCards = (items) => items.slice(0, 40).map(it => `
+    <div class="ps-ic-card">
+      <div class="ps-ic-top">
+        <span class="ps-ic-badge" style="background:${typeColor[it.type]||'#555'}">${typeBadge(it.type)}</span>
+        <span class="ps-ic-name">${escHtml(it.nom)}</span>
+      </div>
+      ${it.detail||it.prix ? `<div class="ps-ic-meta">${[it.detail,it.prix].filter(Boolean).map(escHtml).join(' · ')}</div>` : ''}
+      <div class="ps-ic-footer">
+        <div class="ps-ic-qty-row">
+          <button class="ps-ic-qty-btn" data-ic-dec tabindex="-1">−</button>
+          <input class="ps-ic-qty-input" type="number" value="1" min="1" max="999" tabindex="-1">
+          <button class="ps-ic-qty-btn" data-ic-inc tabindex="-1">+</button>
+        </div>
+        <button class="ps-ic-add-btn" data-item-nom="${escHtml(it.nom)}" data-item-type="${it.type}" title="Ajouter à l'inventaire">+</button>
+      </div>
+    </div>`).join('');
+
+  Modal.show(`
+  <div class="ps-add-item-modal ps-aim-v2">
+    <h3 class="ps-dialog-title">Ajouter un objet</h3>
+    <input type="search" class="wiz-input" id="item-search" placeholder="Arme, armure, matériel, outil…" autocomplete="off">
+    <div class="ps-ic-count" id="ic-count">${allItems.length} objets disponibles</div>
+    <div class="ps-ic-grid" id="item-sugg-grid">
+      ${renderCards(allItems.slice(0, 24))}
+    </div>
+    <div class="ps-add-item-separator">— ou entrer manuellement —</div>
+    <div class="ps-aim-manual-row">
+      <input type="text" class="ps-dialog-input ps-aim-nom" id="item-nom-custom" placeholder="Nom de l'objet">
+      <select class="wiz-stat-select ps-aim-type" id="item-type-custom">
+        <option value="misc">Divers</option>
+        <option value="arme">Arme</option>
+        <option value="armure">Armure</option>
+      </select>
+      <input type="number" class="ps-aim-qty-manual" id="item-qty-custom" value="1" min="1" max="999" title="Quantité">
+      <button class="ps-dialog-btn ps-dialog-btn--ok ps-aim-add-btn" id="item-add-custom">Ajouter</button>
+    </div>
+    <button class="ps-dialog-btn ps-dialog-btn--cancel" id="item-cancel" style="margin-top:.4rem;width:100%">Fermer</button>
+  </div>`);
+
+  const searchEl = Modal.body.querySelector('#item-search');
+  const gridEl   = Modal.body.querySelector('#item-sugg-grid');
+  const countEl  = Modal.body.querySelector('#ic-count');
+
+  const addItem = (nom, type, quantite) => {
+    const fresh = getChar(); if (!fresh) return;
+    if (!fresh.equipement) fresh.equipement = [];
+    const id = Math.random().toString(36).slice(2);
+    fresh.equipement.push({ id, nom: capitalize(nom.trim()), type, quantite: Math.max(1, parseInt(quantite)||1), equipe: false });
+    saveChar(fresh);
+    const panel = container.querySelector('#ps-tab-panels');
+    if (panel) { panel.innerHTML = psTabInventaire(fresh); wireTabEvents(container, 'inventaire', fresh, d); }
+    // Flash confirmation instead of closing modal so user can add more
+    const toast = document.createElement('div');
+    toast.className = 'ps-aim-toast';
+    toast.textContent = `${capitalize(nom)} ajouté !`;
+    Modal.body.querySelector('.ps-aim-v2')?.appendChild(toast);
+    setTimeout(() => toast.remove(), 1400);
+  };
+
+  // Wire grid events (re-runs after each search update)
+  const wireGrid = () => {
+    gridEl.querySelectorAll('.ps-ic-card').forEach(card => {
+      const qtyInput = card.querySelector('.ps-ic-qty-input');
+      card.querySelector('[data-ic-dec]')?.addEventListener('click', () => { qtyInput.value = Math.max(1, parseInt(qtyInput.value||1)-1); });
+      card.querySelector('[data-ic-inc]')?.addEventListener('click', () => { qtyInput.value = Math.min(999, parseInt(qtyInput.value||1)+1); });
+      card.querySelector('[data-item-nom]')?.addEventListener('click', e => {
+        const btn = e.currentTarget;
+        addItem(btn.dataset.itemNom, btn.dataset.itemType||'misc', qtyInput?.value||1);
+      });
+    });
+  };
+
+  searchEl?.addEventListener('input', debounce(e => {
+    const q = normalize(e.target.value);
+    const pool = q
+      ? allItems.filter(it => normalize(it.nom).includes(q) || normalize(it.cat||'').includes(q) || normalize(it.detail||'').includes(q))
+      : allItems.slice(0, 24);
+    gridEl.innerHTML = renderCards(pool) || '<p style="color:var(--ps-text3);padding:.5rem">Aucun résultat</p>';
+    if (countEl) countEl.textContent = q ? `${pool.length} résultat${pool.length>1?'s':''}` : `${allItems.length} objets disponibles`;
+    wireGrid();
+  }, 160));
+
+  Modal.body.querySelector('#item-add-custom')?.addEventListener('click', () => {
+    const nom = Modal.body.querySelector('#item-nom-custom')?.value?.trim();
+    if (!nom) { Modal.body.querySelector('#item-nom-custom')?.focus(); return; }
+    const qty = Modal.body.querySelector('#item-qty-custom')?.value || '1';
+    addItem(nom, Modal.body.querySelector('#item-type-custom')?.value||'misc', qty);
+    Modal.body.querySelector('#item-nom-custom').value = '';
+  });
+
+  Modal.body.querySelector('#item-cancel')?.addEventListener('click', () => Modal.hide());
+
+  wireGrid();
+  searchEl?.focus();
+}
+
+function showNotif(container, msg) {
+  let notif = container.querySelector('.ps-notif');
+  if (!notif) {
+    notif = document.createElement('div');
+    notif.className = 'ps-notif';
+    container.querySelector('.ps-wrap')?.appendChild(notif);
+  }
+  notif.textContent = msg;
+  notif.classList.add('show');
+  setTimeout(()=>notif.classList.remove('show'), 2500);
 }
 
 // ============================================================
