@@ -1,0 +1,178 @@
+{
+  "explications": [
+    {
+      "nom": "Catégorie",
+      "description": "Chaque type d’armure appartient à l’une des catégories suivantes : armure légère, intermédiaire, lourde ou bouclier. La catégorie détermine notamment le temps nécessaire pour l’enfiler ou la retirer."
+    },
+    {
+      "nom": "Classe d’armure (CA)",
+      "description": "Indique la formule ou la valeur de la Classe d’armure conférée lorsque l’armure est portée."
+    },
+    {
+      "nom": "Force",
+      "description": "Certaines armures exigent une valeur minimale de Force. Si cette condition n’est pas remplie, la Vitesse du porteur est réduite de 3 m."
+    },
+    {
+      "nom": "Discrétion",
+      "description": "Certaines armures imposent un Désavantage aux jets de Dextérité (Discrétion)."
+    },
+    {
+      "nom": "Formation aux armures",
+      "description": "Une créature doit être formée au port d’une armure ou d’un bouclier pour en tirer pleinement parti. Les classes et certaines capacités accordent cette formation."
+    },
+    {
+      "nom": "Armures légères, intermédiaires ou lourdes",
+      "description": "Porter une armure sans y être formé impose un Désavantage à tous les jets de d20 utilisant la Force ou la Dextérité et empêche de lancer des sorts."
+    },
+    {
+      "nom": "Bouclier",
+      "description": "Le bonus de Classe d’armure d’un bouclier ne s’applique que si son porteur est formé à son utilisation."
+    },
+    {
+      "nom": "Une seule à la fois",
+      "description": "Une créature ne peut porter qu’une seule armure à la fois, ainsi qu’un seul bouclier."
+    }
+  ],
+  "armures": [
+    {
+      "categorie": "Armures légères",
+      "temps": {
+        "enfiler": "1 minute",
+        "retirer": "1 minute"
+      },
+      "armures": [
+        {
+          "nom": "Armure matelassée",
+          "ca": "11 + modificateur de Dex",
+          "force": null,
+          "discretion": "Désavantage",
+          "poids": "4 kg",
+          "cout": "5 po"
+        },
+        {
+          "nom": "Armure de cuir",
+          "ca": "11 + modificateur de Dex",
+          "force": null,
+          "discretion": null,
+          "poids": "5 kg",
+          "cout": "10 po"
+        },
+        {
+          "nom": "Armure de cuir clouté",
+          "ca": "12 + modificateur de Dex",
+          "force": null,
+          "discretion": null,
+          "poids": "6,5 kg",
+          "cout": "45 po"
+        }
+      ]
+    },
+    {
+      "categorie": "Armures intermédiaires",
+      "temps": {
+        "enfiler": "5 minutes",
+        "retirer": "1 minute"
+      },
+      "armures": [
+        {
+          "nom": "Armure de peaux",
+          "ca": "12 + modificateur de Dex (max 2)",
+          "force": null,
+          "discretion": null,
+          "poids": "6 kg",
+          "cout": "10 po"
+        },
+        {
+          "nom": "Chemise de mailles",
+          "ca": "13 + modificateur de Dex (max 2)",
+          "force": null,
+          "discretion": null,
+          "poids": "10 kg",
+          "cout": "50 po"
+        },
+        {
+          "nom": "Armure d’écailles",
+          "ca": "14 + modificateur de Dex (max 2)",
+          "force": null,
+          "discretion": "Désavantage",
+          "poids": "22,5 kg",
+          "cout": "50 po"
+        },
+        {
+          "nom": "Cuirasse",
+          "ca": "14 + modificateur de Dex (max 2)",
+          "force": null,
+          "discretion": null,
+          "poids": "10 kg",
+          "cout": "400 po"
+        },
+        {
+          "nom": "Demi-plate",
+          "ca": "15 + modificateur de Dex (max 2)",
+          "force": null,
+          "discretion": "Désavantage",
+          "poids": "20 kg",
+          "cout": "750 po"
+        }
+      ]
+    },
+    {
+      "categorie": "Armures lourdes",
+      "temps": {
+        "enfiler": "10 minutes",
+        "retirer": "5 minutes"
+      },
+      "armures": [
+        {
+          "nom": "Broigne",
+          "ca": "14",
+          "force": null,
+          "discretion": "Désavantage",
+          "poids": "20 kg",
+          "cout": "30 po"
+        },
+        {
+          "nom": "Cotte de mailles",
+          "ca": "16",
+          "force": 13,
+          "discretion": "Désavantage",
+          "poids": "27,5 kg",
+          "cout": "75 po"
+        },
+        {
+          "nom": "Clibanion",
+          "ca": "17",
+          "force": 15,
+          "discretion": "Désavantage",
+          "poids": "30 kg",
+          "cout": "200 po"
+        },
+        {
+          "nom": "Harnois",
+          "ca": "18",
+          "force": 15,
+          "discretion": "Désavantage",
+          "poids": "32,5 kg",
+          "cout": "1500 po"
+        }
+      ]
+    },
+    {
+      "categorie": "Boucliers",
+      "temps": {
+        "enfiler": "Action Utilisation",
+        "retirer": "Action Utilisation"
+      },
+      "armures": [
+        {
+          "nom": "Bouclier",
+          "ca": "+2",
+          "force": null,
+          "discretion": null,
+          "poids": "3 kg",
+          "cout": "10 po"
+        }
+      ]
+    }
+  ]
+}

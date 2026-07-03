@@ -1,0 +1,428 @@
+{
+  "explications": [
+    {
+      "nom": "Catégorie",
+      "description": "Toute arme appartient à l’une de ces catégories : arme courante ou arme de guerre. Les maîtrises d’armes sont généralement liées à l’une de ces catégories."
+    },
+    {
+      "nom": "Corps à corps ou à distance",
+      "description": "Une arme de corps à corps sert à attaquer une cible située à 1,50 m ou moins de soi, tandis qu’une arme à distance permet d’attaquer une cible plus éloignée."
+    },
+    {
+      "nom": "Dégâts",
+      "description": "Indique les dégâts infligés par une attaque réussie ainsi que leur type."
+    },
+    {
+      "nom": "Propriétés",
+      "description": "Liste les propriétés spéciales de l’arme définies dans les règles."
+    },
+    {
+      "nom": "Botte d’arme",
+      "description": "Chaque arme possède une propriété botte. Son utilisation nécessite une capacité qui permet de l’exploiter."
+    },
+    {
+      "nom": "Maîtrise des armes",
+      "description": "Tout personnage peut manier une arme, mais il doit en avoir la maîtrise pour ajouter son bonus de maîtrise à ses jets d’attaque. Les personnages et les monstres disposent des maîtrises indiquées par leurs capacités ou leur profil."
+    }
+  ],
+  "proprietes": [
+    {
+      "nom": "Allonge",
+      "description": "Ajoute 1,50 m à votre allonge lorsque vous attaquez avec cette arme, y compris pour les attaques d’Opportunité."
+    },
+    {
+      "nom": "Chargement",
+      "description": "Vous ne pouvez tirer qu’un seul projectile par action, action Bonus ou Réaction, quel que soit le nombre d’attaques dont vous disposez."
+    },
+    {
+      "nom": "Deux mains",
+      "description": "L’arme nécessite l’utilisation des deux mains pour attaquer."
+    },
+    {
+      "nom": "Finesse",
+      "description": "Vous choisissez d’utiliser votre modificateur de Force ou de Dextérité pour les jets d’attaque et de dégâts."
+    },
+    {
+      "nom": "Lancer",
+      "description": "L’arme peut être lancée pour effectuer une attaque à distance. Les armes de corps à corps utilisent le même modificateur que pour une attaque au corps à corps."
+    },
+    {
+      "nom": "Légère",
+      "description": "Après avoir attaqué avec une arme légère, vous pouvez effectuer une attaque supplémentaire avec une autre arme légère grâce à une action Bonus. Cette attaque n’ajoute pas le modificateur de caractéristique aux dégâts, sauf si celui-ci est négatif."
+    },
+    {
+      "nom": "Lourde",
+      "description": "Les attaques avec cette arme sont effectuées avec Désavantage si votre Force est inférieure à 13 (arme de corps à corps) ou si votre Dextérité est inférieure à 13 (arme à distance)."
+    },
+    {
+      "nom": "Munitions",
+      "description": "L’arme nécessite des munitions spécifiques. Une munition est consommée à chaque attaque. Après un combat, vous pouvez récupérer la moitié des munitions utilisées (arrondie à l’inférieur)."
+    },
+    {
+      "nom": "Polyvalente",
+      "description": "L’arme peut être utilisée à une ou deux mains. Les dégâts entre parenthèses s’appliquent lorsqu’elle est maniée à deux mains."
+    },
+    {
+      "nom": "Portée",
+      "description": "La portée indique une portée normale et une portée longue. Les attaques au-delà de la portée normale sont effectuées avec Désavantage, et il est impossible d’attaquer au-delà de la portée longue."
+    },
+    {
+      "nom": "Coup double",
+      "description": "Lors de l’attaque supplémentaire accordée par la propriété Légère, vous pouvez effectuer cette attaque dans le cadre de l’action Attaque au lieu d’utiliser une action Bonus. Une seule fois par tour."
+    },
+    {
+      "nom": "Écorchure",
+      "description": "Si l’attaque manque sa cible, celle-ci subit tout de même des dégâts égaux au modificateur de la caractéristique utilisée pour l’attaque."
+    },
+    {
+      "nom": "Enchaînement",
+      "description": "Après avoir touché une créature, vous pouvez effectuer une attaque supplémentaire contre une seconde créature située à 1,50 m de la première et à votre portée. Cette attaque n’ajoute pas le modificateur de caractéristique aux dégâts, sauf s’il est négatif. Une seule fois par tour."
+    },
+    {
+      "nom": "Ouverture",
+      "description": "Après avoir infligé des dégâts à une créature, vous bénéficiez d’un Avantage à votre prochain jet d’attaque contre elle avant la fin de votre tour suivant."
+    },
+    {
+      "nom": "Poussée",
+      "description": "Lorsque vous touchez une créature de taille G ou inférieure, vous pouvez la repousser jusqu’à 3 m en ligne droite."
+    },
+    {
+      "nom": "Ralentissement",
+      "description": "Après avoir infligé des dégâts, vous pouvez réduire la Vitesse de la cible de 3 m jusqu’au début de votre tour suivant. Les réductions ne sont pas cumulatives."
+    },
+    {
+      "nom": "Renversement",
+      "description": "La cible doit réussir un jet de sauvegarde de Constitution (DD = 8 + modificateur de caractéristique utilisé pour l’attaque + bonus de maîtrise) ou tomber À terre."
+    },
+    {
+      "nom": "Sape",
+      "description": "La cible subit un Désavantage à son prochain jet d’attaque avant le début de votre tour suivant."
+    }
+  ],
+  "armes": [
+    {
+      "categorie": "Armes courantes de corps à corps",
+      "armes": [
+        {
+          "nom": "Bâton de combat",
+          "degats": "1d6 contondants",
+          "proprietes": ["Polyvalente (1d8)"],
+          "botte": "Renversement",
+          "poids": "2 kg",
+          "prix": "2 pa"
+        },
+        {
+          "nom": "Dague",
+          "degats": "1d4 perforants",
+          "proprietes": ["Finesse", "Lancer (portée 6/18)", "Légère"],
+          "botte": "Coup double",
+          "poids": "0,5 kg",
+          "prix": "2 po"
+        },
+        {
+          "nom": "Gourdin",
+          "degats": "1d4 contondants",
+          "proprietes": ["Légère"],
+          "botte": "Ralentissement",
+          "poids": "1 kg",
+          "prix": "1 pa"
+        },
+        {
+          "nom": "Hachette",
+          "degats": "1d6 tranchants",
+          "proprietes": ["Lancer (portée 6/18)", "Légère"],
+          "botte": "Ouverture",
+          "poids": "1 kg",
+          "prix": "5 po"
+        },
+        {
+          "nom": "Javeline",
+          "degats": "1d6 perforants",
+          "proprietes": ["Lancer (portée 9/36)"],
+          "botte": "Ralentissement",
+          "poids": "1 kg",
+          "prix": "5 pa"
+        },
+        {
+          "nom": "Lance",
+          "degats": "1d6 perforants",
+          "proprietes": ["Lancer (portée 6/18)", "Polyvalente (1d8)"],
+          "botte": "Sape",
+          "poids": "1,5 kg",
+          "prix": "1 po"
+        },
+        {
+          "nom": "Marteau léger",
+          "degats": "1d4 contondants",
+          "proprietes": ["Lancer (portée 6/18)", "Légère"],
+          "botte": "Coup double",
+          "poids": "1 kg",
+          "prix": "2 po"
+        },
+        {
+          "nom": "Masse d’armes",
+          "degats": "1d6 contondants",
+          "proprietes": [],
+          "botte": "Sape",
+          "poids": "2 kg",
+          "prix": "5 po"
+        },
+        {
+          "nom": "Massue",
+          "degats": "1d8 contondants",
+          "proprietes": ["Deux mains"],
+          "botte": "Poussée",
+          "poids": "5 kg",
+          "prix": "2 pa"
+        },
+        {
+          "nom": "Serpe",
+          "degats": "1d4 tranchants",
+          "proprietes": ["Légère"],
+          "botte": "Coup double",
+          "poids": "1 kg",
+          "prix": "1 po"
+        }
+      ]
+    },
+    {
+      "categorie": "Armes courantes à distance",
+      "armes": [
+        {
+          "nom": "Arbalète légère",
+          "degats": "1d8 perforants",
+          "proprietes": ["Chargement", "Deux mains", "Munitions (portée 24/96 ; carreaux)"],
+          "botte": "Ralentissement",
+          "poids": "2,5 kg",
+          "prix": "25 po"
+        },
+        {
+          "nom": "Arc court",
+          "degats": "1d6 perforants",
+          "proprietes": ["Deux mains", "Munitions (portée 24/96 ; flèches)"],
+          "botte": "Ouverture",
+          "poids": "1 kg",
+          "prix": "25 po"
+        },
+        {
+          "nom": "Fléchette",
+          "degats": "1d4 perforants",
+          "proprietes": ["Finesse", "Lancer (portée 6/18)"],
+          "botte": "Ouverture",
+          "poids": "125 g",
+          "prix": "5 pc"
+        },
+        {
+          "nom": "Fronde",
+          "degats": "1d4 contondants",
+          "proprietes": ["Munitions (portée 9/36 ; billes)"],
+          "botte": "Ralentissement",
+          "poids": null,
+          "prix": "1 pa"
+        }
+      ]
+    },
+    {
+      "categorie": "Armes de guerre de corps à corps",
+      "armes": [
+        {
+          "nom": "Cimeterre",
+          "degats": "1d6 tranchants",
+          "proprietes": ["Finesse", "Légère"],
+          "botte": "Coup double",
+          "poids": "1,5 kg",
+          "prix": "25 po"
+        },
+        {
+          "nom": "Coutille",
+          "degats": "1d10 tranchants",
+          "proprietes": ["Allonge", "Deux mains", "Lourde"],
+          "botte": "Écorchure",
+          "poids": "3 kg",
+          "prix": "20 po"
+        },
+        {
+          "nom": "Épée à deux mains",
+          "degats": "2d6 tranchants",
+          "proprietes": ["Deux mains", "Lourde"],
+          "botte": "Écorchure",
+          "poids": "3 kg",
+          "prix": "50 po"
+        },
+        {
+          "nom": "Épée courte",
+          "degats": "1d6 perforants",
+          "proprietes": ["Finesse", "Légère"],
+          "botte": "Ouverture",
+          "poids": "1 kg",
+          "prix": "10 po"
+        },
+        {
+          "nom": "Épée longue",
+          "degats": "1d8 tranchants",
+          "proprietes": ["Polyvalente (1d10)"],
+          "botte": "Sape",
+          "poids": "1,5 kg",
+          "prix": "15 po"
+        },
+        {
+          "nom": "Fléau d’armes",
+          "degats": "1d8 contondants",
+          "proprietes": [],
+          "botte": "Sape",
+          "poids": "1 kg",
+          "prix": "10 po"
+        },
+        {
+          "nom": "Fouet",
+          "degats": "1d4 tranchants",
+          "proprietes": ["Allonge", "Finesse"],
+          "botte": "Ralentissement",
+          "poids": "1,5 kg",
+          "prix": "2 po"
+        },
+        {
+          "nom": "Hache à deux mains",
+          "degats": "1d12 tranchants",
+          "proprietes": ["Deux mains", "Lourde"],
+          "botte": "Enchaînement",
+          "poids": "3,5 kg",
+          "prix": "30 po"
+        },
+        {
+          "nom": "Hache d’armes",
+          "degats": "1d8 tranchants",
+          "proprietes": ["Polyvalente (1d10)"],
+          "botte": "Renversement",
+          "poids": "2 kg",
+          "prix": "10 po"
+        },
+        {
+          "nom": "Hallebarde",
+          "degats": "1d10 tranchants",
+          "proprietes": ["Allonge", "Deux mains", "Lourde"],
+          "botte": "Enchaînement",
+          "poids": "3 kg",
+          "prix": "20 po"
+        },
+        {
+          "nom": "Lance d’arçon",
+          "degats": "1d10 perforants",
+          "proprietes": ["Allonge", "Deux mains (sauf à cheval)", "Lourde"],
+          "botte": "Renversement",
+          "poids": "3 kg",
+          "prix": "10 po"
+        },
+        {
+          "nom": "Maillet d’armes",
+          "degats": "2d6 contondants",
+          "proprietes": ["Deux mains", "Lourde"],
+          "botte": "Renversement",
+          "poids": "5 kg",
+          "prix": "10 po"
+        },
+        {
+          "nom": "Marteau de guerre",
+          "degats": "1d8 contondants",
+          "proprietes": ["Polyvalente (1d10)"],
+          "botte": "Poussée",
+          "poids": "2,5 kg",
+          "prix": "15 po"
+        },
+        {
+          "nom": "Morgenstern",
+          "degats": "1d8 perforants",
+          "proprietes": [],
+          "botte": "Sape",
+          "poids": "2 kg",
+          "prix": "15 po"
+        },
+        {
+          "nom": "Pic de guerre",
+          "degats": "1d8 perforants",
+          "proprietes": ["Polyvalente (1d10)"],
+          "botte": "Sape",
+          "poids": "1 kg",
+          "prix": "5 po"
+        },
+        {
+          "nom": "Pique",
+          "degats": "1d10 perforants",
+          "proprietes": ["Allonge", "Deux mains", "Lourde"],
+          "botte": "Poussée",
+          "poids": "9 kg",
+          "prix": "5 po"
+        },
+        {
+          "nom": "Rapière",
+          "degats": "1d8 perforants",
+          "proprietes": ["Finesse"],
+          "botte": "Ouverture",
+          "poids": "1 kg",
+          "prix": "25 po"
+        },
+        {
+          "nom": "Trident",
+          "degats": "1d8 perforants",
+          "proprietes": ["Lancer (portée 6/18)", "Polyvalente (1d10)"],
+          "botte": "Renversement",
+          "poids": "2 kg",
+          "prix": "5 po"
+        }
+      ]
+    },
+    {
+      "categorie": "Armes de guerre à distance",
+      "armes": [
+        {
+          "nom": "Arbalète de poing",
+          "degats": "1d6 perforants",
+          "proprietes": ["Chargement", "Légère", "Munitions (portée 9/36 ; carreaux)"],
+          "botte": "Ouverture",
+          "poids": "1,5 kg",
+          "prix": "75 po"
+        },
+        {
+          "nom": "Arbalète lourde",
+          "degats": "1d10 perforants",
+          "proprietes": ["Chargement", "Deux mains", "Lourde", "Munitions (portée 30/120 ; carreaux)"],
+          "botte": "Poussée",
+          "poids": "9 kg",
+          "prix": "50 po"
+        },
+        {
+          "nom": "Arc long",
+          "degats": "1d8 perforants",
+          "proprietes": ["Deux mains", "Lourde", "Munitions (portée 45/180 ; flèches)"],
+          "botte": "Ralentissement",
+          "poids": "1 kg",
+          "prix": "50 po"
+        },
+        {
+          "nom": "Mousquet",
+          "degats": "1d12 perforants",
+          "proprietes": ["Chargement", "Deux mains", "Munitions (portée 12/36 ; balles)"],
+          "botte": "Ralentissement",
+          "poids": "5 kg",
+          "prix": "500 po"
+        },
+        {
+          "nom": "Pistolet",
+          "degats": "1d10 perforants",
+          "proprietes": ["Chargement", "Munitions (portée 9/27 ; balles)"],
+          "botte": "Ouverture",
+          "poids": "1,5 kg",
+          "prix": "250 po"
+        },
+        {
+          "nom": "Sarbacane",
+          "degats": "1 perforant",
+          "proprietes": ["Chargement", "Munitions (portée 7,50/30 ; dards)"],
+          "botte": "Ouverture",
+          "poids": "0,5 kg",
+          "prix": "10 po"
+        }
+      ]
+    }
+  ]
+}
