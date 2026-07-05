@@ -25,7 +25,7 @@ export function parseClassTraits(html_traits_table){
   const carac = grabRow(html, "Caract[ée]ristique principale");
   const deVieRaw = grabRow(html, "D[ée] de vie");
   const saves = grabRow(html, "jets? de sauvegarde");
-  const armures = grabRow(html, "Ma[iî]trises? d.armures?");
+  const armures = grabRow(html, "(?:Ma[iî]trises? d.armures?|Formation aux armures)");
   const armes = grabRow(html, "Ma[iî]trises? d.armes?");
   const competencesRaw = grabRow(html, "Ma[iî]trises? de comp[ée]tence");
 

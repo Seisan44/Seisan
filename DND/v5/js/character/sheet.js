@@ -60,13 +60,16 @@ function textExcerpt(html, n = 150){
 // et les actions courantes, afin que la fiche de personnage ait le même vocabulaire visuel.
 function wireActionCards(panel){
   panel.querySelectorAll('.cbt-action-card').forEach(card => {
+    // Sur tactile, un tap sur un terme à info-bulle (.term-link) ne doit pas aussi
+    // refermer la carte — sur PC ce n'était pas gênant car on pouvait survoler le
+    // terme sans cliquer, mais au tactile le tap est le seul moyen de voir la bulle.
     const toggle = (e) => {
-      if(e.target.closest('[data-dice-roll]')) return;
+      if(e.target.closest('[data-dice-roll], .term-link')) return;
       card.classList.toggle('is-open');
     };
     card.addEventListener('click', toggle);
     card.addEventListener('keydown', (e) => {
-      if(e.target.closest('[data-dice-roll]')) return;
+      if(e.target.closest('[data-dice-roll], .term-link')) return;
       if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(e); }
     });
   });

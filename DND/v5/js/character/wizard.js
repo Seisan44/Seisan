@@ -8,6 +8,42 @@ import { openAvatarPicker } from './avatar.js';
 import { navigate } from '../router.js';
 import { toast } from '../toast.js';
 import { confirmAction } from '../confirm.js';
+import { enrichHTML } from '../enrich.js';
+import { CLASS_ARCHETYPES } from '../pages/class-tips.js';
+import { isBeginnerMode } from '../beginner.js';
+
+// Astuce affichée en tête de chaque étape uniquement en Mode Découverte — répète
+// l'essentiel ("rien n'est figé") pour que les débutants avancent sans hésiter.
+function beginnerTip(text){
+  if(!isBeginnerMode()) return '';
+  return `<div class="cbt-callout c-gold" style="margin-bottom:1.2em;"><span class="cbt-callout-icon">💡</span><div>${text}</div></div>`;
+}
+
+const SIZE_WORDS = { 'TP':'Très petite', 'P':'Petite', 'M':'Moyenne', 'G':'Grande', 'TG':'Très grande' };
+function tailleShort(str){
+  if(!str) return '';
+  const codes = str.replace(/\([^)]*\)/g, '').split(/\bou\b|,/).map(s => s.trim()).filter(Boolean);
+  return codes.map(c => SIZE_WORDS[c] || c).join(' ou ');
+}
+
+// Bloc de trait replié par défaut (traits raciaux / capacités de classe niveau 1) : garde
+// l'étape de création scannable même quand une espèce ou une classe a beaucoup de traits.
+function traitBlockHTML(title, bodyHtml){
+  return `
+    <article class="capacite-block is-collapsible">
+      <button type="button" class="capacite-toggle" data-cap-toggle>
+        <span class="capacite-toggle-title">${escapeHtml(title)}</span>
+        <svg class="i chevron"><use href="#i-chevron"/></svg>
+      </button>
+      <div class="capacite-body"><div class="prose">${bodyHtml}</div></div>
+    </article>
+  `;
+}
+function wireTraitToggles(root){
+  root.querySelectorAll('[data-cap-toggle]').forEach(btn => {
+    btn.addEventListener('click', () => btn.closest('.is-collapsible').classList.toggle('is-expanded'));
+  });
+}
 
 const STEPS = [
   { key:'espece', label:'Espèce' },
@@ -117,12 +153,16 @@ export function renderWizard(container, existingDraft){
   function renderEspeceStep(panel){
     panel.innerHTML = `
       <h2>Choisissez une espèce</h2>
+      ${beginnerTip("L'espèce détermine des traits innés (vision dans le noir, résistances…). Aucun mauvais choix : suivez votre envie, tout est jouable !")}
       <p class="page-lede" style="font-size:.94em;margin-bottom:1.4em;">Votre origine façonne vos traits innés — vision, résistances, capacités spéciales.</p>
       <div class="option-grid" id="espece-grid">
         ${DATA.species.map(s => `
           <button type="button" class="option-card ${draft.species===s.espece?'is-selected':''}" data-espece="${escapeHtml(s.espece)}">
-            ${imgWithFallback(speciesImage(s.espece), s.espece, { fallbackEmoji:'🧬' })}
-            <div class="oc-body"><span class="oc-title">${escapeHtml(s.espece)}</span><span class="oc-check">✓</span></div>
+            <div class="oc-media">${imgWithFallback(speciesImage(s.espece), s.espece, { fallbackEmoji:'🧬' })}</div>
+            <div class="oc-body">
+              <span class="oc-title">${escapeHtml(s.espece)}</span><span class="oc-check">✓</span>
+              <span class="oc-meta">${escapeHtml(tailleShort(s.infos?.['Taille']))} · ${escapeHtml(s.infos?.['Vitesse']||'')}</span>
+            </div>
           </button>
         `).join('')}
       </div>
@@ -136,8 +176,8 @@ export function renderWizard(container, existingDraft){
         <div class="divider"></div>
         <div class="detail-badges" style="margin-bottom:1em;">
           <span class="pill">${escapeHtml(s.infos?.['Type de créature']||'')}</span>
-          <span class="pill">${escapeHtml(s.infos?.['Taille']||'')}</span>
-          <span class="pill">${escapeHtml(s.infos?.['Vitesse']||'')}</span>
+          <span class="pill">Taille : ${escapeHtml(s.infos?.['Taille']||'')}</span>
+          <span class="pill">Vitesse : ${escapeHtml(s.infos?.['Vitesse']||'')}</span>
         </div>
         ${s.sous_especes?.length ? `
           <p class="field-label">Lignée (optionnel)</p>
@@ -145,12 +185,18 @@ export function renderWizard(container, existingDraft){
             ${s.sous_especes.map(se => `<button type="button" class="chip ${draft.speciesChoiceSubrace===se.nom?'is-selected':''}" data-sub="${escapeHtml(se.nom)}"><svg class="i"><use href="#i-check"/></svg>${escapeHtml(se.nom)}</button>`).join('')}
           </div>
         ` : ''}
-        <p class="page-lede" style="font-size:.9em;">${(s.capacites||[]).slice(0,3).map(c=>c.nom).join(' · ')}</p>
+        ${s.capacites?.length ? `
+          <p class="field-label">Traits raciaux</p>
+          <div class="capacite-list" id="espece-traits">
+            ${s.capacites.map(c => traitBlockHTML(c.nom, enrichHTML(c.description, { isPlainText:true }) + (c.tables||[]).map(t => `<div class="table-wrap"><p class="table-title">${escapeHtml(t.titre)}</p>${t.html}</div>`).join(''))).join('')}
+          </div>
+        ` : ''}
       `;
       prev.querySelectorAll('[data-sub]').forEach(b => b.addEventListener('click', () => {
         draft.speciesChoiceSubrace = draft.speciesChoiceSubrace === b.dataset.sub ? null : b.dataset.sub;
         persist(); renderPreview();
       }));
+      wireTraitToggles(prev);
     }
     panel.querySelectorAll('[data-espece]').forEach(card => card.addEventListener('click', () => {
       draft.species = card.dataset.espece;
@@ -166,14 +212,21 @@ export function renderWizard(container, existingDraft){
   function renderClasseStep(panel){
     panel.innerHTML = `
       <h2>Choisissez une classe</h2>
+      ${beginnerTip("La classe est le rôle de combat de votre personnage. Pas sûr ? Un Guerrier ou un Clerc sont très simples à prendre en main pour une première partie.")}
       <p class="page-lede" style="font-size:.94em;margin-bottom:1.4em;">Votre classe détermine vos capacités de combat, votre magie éventuelle et votre équipement de départ.</p>
       <div class="option-grid" id="classe-grid">
-        ${DATA.classes.map(c => `
+        ${DATA.classes.map(c => {
+          const t = parseClassTraits(c.html_traits_table);
+          return `
           <button type="button" class="option-card ${draft.className===c.classe_title?'is-selected':''}" data-classe="${escapeHtml(c.classe_title)}">
-            ${imgWithFallback(classImageLocal(c.image), c.classe_title, { fallbackEmoji:'⚔️' })}
-            <div class="oc-body"><span class="oc-title">${escapeHtml(c.classe_title)}</span><span class="oc-check">✓</span></div>
+            <div class="oc-media">${imgWithFallback(classImageLocal(c.image), c.classe_title, { fallbackEmoji:'⚔️' })}</div>
+            <div class="oc-body">
+              <span class="oc-title">${escapeHtml(c.classe_title)}</span><span class="oc-check">✓</span>
+              <span class="oc-meta">${escapeHtml(t.caracteristique)} · D${t.deVieFaces}</span>
+            </div>
           </button>
-        `).join('')}
+        `;
+        }).join('')}
       </div>
       <div id="classe-detail" style="margin-top:1.6em;"></div>
     `;
@@ -184,9 +237,28 @@ export function renderWizard(container, existingDraft){
       const traits = parseClassTraits(c.html_traits_table);
       const equipOptions = parseStartingEquipmentChoices(c.html_traits_table);
       if(!equipOptions.some(o => o.label === draft.classEquipmentChoice)) draft.classEquipmentChoice = equipOptions[0]?.label || 'A';
+      const isCaster = DATA.getSpellsForClass(c.classe_title).length > 0;
+      const level1Feats = (c.capacites||[]).filter(cap => String(cap.niveau) === '1');
 
       box.innerHTML = `
         <div class="divider"></div>
+        <div class="detail-badges" style="margin-bottom:1em;">
+          <span class="pill">Caractéristique : ${escapeHtml(traits.caracteristique)}</span>
+          <span class="pill">D${traits.deVieFaces} par niveau</span>
+          <span class="pill">JS : ${escapeHtml(traits.sauvegardes.join(', '))}</span>
+          ${isCaster ? `<span class="pill">Lanceur de sorts</span>` : ''}
+        </div>
+        <div class="detail-badges" style="margin-bottom:1em;">
+          <span class="pill pill-muted">Armures : ${escapeHtml(traits.armures || 'aucune')}</span>
+          <span class="pill pill-muted">Armes : ${escapeHtml(traits.armes || 'aucune')}</span>
+        </div>
+        ${CLASS_ARCHETYPES[c.classe_title] ? `<p class="page-lede" style="font-size:.92em;margin-bottom:1.2em;">${escapeHtml(CLASS_ARCHETYPES[c.classe_title])}</p>` : ''}
+        ${level1Feats.length ? `
+          <p class="field-label">Ce que vous obtenez au niveau 1</p>
+          <div class="capacite-list" id="classe-level1-feats" style="margin-bottom:1.4em;">
+            ${level1Feats.map(cap => traitBlockHTML(cap.capacite_name, enrichHTML(cap.description_html))).join('')}
+          </div>
+        ` : ''}
         <p class="field-label">Compétences de classe — choisissez-en ${traits.competences.count}</p>
         <div class="chip-group" id="classe-skill-chips" style="margin-bottom:1.4em;">
           ${traits.competences.options.map(op => `
@@ -210,6 +282,7 @@ export function renderWizard(container, existingDraft){
           </ul>` : '<p>Aucune donnée.</p>';
       }
       renderEquipPreview();
+      wireTraitToggles(box);
       box.querySelectorAll('[data-skill]').forEach(chip => chip.addEventListener('click', () => {
         const val = chip.dataset.skill;
         const idx = draft.classSkills.indexOf(val);
@@ -245,6 +318,7 @@ export function renderWizard(container, existingDraft){
   function renderHistoriqueStep(panel){
     panel.innerHTML = `
       <h2>Choisissez un historique</h2>
+      ${beginnerTip("L'historique raconte le passé de votre personnage avant l'aventure — il donne des compétences et un don utiles, sans complexité supplémentaire.")}
       <p class="page-lede" style="font-size:.94em;margin-bottom:1.4em;">Votre passé accorde des compétences, un don et un point de départ matériel.</p>
       <div class="option-grid" id="histo-grid">
         ${DATA.historiques.map(h => `
@@ -313,6 +387,7 @@ export function renderWizard(container, existingDraft){
 
     panel.innerHTML = `
       <h2>Répartissez vos caractéristiques</h2>
+      ${beginnerTip("Plus un chiffre est haut, plus votre personnage excelle dans ce domaine. Mettez vos plus hauts scores sur ce qui compte pour votre classe (indiqué juste au-dessus).")}
       <p class="page-lede" style="font-size:.94em;">Méthode du tableau standard : attribuez librement 15, 14, 13, 12, 10 et 8 entre vos six caractéristiques.</p>
       ${histo ? `
         <div class="divider"></div>
@@ -411,6 +486,7 @@ export function renderWizard(container, existingDraft){
     const fallbackHTML = draft.species ? imgWithFallback(speciesImage(draft.species), draft.species, { fallbackEmoji:'🧬' }) : '🧬';
     panel.innerHTML = `
       <h2>Qui est votre personnage ?</h2>
+      ${beginnerTip('Donnez vie à votre personnage : un nom suffit pour continuer, le reste est facultatif et modifiable à tout moment.')}
       <p class="field-label">Portrait <span class="hint-inline">(optionnel — modifiable à tout moment depuis la fiche)</span></p>
       <div class="avatar-picker-inline" id="wiz-avatar-box" style="margin-bottom:1.4em;"></div>
       <div class="abil-grid" style="grid-template-columns:1fr;max-width:560px;gap:16px;">
@@ -491,6 +567,7 @@ export function renderWizard(container, existingDraft){
 
     panel.innerHTML = `
       <h2>${escapeHtml(draft.profile.name || 'Votre personnage')}</h2>
+      ${beginnerTip("Dernière étape : vérifiez tout, puis lancez-vous ! Rien n'est figé, votre fiche restera modifiable ensuite.")}
       <p class="page-lede" style="font-size:.94em;margin-bottom:1.4em;">Vérifiez votre création avant de la finaliser. Vous pourrez continuer à faire évoluer votre personnage depuis sa fiche.</p>
       <div class="summary-grid">
         <div class="summary-block frame">

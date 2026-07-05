@@ -321,6 +321,10 @@ export async function renderCombat(container, parts){
       <p class="eyebrow">Référence rapide</p>
       <h1 class="page-title">Combat</h1>
       <p class="page-lede">Un aide-mémoire interactif des règles 2024, pensé pour suivre votre tour sans interrompre la partie.</p>
+      <div class="cbt-callout c-gold cbt-beginner-note">
+        <span class="cbt-callout-icon">🎓</span>
+        <div>Mode Découverte : on garde seulement l'essentiel — <strong>votre tour</strong>, <strong>vos actions</strong> (attaquer, lancer un sort…) et le détail d'une <strong>attaque</strong>. Les règles avancées (couvert, états spéciaux…) reviendront quand vous désactiverez ce mode.</div>
+      </div>
       <button class="btn btn-primary" id="combat-dice-btn" style="margin-top:1em;"><svg class="i"><use href="#i-dice"/></svg> Lancer les dés</button>
     </header>
     <div class="tabs" role="tablist" id="combat-tabs">
@@ -338,10 +342,17 @@ export async function renderCombat(container, parts){
       btn.addEventListener('click', () => btn.closest('.is-collapsible').classList.toggle('is-expanded'));
     });
     panel.querySelectorAll('.cbt-action-card').forEach(card => {
-      const toggle = () => card.classList.toggle('is-open');
+      // Sur tactile, un tap sur un terme à info-bulle (.term-link) ne doit pas aussi
+      // refermer la carte — sur PC ce n'était pas gênant car on pouvait survoler le
+      // terme sans cliquer, mais au tactile le tap est le seul moyen de voir la bulle.
+      const toggle = (e) => {
+        if(e?.target?.closest?.('.term-link')) return;
+        card.classList.toggle('is-open');
+      };
       card.addEventListener('click', toggle);
       card.addEventListener('keydown', (e) => {
-        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); }
+        if(e.target.closest('.term-link')) return;
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(e); }
       });
     });
   }

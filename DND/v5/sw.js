@@ -2,7 +2,7 @@
 // Stratégie : cache-first pour tout le code/données de l'application (versionné),
 // cache-as-you-go pour les images (illustrations d'espèces/classes/sorts) rencontrées.
 
-const VERSION = 'codex-dnd-v3';
+const VERSION = 'codex-dnd-v4';
 const CORE_CACHE = `${VERSION}-core`;
 const RUNTIME_CACHE = `${VERSION}-runtime`;
 
@@ -25,6 +25,7 @@ const CORE_ASSETS = [
   'js/confirm.js',
   'js/search.js',
   'js/theme.js',
+  'js/beginner.js',
   'js/favorites.js',
   'js/pages/home.js',
   'js/pages/races.js',
@@ -44,6 +45,9 @@ const CORE_ASSETS = [
   'js/character/sheet.js',
   'js/character/list.js',
   'js/character/avatar.js',
+  'js/character/pregens.js',
+  'js/character/quiz.js',
+  'js/character/start-hub.js',
   'data/species.json',
   'data/races.json',
   'data/classes.json',

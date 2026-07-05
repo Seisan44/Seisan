@@ -4,6 +4,9 @@
 import { DATA } from './data.js';
 import { qs, debounce, escapeHtml, lockBodyScroll, unlockBodyScroll, trapFocus } from './utils.js';
 import { navigate } from './router.js';
+import { isBeginnerMode } from './beginner.js';
+
+const BEGINNER_HIDDEN_CATS = new Set(['Dons', 'Équipement', 'Historiques']);
 
 let backdrop = null;
 let inputEl, resultsEl;
@@ -33,8 +36,10 @@ function runSearch(q){
     renderEmpty('Tapez pour chercher un sort, un don, une règle, un objet…');
     return;
   }
+  const beginner = isBeginnerMode();
   const scored = [];
   for(const item of DATA.searchIndex){
+    if(beginner && BEGINNER_HIDDEN_CATS.has(item.cat)) continue;
     const label = item.label.toLowerCase();
     const sub = (item.sub||'').toLowerCase();
     let score = -1;

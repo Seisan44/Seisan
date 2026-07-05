@@ -1,3 +1,21 @@
+// Résumés d'archétype courts, rédigés à la main (non pilotés par les données) : aident à
+// choisir une classe pendant la création de personnage sans avoir à lire toute la table
+// de capacités — rôle de combat, complexité et ambiance de jeu en une phrase.
+export const CLASS_ARCHETYPES = {
+  'Barbare': "Combattant primitif tout-terrain : encaisse et frappe fort au corps-à-corps. Très simple à jouer.",
+  'Barde': "Généraliste social et magique : soutient le groupe par la musique, la magie et des compétences très variées.",
+  'Clerc': "Soigneur et lanceur de sorts divin polyvalent : garde le groupe en vie tout en restant utile au combat.",
+  'Druide': "Lanceur de sorts nature polyvalent grâce à la Forme sauvage : contrôle, soin ou combat selon la forme prise.",
+  'Ensorceleur': "Lanceur de sorts offensif à la liste réduite mais très flexible grâce à la Métamagie.",
+  'Guerrier': "Combattant polyvalent et simple à prendre en main : maîtrise toutes les armes et armures, efficace en toutes situations.",
+  'Magicien': "Lanceur de sorts arcanique le plus complet : immense choix de sorts, demande préparation et anticipation.",
+  'Moine': "Combattant agile à mains nues : mobilité et rafales de coups alimentées par le Ki. Technique à jouer.",
+  'Occultiste': "Lanceur de sorts orienté combat : peu d'emplacements mais très puissants, complétés par des capacités mystiques uniques.",
+  'Paladin': "Combattant sacré hybride : solide au corps-à-corps, quelques sorts divins et de puissants châtiments.",
+  'Rodeur': "Combattant polyvalent tourné vers l'exploration : efficace à distance ou au corps-à-corps, avec un soupçon de magie.",
+  'Roublard': "Combattant furtif et technique : dégâts concentrés via l'Attaque sournoise, excelle en compétences et en discrétion.",
+};
+
 // Conseils de jeu courts, rédigés à la main (non pilotés par les données) : un
 // complément pratique à la table de capacités, pas une retranscription des règles.
 export const CLASS_TIPS = {

@@ -132,11 +132,11 @@ function renderTabContent(tab, q){
     <nav class="az-nav" aria-label="Navigation alphabétique">
       ${letters.map(l => `<a href="#az-${l}">${l}</a>`).join('')}
     </nav>
-    <div class="glossary-list">
+    <div class="glossary-az">
       ${letters.map(l => `
         <div id="az-${l}" class="az-group">
           <h2 class="az-letter">${l}</h2>
-          ${groups.get(l).map(entryCard).join('')}
+          <div class="az-grid">${groups.get(l).map(entryCard).join('')}</div>
         </div>
       `).join('')}
     </div>

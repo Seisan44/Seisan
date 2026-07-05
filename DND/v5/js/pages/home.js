@@ -33,13 +33,32 @@ export async function renderHome(container){
       </div>
     </section>
 
+    <div class="beginner-cta">
+      <div class="beginner-cta-off">
+        <span class="beginner-cta-icon" aria-hidden="true">🎓</span>
+        <div>
+          <strong>Nouveau sur D&amp;D ?</strong>
+          <p>Le Mode Découverte simplifie le site et propose des personnages prêts à jouer.</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-primary" data-beginner-enable>Activer le Mode Découverte</button>
+      </div>
+      <div class="beginner-cta-on">
+        <span class="beginner-cta-icon" aria-hidden="true">🎓</span>
+        <div>
+          <strong>Mode Découverte activé</strong>
+          <p>Le site est simplifié pour apprendre les bases — pages avancées masquées, personnages prêts à jouer disponibles.</p>
+        </div>
+        <button type="button" class="btn btn-sm btn-ghost" data-beginner-disable>Désactiver</button>
+      </div>
+    </div>
+
     <div class="divider"></div>
 
     <section>
       <h2 class="eyebrow" style="font-size:.8rem;">Explorer le codex</h2>
       <div class="card-grid card-grid-wide home-hub-grid">
         ${HUB_CARDS.map(c => `
-          <a class="card hub-card" href="#${c.route}">
+          <a class="card hub-card" href="#${c.route}" data-route="${c.route}">
             <div class="card-body">
               <svg class="i hub-card-icon"><use href="#${c.icon}"/></svg>
               <h3 class="card-title">${c.title}</h3>

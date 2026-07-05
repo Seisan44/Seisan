@@ -2,6 +2,8 @@ import { getActiveCharacter, getCharacter, listCharacters, setActiveId, createCh
 import { renderWizard } from '../character/wizard.js';
 import { renderSheet } from '../character/sheet.js';
 import { renderCharacterList } from '../character/list.js';
+import { renderStartHub } from '../character/start-hub.js';
+import { isBeginnerMode } from '../beginner.js';
 import { navigate } from '../router.js';
 
 export async function renderPersonnage(container, parts){
@@ -12,6 +14,10 @@ export async function renderPersonnage(container, parts){
     return;
   }
   if(sub === 'nouveau'){
+    if(isBeginnerMode()){
+      renderStartHub(container);
+      return;
+    }
     const draft = createCharacterShell();
     saveCharacter(draft);
     setActiveId(draft.id);
@@ -42,5 +48,9 @@ export async function renderPersonnage(container, parts){
     return;
   }
 
+  if(isBeginnerMode()){
+    renderStartHub(container);
+    return;
+  }
   renderWizard(container, createCharacterShell());
 }

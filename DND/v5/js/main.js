@@ -3,6 +3,7 @@ import { initRouter, registerRoute } from './router.js';
 import { initGlossaryPopovers } from './popover.js';
 import { initCommandPalette } from './search.js';
 import { initReaderSettings } from './theme.js';
+import { initBeginnerMode } from './beginner.js';
 import { qs, qsa, lockBodyScroll, unlockBodyScroll } from './utils.js';
 import { toast } from './toast.js';
 
@@ -58,6 +59,7 @@ function registerAllRoutes(){
 async function boot(){
   initNav();
   initReaderSettings();
+  initBeginnerMode();
   initGlossaryPopovers();
   initSpellLinks();
   initCommandPalette();
