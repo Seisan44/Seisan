@@ -32,13 +32,14 @@ function renderGrid(container){
   grid.innerHTML = DATA.species.map(s => `
     <a class="card" href="#races/${s.slug}">
       <div class="card-media">
-        ${imgWithFallback(speciesThumb(s.espece), s.espece, { fallbackEmoji:'🧬' })}
+        ${imgWithFallback(s._homebrew ? null : speciesThumb(s.espece), s.espece, { fallbackEmoji:'🧬' })}
       </div>
       <div class="card-body">
         <h2 class="card-title">${escapeHtml(s.espece)}</h2>
         <div class="card-meta">
           <span class="pill pill-muted">${escapeHtml(tailleShort(s.infos?.['Taille']))}</span>
           <span class="pill pill-muted">${escapeHtml(s.infos?.['Vitesse'] || '')}</span>
+          ${s._homebrew ? `<span class="pill">✨ Homebrew</span>` : ''}
         </div>
         <p class="card-desc">${s.sous_especes?.length ? `${s.sous_especes.length} lignées : ${escapeHtml(s.sous_especes.map(se => se.nom).join(', '))}` : escapeHtml(s.infos?.['Type de créature']||'')}</p>
       </div>
@@ -50,11 +51,12 @@ function renderDetail(container, s){
   container.innerHTML = `
     <a href="#races" class="btn btn-ghost btn-sm" style="margin-bottom:1.4rem;">&larr; Toutes les races</a>
     <div class="detail-hero">
-      <div class="detail-portrait">${imgWithFallback(speciesImage(s.espece), s.espece, { fallbackEmoji:'🧬' })}</div>
+      <div class="detail-portrait">${imgWithFallback(s._homebrew ? null : speciesImage(s.espece), s.espece, { fallbackEmoji:'🧬' })}</div>
       <div class="detail-heading">
         <p class="eyebrow">Espèce jouable</p>
         <h1 class="page-title" style="font-size:2.2rem;">${escapeHtml(s.espece)}</h1>
         <div class="detail-badges">
+          ${s._homebrew ? `<span class="pill">✨ Homebrew</span>` : ''}
           <span class="pill">${escapeHtml(s.infos?.['Type de créature']||'')}</span>
           <span class="pill">${escapeHtml(tailleShort(s.infos?.['Taille']))}</span>
           <span class="pill">${escapeHtml(s.infos?.['Vitesse']||'')}</span>

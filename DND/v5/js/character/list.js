@@ -1,6 +1,7 @@
 import { listCharacters, getActiveId, setActiveId, deleteCharacter } from './storage.js';
 import { escapeHtml } from '../utils.js';
 import { speciesImage, imgWithFallback } from '../images.js';
+import { DATA } from '../data.js';
 import { navigate } from '../router.js';
 import { confirmAction } from '../confirm.js';
 import { toast } from '../toast.js';
@@ -32,7 +33,7 @@ export function renderCharacterList(container){
       <div class="card-body" style="padding-top:18px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:.6em;">
           <div class="char-avatar" style="width:52px;height:52px;font-size:1.4rem;">
-            ${c.species ? imgWithFallback(speciesImage(c.species), c.species, { className:'', fallbackEmoji:'🐉' }) : '🐉'}
+            ${c.species ? imgWithFallback(DATA.species.find(x => x.espece === c.species)?._homebrew ? null : speciesImage(c.species), c.species, { className:'', fallbackEmoji:'🐉' }) : '🐉'}
           </div>
           <div>
             <h2 class="card-title" style="margin-bottom:.1em;">${escapeHtml(c.profile?.name || 'Sans nom')}</h2>

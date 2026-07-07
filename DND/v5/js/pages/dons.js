@@ -7,6 +7,7 @@ import { toast } from '../toast.js';
 
 const TYPE_LABEL = { 'general':'Général', 'style_combat':'Style de combat', 'origine':'Origine' };
 const TYPE_ICON = { 'general':'✦', 'style_combat':'⚔️', 'origine':'🌱' };
+const TYPE_PILL_CLASS = { 'general':'pill-cat-general', 'style_combat':'pill-cat-style', 'origine':'pill-cat-origine' };
 
 let state = { q:'', type:'', favoris:false };
 
@@ -104,7 +105,8 @@ function renderGrid(grid, list){
         <span style="font-size:1.6rem;" aria-hidden="true">${TYPE_ICON[type] || '✦'}</span>
         <h2 class="card-title">${escapeHtml(d._primaryName)}${d._altName ? ` <span style="color:var(--ink-faint);font-size:.7em;">(${escapeHtml(d._altName)})</span>` : ''}</h2>
         <div class="card-meta">
-          <span class="pill pill-muted">${TYPE_LABEL[type] || type || 'Don'}</span>
+          <span class="pill ${TYPE_PILL_CLASS[type] || 'pill-muted'}">${TYPE_LABEL[type] || type || 'Don'}</span>
+          ${d._homebrew ? `<span class="pill">✨ Homebrew</span>` : ''}
         </div>
         <p class="card-desc">${escapeHtml(formatPrereq(d))}</p>
       </div>
@@ -132,7 +134,7 @@ function renderGrid(grid, list){
 function openDonDetail(don, originEl=null){
   const type = don.prerequis?.type_don;
   openModal({
-    eyebrow: TYPE_LABEL[type] || 'Don',
+    eyebrow: (don._homebrew ? '✨ Homebrew · ' : '') + (TYPE_LABEL[type] || 'Don'),
     title: `${escapeHtml(don._primaryName)}${don._altName ? ` <span style="color:var(--ink-faint);font-size:.7em;">(${escapeHtml(don._altName)})</span>` : ''}`,
     originEl,
     build(body){

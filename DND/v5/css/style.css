@@ -35,6 +35,10 @@
   --accent-bright: var(--gold-bright);
   --accent-rgb:    201,168,76;
   --danger-rgb:    176,70,63;
+  /* Texte posé sur un aplat accent/gold/sémantique (badges, boutons pleins) —
+     sombre sur les teintes vives du thème sombre, crème sur les teintes
+     assombries du thème clair. */
+  --on-accent:     #17110a;
   --success-rgb:   95,158,106;
   --info-rgb:      111,155,199;
 
@@ -53,14 +57,15 @@
   --shadow-glow: 0 0 0 1px rgba(var(--accent-rgb),.35), 0 0 24px -4px rgba(var(--accent-rgb),.45);
 
   --header-h: 68px;
+  --sidebar-w: 240px;
   --content-max: 1280px;
   --reading-max: 74ch;
 
   --z-header: 100;
   --z-nav-drawer: 200;
+  --z-toast: 400;
   --z-overlay: 500;
   --z-tooltip: 600;
-  --z-toast: 700;
   --z-hp: 150;
 
   --dur-fast: 140ms;
@@ -97,6 +102,18 @@ body[data-route="personnage"]   { --accent:#4fb0a0; --accent-bright:#79d4c3; --a
   --gold:          #8a6420;
   --gold-bright:   #6b4c15;
   --gold-dim:      #a9863c;
+
+  /* Variantes assombries des couleurs sémantiques : les teintes du thème sombre
+     (pensées pour briller sur fond quasi noir) tombent sous 3:1 sur le parchemin
+     clair. Même teinte, luminosité réduite pour rester ≥ AA (4.5:1) sur panel/bg. */
+  --danger:        #a2403a;
+  --danger-bright: #b52b21;
+  --success:       #3f6946;
+  --info:          #37628e;
+  --danger-rgb:    162,64,58;
+  --success-rgb:   63,105,70;
+  --info-rgb:      55,98,142;
+  --on-accent:     #fff8ea;
   color-scheme: light;
 }
 :root[data-theme="light"] body{
@@ -106,6 +123,19 @@ body[data-route="personnage"]   { --accent:#4fb0a0; --accent-bright:#79d4c3; --a
 :root[data-theme="light"] .site-header::before{ background: rgba(233,220,184,.9); }
 :root[data-theme="light"] .primary-nav a.nav-cta{ color:#fff8ea; }
 :root[data-theme="light"] .btn-primary{ color:#fff8ea; }
+
+/* accents par catégorie — variantes assombries pour le thème clair : les teintes
+   du thème sombre (calibrées pour un fond quasi noir) tombent à 1.3–4.1:1 sur le
+   parchemin clair (mesuré). Même teinte, luminosité réduite pour rester ≥ AA. */
+:root[data-theme="light"] body[data-route="races"]        { --accent:#496836; --accent-bright:#3e6a23; --accent-rgb:73,104,54; }
+:root[data-theme="light"] body[data-route="classes"]      { --accent:#9f4337; --accent-bright:#af341f; --accent-rgb:159,67,55; }
+:root[data-theme="light"] body[data-route="dons"]         { --accent:#7c591a; --accent-bright:#7f590a; --accent-rgb:124,89,26; }
+:root[data-theme="light"] body[data-route="sorts"]        { --accent:#6e46c1; --accent-bright:#6d38e2; --accent-rgb:110,70,193; }
+:root[data-theme="light"] body[data-route="equipements"]  { --accent:#7c5836; --accent-bright:#875525; --accent-rgb:124,88,54; }
+:root[data-theme="light"] body[data-route="glossaire"]    { --accent:#3f628d; --accent-bright:#2961a5; --accent-rgb:63,98,141; }
+:root[data-theme="light"] body[data-route="combat"]       { --accent:#a73b36; --accent-bright:#b7271d; --accent-rgb:167,59,54; }
+:root[data-theme="light"] body[data-route="historiques"]  { --accent:#596440; --accent-bright:#546631; --accent-rgb:89,100,64; }
+:root[data-theme="light"] body[data-route="personnage"]   { --accent:#2f6a60; --accent-bright:#206a5c; --accent-rgb:47,106,96; }
 
 html{
   font-size: calc(16px * var(--font-scale));
@@ -148,7 +178,7 @@ p{ margin:0 0 1em; }
 
 .skip-link{
   position:absolute; left:-999px; top:0; z-index:1000;
-  background: var(--gold); color:#1a1206; padding:.7em 1.2em; border-radius:0 0 var(--radius-s) 0;
+  background: var(--gold); color:var(--on-accent); padding:.7em 1.2em; border-radius:0 0 var(--radius-s) 0;
   font-family: var(--font-label); font-weight:600;
 }
 .skip-link:focus{ left:0; }
@@ -246,20 +276,30 @@ p{ margin:0 0 1em; }
 .brand-mark{ font-size:1.5em; filter: drop-shadow(0 0 10px rgba(var(--accent-rgb),.5)); }
 .brand-text em{ font-style:normal; color: var(--ink); font-family: var(--font-head); font-size:.72em; margin-left:.15em; }
 
-.primary-nav{ flex:1; min-width:0; }
-.primary-nav ul{ display:flex; align-items:center; gap:2px; }
+/* La nav est toujours position:fixed, ancrée à gauche : c'est une sidebar permanente
+   sous le header dès 641px, et un tiroir hors-écran (transform translateX) sur
+   smartphone (@media max-width:640px la fait démarrer à top:0 et gère l'ouverture). */
+.primary-nav{
+  position:fixed; top: var(--header-h); left:0; bottom:0; width: var(--sidebar-w);
+  z-index: var(--z-nav-drawer);
+  background: linear-gradient(180deg, var(--bg-2), var(--bg));
+  border-right:1px solid var(--panel-border);
+  padding: 14px 12px 18px;
+  overflow-y:auto;
+}
+.primary-nav ul{ display:flex; flex-direction:column; gap:2px; }
 .primary-nav a{
-  display:flex; align-items:center; gap:.5em;
-  padding:.6em .8em; border-radius: var(--radius-s);
+  display:flex; align-items:center; gap:.6em;
+  padding:.85em 1em; border-radius: var(--radius-s);
   color: var(--ink-dim); text-decoration:none;
-  font-family: var(--font-label); font-size:.86rem; letter-spacing:.02em;
+  font-family: var(--font-label); font-size:.92rem; letter-spacing:.02em;
   white-space:nowrap;
   transition: color var(--dur-fast), background var(--dur-fast);
 }
-.primary-nav a .i{ opacity:.85; }
+.primary-nav a .i{ opacity:.85; width:1.2em; height:1.2em; }
 .primary-nav a:hover{ color: var(--ink); background: rgba(255,255,255,.05); }
 .primary-nav a.is-active{ color: var(--accent-bright); background: rgba(var(--accent-rgb),.14); box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb),.3); }
-.primary-nav a.nav-cta{ color:#17110a; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); box-shadow: var(--shadow-soft); font-weight:600; }
+.primary-nav a.nav-cta{ color:var(--on-accent); background: linear-gradient(180deg, var(--gold-bright), var(--gold)); box-shadow: var(--shadow-soft); font-weight:600; margin-top:8px; }
 .primary-nav a.nav-cta:hover{ filter: brightness(1.08); }
 .primary-nav a.nav-cta.is-active{ box-shadow: 0 0 0 2px var(--accent-bright), var(--shadow-soft); }
 
@@ -281,6 +321,11 @@ p{ margin:0 0 1em; }
 
 #view{ flex:1; outline:none; }
 #view:focus-visible{ outline:none; }
+/* Décalage pour laisser la place à la sidebar fixe ; annulé sous 641px (tiroir smartphone,
+   voir section 11 responsive) où la nav repasse hors-écran. */
+@media (min-width:641px){
+  #view, .site-footer{ margin-left: var(--sidebar-w); }
+}
 
 .page{
   max-width: var(--content-max); margin:0 auto;
@@ -365,9 +410,9 @@ p{ margin:0 0 1em; }
 .btn:active{ transform: translateY(0); }
 .btn-primary{
   background: linear-gradient(180deg, var(--accent-bright), var(--accent));
-  border-color: transparent; color:#17110a; box-shadow: var(--shadow-soft);
+  border-color: transparent; color:var(--on-accent); box-shadow: var(--shadow-soft);
 }
-.btn-primary:hover{ filter:brightness(1.07); color:#17110a; }
+.btn-primary:hover{ filter:brightness(1.07); color:var(--on-accent); }
 .btn-ghost{ background:transparent; }
 .btn-danger{ border-color: rgba(176,70,63,.5); color: var(--danger-bright); }
 .btn-danger:hover{ background: rgba(176,70,63,.15); border-color: var(--danger-bright); }
@@ -401,6 +446,11 @@ p{ margin:0 0 1em; }
   border: 1px solid rgba(var(--accent-rgb),.3);
 }
 .pill-muted{ background: rgba(255,255,255,.05); color: var(--ink-dim); border-color: var(--panel-border); }
+/* Dons : une teinte par catégorie (Général reprend l'accent doré de la page,
+   les deux autres empruntent les couleurs sémantiques déjà themées). */
+.pill-cat-general{ background: rgba(var(--accent-rgb),.14); color: var(--accent-bright); border-color: rgba(var(--accent-rgb),.32); }
+.pill-cat-style{ background: rgba(var(--info-rgb),.14); color: var(--info); border-color: rgba(var(--info-rgb),.35); }
+.pill-cat-origine{ background: rgba(var(--success-rgb),.14); color: var(--success); border-color: rgba(var(--success-rgb),.35); }
 
 .icon-toggle{
   display:inline-flex; align-items:center; justify-content:center;
@@ -627,7 +677,7 @@ label.field-label{ display:block; font-family: var(--font-label); font-size:.78r
 .eq-table{ width:100%; border-collapse:collapse; min-width:640px; font-size:.9rem; }
 .eq-table th{
   text-align:left; font-family: var(--font-label); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em;
-  color: var(--ink-faint); padding:10px 14px; background: var(--panel-2); position:sticky; top:0;
+  color: var(--ink-dim); padding:10px 14px; background: var(--panel-2); position:sticky; top:0;
 }
 .eq-table td{ padding:10px 14px; border-top:1px solid var(--panel-border); vertical-align:middle; }
 .eq-table tbody tr:hover td{ background: rgba(255,255,255,.03); }
@@ -931,7 +981,7 @@ label.field-label{ display:block; font-family: var(--font-label); font-size:.78r
 .death-dot.is-fail{ border-color: var(--danger); }
 .death-dot.is-fail.is-filled{ background: var(--danger); box-shadow: 0 0 8px -1px rgba(var(--danger-rgb),.85); }
 
-.stat-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(90px,1fr)); gap:10px; }
+.stat-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(90px,1fr)); gap:10px; }
 .stat-block{ text-align:center; padding:12px 6px; border-radius: var(--radius-m); }
 .stat-block .label{ font-family: var(--font-label); font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color: var(--ink-faint); }
 .stat-block .score{ font-size:1.7rem; font-family: var(--font-head); color: var(--gold-bright); }
@@ -939,7 +989,7 @@ label.field-label{ display:block; font-family: var(--font-label); font-size:.78r
 
 /* Jets de sauvegarde par caractéristique — déplacés de l'aside vers le panneau
    Caractéristiques, à côté des scores. */
-.save-grid{ display:grid; grid-template-columns: repeat(auto-fill,minmax(96px,1fr)); gap:8px; }
+.save-grid{ display:grid; grid-template-columns: repeat(auto-fit,minmax(96px,1fr)); gap:8px; }
 .save-block{ display:flex; align-items:center; gap:7px; padding:8px 10px; border-radius: var(--radius-m); background: var(--bg-1); border:1px solid var(--panel-border); }
 .save-block.is-proficient{ border-color: var(--accent); }
 .save-dot{ width:8px; height:8px; border-radius:50%; border:1.5px solid var(--ink-faint); flex:none; }
@@ -949,7 +999,7 @@ label.field-label{ display:block; font-family: var(--font-label); font-size:.78r
 
 .spell-slots-row{ display:flex; flex-wrap:wrap; gap:14px; }
 .spell-slot-lvl{ text-align:center; padding:10px 12px; min-width:64px; }
-.spell-slot-lvl .lvl-label{ font-family: var(--font-label); font-size:.72rem; color: var(--ink-faint); }
+.spell-slot-lvl .lvl-label{ font-family: var(--font-label); font-size:.72rem; color: var(--ink-faint); display:flex; align-items:center; justify-content:center; gap:5px; }
 .slot-dots{ display:flex; gap:4px; justify-content:center; margin-top:6px; }
 .slot-dot{ width:14px; height:14px; border-radius:50%; border:1px solid var(--accent); background:transparent; cursor:pointer; padding:0; }
 .slot-dot.is-used{ background: var(--accent); }
@@ -980,7 +1030,7 @@ label.field-label{ display:block; font-family: var(--font-label); font-size:.78r
 .inv-suggest-empty{ padding:10px; font-size:.82rem; color: var(--ink-faint); }
 
 .inv-table{ width:100%; border-collapse:collapse; }
-.inv-table th{ text-align:left; font-family: var(--font-label); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color: var(--ink-faint); padding:8px 10px; border-bottom:1px solid var(--panel-border); }
+.inv-table th{ text-align:left; font-family: var(--font-label); font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; color: var(--ink-dim); padding:8px 10px; border-bottom:1px solid var(--panel-border); }
 .inv-table td{ padding:9px 10px; border-bottom:1px solid rgba(255,255,255,.05); font-size:.92rem; }
 .inv-table tr:hover td{ background: rgba(255,255,255,.03); }
 .inv-item-name{ cursor:help; border-bottom:1px dotted var(--ink-faint); }
@@ -1003,7 +1053,7 @@ label.field-label{ display:block; font-family: var(--font-label); font-size:.78r
    au survol/focus expliquant le calcul, pour que les joueurs comprennent le chiffre. */
 .hint-inline{ font-size:.72em; text-transform:none; letter-spacing:0; font-style:italic; color: var(--ink-faint); font-family: var(--font-body); }
 .char-vitals-panel{ padding:16px 18px; }
-.vital-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(104px,1fr)); gap:10px; }
+.vital-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(104px,1fr)); gap:10px; margin: 0 auto}
 .vital-tile{
   text-align:center; padding:10px 6px; border-radius: var(--radius-m);
   background: var(--bg-1); border:1px solid var(--panel-border); cursor:help;
@@ -1012,6 +1062,34 @@ label.field-label{ display:block; font-family: var(--font-label); font-size:.78r
 .vital-tile:hover, .vital-tile:focus-visible{ border-color: rgba(var(--accent-rgb),.55); outline:none; transform: translateY(-2px); }
 .vital-value{ font-size:1.3rem; font-family: var(--font-head); color: var(--gold-bright); line-height:1.2; }
 .vital-label{ font-family: var(--font-label); font-size:.64rem; letter-spacing:.05em; text-transform:uppercase; color: var(--ink-faint); margin-top:3px; }
+.vital-tile.is-warning{ border-color: rgba(214,160,61,.5); }
+.vital-tile.is-warning .vital-value{ color: var(--gold); }
+.vital-tile.is-danger{ border-color: rgba(176,70,63,.55); }
+.vital-tile.is-danger .vital-value{ color: var(--danger-bright); }
+
+/* Icônes de statistiques (game-icons.net) : badge centré au-dessus du chiffre sur les
+   tuiles verticales (vitals, caractéristiques, ressources de classe), et petit pictogramme
+   en ligne sur les rangées horizontales (jets de sauvegarde, barre de PV). */
+.stat-icon{ width:24px; height:24px; display:block; margin:0 auto 5px; color: var(--accent); opacity:.85; }
+.vital-tile.is-warning .stat-icon{ color: var(--gold); }
+.vital-tile.is-danger .stat-icon{ color: var(--danger-bright); }
+.stat-icon-inline{ width:14px; height:14px; flex:none; color: var(--accent); opacity:.85; vertical-align:-2px; }
+
+/* Encombrement : marque discrète sur les caractéristiques/sauvegardes touchées (For/Dex/Con)
+   quand la charge portée dépasse le seuil "Fortement encombré" (voir js/character/rules.js). */
+.stat-block.is-encumbered, .save-block.is-encumbered{ background: rgba(176,70,63,.08); }
+
+/* Barre de capacité de charge (onglet Inventaire) : même vocabulaire visuel que la barre de PV. */
+.inv-capacity-bar{ padding:10px 12px; border-radius: var(--radius-m); background: var(--bg-1); border:1px solid var(--panel-border); margin-bottom:1em; cursor:help; }
+.inv-capacity-head{ display:flex; justify-content:space-between; align-items:baseline; font-size:.85rem; margin-bottom:6px; }
+.inv-capacity-status{ font-family: var(--font-label); font-size:.68rem; letter-spacing:.05em; text-transform:uppercase; color: var(--ink-faint); }
+.inv-capacity-bar.is-light .inv-capacity-status{ color: var(--gold); }
+.inv-capacity-bar.is-heavy .inv-capacity-status{ color: var(--danger-bright); }
+.inv-capacity-track{ height:10px; border-radius: var(--radius-round); background: var(--bg-2); overflow:hidden; border:1px solid var(--panel-border); }
+.inv-capacity-fill{ height:100%; transition: width var(--dur-med) var(--ease-out); }
+.inv-capacity-fill.is-normal{ background: linear-gradient(90deg,#2f5c33,#5f9e6a 60%,#7fc98a); }
+.inv-capacity-fill.is-light{ background: linear-gradient(90deg,#8a6a1f,#d6a03d 60%,#f0c469); }
+.inv-capacity-fill.is-heavy{ background: linear-gradient(90deg,#7a2620,#c1453f 55%,#e2685f); }
 
 /* Caractéristiques éditables directement dans la tuile (remplace l'affichage figé). */
 .stat-score-input{
@@ -1052,7 +1130,7 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
   content:""; position:absolute; top:17px; left:-50%; width:100%; height:2px; background: var(--panel-border); z-index:0;
 }
 .wizard-step-node:first-child::before{ display:none; }
-.wizard-step-node.is-done .dot{ background: var(--accent); border-color: var(--accent); color:#17110a; }
+.wizard-step-node.is-done .dot{ background: var(--accent); border-color: var(--accent); color:var(--on-accent); }
 .wizard-step-node.is-done::before{ background: var(--accent); }
 .wizard-step-node.is-active .dot{ border-color: var(--accent-bright); box-shadow: 0 0 0 4px rgba(var(--accent-rgb),.22); color: var(--accent-bright); }
 .wizard-step-node.is-active .lbl{ color: var(--accent-bright); }
@@ -1101,7 +1179,7 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
 .cbt-content{ max-width:none; }
 .cbt-section{ display:flex; flex-direction:column; gap:1.4rem; }
 .cbt-section-title{ display:flex; align-items:center; flex-wrap:wrap; gap:.4em; font-size:1.3rem; margin-bottom:0; }
-.cbt-highlight{ color:#17110a; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); padding:.05em .5em; border-radius: var(--radius-s); }
+.cbt-highlight{ color:var(--on-accent); background: linear-gradient(180deg, var(--gold-bright), var(--gold)); padding:.05em .5em; border-radius: var(--radius-s); }
 .cbt-subsection{ font-size:1.05rem; margin:.2em 0 -.6em; }
 .cbt-lead{ max-width: var(--reading-max); color: var(--ink-dim); margin:0; }
 .cbt-footnote{ font-size:.88rem; color: var(--ink-faint); font-style:italic; }
@@ -1127,8 +1205,8 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
   margin-top:auto; font-family: var(--font-label); font-size:.66rem; text-transform:uppercase; letter-spacing:.05em;
   padding:.25em .7em; border-radius: var(--radius-round); border:1px solid var(--panel-border); color: var(--ink-faint);
 }
-.cbt-flow-badge.is-required{ color:#17110a; background: var(--danger-bright); border-color:transparent; }
-.cbt-flow-badge.is-special{ color:#17110a; background: var(--info); border-color:transparent; }
+.cbt-flow-badge.is-required{ color:var(--on-accent); background: var(--danger-bright); border-color:transparent; }
+.cbt-flow-badge.is-special{ color:var(--on-accent); background: var(--info); border-color:transparent; }
 .cbt-flow-badge.is-optional{ color: var(--ink-dim); }
 .cbt-flow-arrow{ display:flex; align-items:center; justify-content:center; flex:0 0 auto; font-size:1.3rem; color: var(--ink-faint); padding:0 2px; }
 
@@ -1205,7 +1283,7 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
 }
 .cbt-formula-part small{ font-family: var(--font-body); font-size:.72em; color: var(--ink-faint); font-style:italic; }
 .cbt-formula-part.c-dice{ color: var(--gold-bright); background: rgba(var(--accent-rgb),.2); }
-.cbt-formula-part.c-hit{ color:#17110a; background: linear-gradient(180deg, var(--gold-bright), var(--gold)); border-color:transparent; font-weight:600; }
+.cbt-formula-part.c-hit{ color:var(--on-accent); background: linear-gradient(180deg, var(--gold-bright), var(--gold)); border-color:transparent; font-weight:600; }
 .cbt-formula-part.c-target{ color: var(--danger-bright); background: rgba(176,70,63,.14); border-color: rgba(176,70,63,.3); }
 
 /* avantage / désavantage */
@@ -1240,14 +1318,15 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
 .cbt-tag-row{ display:flex; gap:8px; align-items:baseline; font-size:.86rem; color: var(--ink-dim); }
 .cbt-tag{
   flex:none; font-family: var(--font-label); font-size:.68rem; text-transform:uppercase; letter-spacing:.03em;
-  padding:.2em .6em; border-radius: var(--radius-round); color:#17110a; font-weight:600;
+  padding:.2em .6em; border-radius: var(--radius-round); color:var(--on-accent); font-weight:600;
 }
 .cbt-tag.c-crimson{ background: var(--danger-bright); }
-.cbt-tag.c-slate{ background:#9aa7b8; }
 .cbt-tag.c-gold{ background: var(--gold-bright); }
-.cbt-tag.c-steel{ background:#8fb0c4; }
-.cbt-tag.c-purple{ background:#bda6f0; }
-.cbt-tag.c-forest{ background:#a3d485; }
+/* Nuances fixes (non liées au thème) : toujours pâles, donc toujours du texte sombre. */
+.cbt-tag.c-slate{ background:#9aa7b8; color:#17110a; }
+.cbt-tag.c-steel{ background:#8fb0c4; color:#17110a; }
+.cbt-tag.c-purple{ background:#bda6f0; color:#17110a; }
+.cbt-tag.c-forest{ background:#a3d485; color:#17110a; }
 
 /* arbre de décision (Intention, Agripper, Bousculer) */
 .cbt-tree{ display:flex; flex-direction:column; gap:10px; }
@@ -1317,22 +1396,24 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
    11. RESPONSIVE
    ========================================================================== */
 
-/* --- Tablette et moins : nav bascule en tiroir --- */
-@media (max-width: 980px){
+/* --- Desktop/tablette (≥641px) : la nav est une sidebar fixe, jamais un tiroir --- */
+@media (min-width:641px){
+  .nav-scrim{ display:none !important; }
+  .header-actions{ margin-left:auto; }
+}
+
+/* --- Mobile (≤640px) : nav en tiroir plein écran, inchangé --- */
+@media (max-width: 640px){
+  :root{ --header-h:60px; }
+  .header-inner{ gap:8px; }
   .primary-nav{
-    position:fixed; top:0; left:0; bottom:0; width:min(320px,84vw); z-index: var(--z-nav-drawer);
-    background: linear-gradient(180deg, var(--bg-2), var(--bg));
-    border-right:1px solid var(--panel-border);
+    top:0; width:min(320px,84vw);
     padding: calc(18px + env(safe-area-inset-top)) 14px 18px;
     transform: translateX(-104%);
     transition: transform var(--dur-med) var(--ease-out);
-    overflow-y:auto;
     box-shadow: var(--shadow-deep);
   }
   .primary-nav.is-open{ transform:none; }
-  .primary-nav ul{ flex-direction:column; gap:2px; }
-  .primary-nav a{ padding:.95em 1em; font-size:.98rem; }
-  .primary-nav a .i{ width:1.3em; height:1.3em; }
   .nav-toggle{
     display:flex; align-items:center; justify-content:center; width:44px; height:44px;
     background:none; border:none; color: var(--ink); cursor:pointer; border-radius: var(--radius-s);
@@ -1343,15 +1424,6 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
   .nav-toggle[aria-expanded="true"] .nav-toggle-bars span:nth-child(2){ opacity:0; }
   .nav-toggle[aria-expanded="true"] .nav-toggle-bars span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
   .brand-text{ display:none; }
-}
-@media (min-width: 981px){
-  .nav-scrim{ display:none !important; }
-}
-
-/* --- Mobile --- */
-@media (max-width: 640px){
-  :root{ --header-h:60px; }
-  .header-inner{ gap:8px; }
   .toolbar{ position:static; top:auto; padding:12px; }
   .overlay-backdrop{ padding:0; align-items:flex-end; }
   .overlay-panel{ max-width:none; width:100%; max-height:92vh; border-radius: var(--radius-l) var(--radius-l) 0 0; padding-bottom: env(safe-area-inset-bottom); }
@@ -1391,6 +1463,7 @@ tr.is-equipped td:first-child{ border-left:3px solid var(--accent); }
   .site-header, .site-footer, .toolbar, .toast-root, #hp-widget-root, .wizard-nav, .nav-toggle{ display:none !important; }
   body{ background:#fff; color:#111; }
   .page{ max-width:none; padding:0; }
+  #view, .site-footer{ margin-left:0; }
   a{ color:#111; text-decoration:none; }
   /* La fiche imprimable est autonome : tout le reste de l'UI interactive est masqué. */
   .char-sheet, .wizard{ display:none !important; }
@@ -1418,11 +1491,24 @@ html[data-beginner="1"] #beginner-banner{ display:flex; }
 .beginner-banner-icon{ font-size:1.2rem; }
 .beginner-banner p{ margin:0; flex:1; min-width:200px; font-size:.88rem; color: var(--ink-dim); }
 
+.beginner-banner-progress{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.beginner-progress-step{
+  font-size:.8rem; color: var(--ink-dim); white-space:nowrap;
+}
+.beginner-progress-step.is-done{ color: var(--accent-bright); font-weight:600; }
+
 html[data-beginner="1"] #beginner-toggle{
   color: var(--accent-bright);
   background: rgba(var(--accent-rgb),.18);
   border-color: rgba(var(--accent-rgb),.5);
 }
+.icon-btn-badge{
+  position:absolute; top:4px; right:4px; min-width:16px; height:16px; padding:0 3px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:999px; background: var(--accent-bright); color:var(--on-accent);
+  font-size:.62rem; font-weight:700; line-height:1;
+}
+#beginner-toggle{ position:relative; }
 
 html[data-beginner="1"] #primary-nav li[data-route="dons"],
 html[data-beginner="1"] #primary-nav li[data-route="equipements"],
@@ -1439,6 +1525,9 @@ html[data-beginner="1"] #combat-tabs .tab[data-tab="pv"]{ display:none; }
 
 .cbt-beginner-note{ display:none; margin-top:1em; }
 html[data-beginner="1"] .cbt-beginner-note{ display:flex; }
+
+.cbt-tutorial-btn{ display:none; }
+html[data-beginner="1"] .cbt-tutorial-btn{ display:inline-flex; }
 
 /* Bannière d'accueil (deux variantes toujours rendues, une seule visible) */
 .beginner-cta{ margin:1.6em 0; }

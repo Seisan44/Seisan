@@ -12,6 +12,7 @@ const TABS = [
   { key:'materiel', label:'Matériel' },
   { key:'outils', label:'Outils' },
   { key:'magiques', label:'Objets magiques' },
+  { key:'homebrew', label:'Objets personnalisés' },
 ];
 
 const RARITY_ORDER = ['commun','peu commun','rare','très rare','légendaire'];
@@ -61,6 +62,7 @@ function renderTab(panel, key){
   if(key === 'materiel') return renderMateriel(panel);
   if(key === 'outils') return renderOutils(panel);
   if(key === 'magiques') return renderMagiques(panel);
+  if(key === 'homebrew') return renderHomebrewItems(panel);
 }
 
 function propertyLookup(){
@@ -309,4 +311,74 @@ function renderMagiques(panel){
 
 function openSimpleModal(title, eyebrow, bodyHTML, originEl){
   openModal({ eyebrow, title: escapeHtml(title), bodyHTML, originEl });
+}
+
+const ITEM_TYPE_LABEL = { arme:'Arme', armure:'Armure', materiel:'Matériel', outil:'Outil', objet_magique:'Objet magique', autre:'Autre' };
+let homebrewItemsQuery = '';
+
+// Objets personnalisés créés dans l'Atelier (voir js/character/homebrew.js) — même vocabulaire
+// visuel que renderMagiques, mais favoris gardés dans un espace de noms distinct ('objet_homebrew'
+// keyé par _hbId) pour ne jamais entrer en collision avec les favoris d'objets magiques officiels
+// (ceux-ci sont keyés par nom brut, pas par slug).
+function renderHomebrewItems(panel){
+  panel.innerHTML = `
+    <div class="toolbar frame">
+      <div class="search-field"><svg class="i"><use href="#i-search"/></svg>
+        <input type="text" class="field" id="hbi-q" placeholder="Rechercher un objet personnalisé…" aria-label="Rechercher un objet personnalisé"></div>
+      <div class="filter-row">
+        <span class="filter-count" id="hbi-count" aria-live="polite"></span>
+      </div>
+    </div>
+    <div class="card-grid" id="hbi-grid"></div>
+  `;
+  const grid = panel.querySelector('#hbi-grid');
+  const qInput = panel.querySelector('#hbi-q');
+  const countEl = panel.querySelector('#hbi-count');
+  function apply(){
+    const q = stripAccents(homebrewItemsQuery.toLowerCase());
+    const list = (DATA.homebrewItems||[]).filter(o => !q || stripAccents(o.nom.toLowerCase()).includes(q));
+    grid.innerHTML = list.map(o => `
+      <button type="button" class="card magic-item-card" data-id="${o._hbId}" style="padding:0;">
+        <span class="card-fav ${isFavorite('objet_homebrew', o._hbId) ? 'is-active':''}" data-fav="${o._hbId}" role="button" tabindex="0" aria-label="Ajouter aux favoris">
+          <svg class="i"><use href="#i-star"/></svg>
+        </span>
+        <div class="card-body" style="padding-top:20px;">
+          <span class="pill" style="margin-bottom:.6em;">✨ Homebrew</span>
+          <h2 class="card-title">${escapeHtml(o.nom)}</h2>
+          <div class="card-meta">
+            ${o.type === 'objet_magique' && o.rarete ? `<span class="pill pill-muted">${escapeHtml(o.rarete)}</span>` : ''}
+            ${o.lien ? `<span class="pill pill-muted">Lien</span>` : ''}
+          </div>
+          <p class="card-desc">${escapeHtml(ITEM_TYPE_LABEL[o.type]||'Objet')}</p>
+        </div>
+      </button>`).join('') || `<div class="empty-state" style="grid-column:1/-1;"><span class="i-big">✨</span><p>Aucun objet personnalisé pour l'instant.</p><a class="btn btn-primary" href="#homebrew/objets" style="margin-top:1em;">Créer un objet</a></div>`;
+    countEl.textContent = `${list.length} objet${list.length>1?'s':''}`;
+    grid.querySelectorAll('.card').forEach(card => card.addEventListener('click', (e) => {
+      if(e.target.closest('[data-fav]')) return;
+      const item = (DATA.homebrewItems||[]).find(o => o._hbId === card.dataset.id);
+      if(!item) return;
+      const body = `
+        <div class="flex-gap" style="margin-bottom:1em;flex-wrap:wrap;">
+          <span class="pill">✨ Homebrew</span>
+          ${item.poids ? `<span class="pill pill-muted">${escapeHtml(item.poids)}</span>` : ''}
+          ${item.prix ? `<span class="pill pill-muted">${escapeHtml(item.prix)}</span>` : ''}
+          ${item.type === 'objet_magique' && item.rarete ? `<span class="pill">${escapeHtml(item.rarete)}</span>` : ''}
+          ${item.lien ? `<span class="pill">${escapeHtml(item.lien)}</span>` : ''}
+        </div>
+        <div class="prose">${enrichHTML(item.description, {isPlainText:true})}</div>
+      `;
+      openSimpleModal(item.nom, ITEM_TYPE_LABEL[item.type]||'Objet', body, card);
+    }));
+    grid.querySelectorAll('[data-fav]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const active = toggleFavorite('objet_homebrew', btn.dataset.fav);
+        btn.classList.toggle('is-active', active);
+        toast(active ? 'Objet ajouté aux favoris' : 'Objet retiré des favoris', { type:'success' });
+      });
+    });
+  }
+  qInput.addEventListener('input', debounce(() => { homebrewItemsQuery = qInput.value; apply(); }, 140));
+  qInput.value = homebrewItemsQuery;
+  apply();
 }

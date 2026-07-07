@@ -10,7 +10,7 @@ import { toast } from '../toast.js';
 import { confirmAction } from '../confirm.js';
 import { enrichHTML } from '../enrich.js';
 import { CLASS_ARCHETYPES } from '../pages/class-tips.js';
-import { isBeginnerMode } from '../beginner.js';
+import { isBeginnerMode, markMilestone } from '../beginner.js';
 
 // Astuce affichée en tête de chaque étape uniquement en Mode Découverte — répète
 // l'essentiel ("rien n'est figé") pour que les débutants avancent sans hésiter.
@@ -158,13 +158,19 @@ export function renderWizard(container, existingDraft){
       <div class="option-grid" id="espece-grid">
         ${DATA.species.map(s => `
           <button type="button" class="option-card ${draft.species===s.espece?'is-selected':''}" data-espece="${escapeHtml(s.espece)}">
-            <div class="oc-media">${imgWithFallback(speciesImage(s.espece), s.espece, { fallbackEmoji:'🧬' })}</div>
+            <div class="oc-media">${imgWithFallback(s._homebrew ? null : speciesImage(s.espece), s.espece, { fallbackEmoji:'🧬' })}</div>
             <div class="oc-body">
               <span class="oc-title">${escapeHtml(s.espece)}</span><span class="oc-check">✓</span>
-              <span class="oc-meta">${escapeHtml(tailleShort(s.infos?.['Taille']))} · ${escapeHtml(s.infos?.['Vitesse']||'')}</span>
+              <span class="oc-meta">${s._homebrew ? '✨ Homebrew · ' : ''}${escapeHtml(tailleShort(s.infos?.['Taille']))} · ${escapeHtml(s.infos?.['Vitesse']||'')}</span>
             </div>
           </button>
         `).join('')}
+        <a href="#homebrew/especes" class="option-card" style="aspect-ratio:auto;align-items:center;justify-content:center;display:flex;">
+          <div class="oc-body" style="padding:18px 14px;text-align:center;">
+            <span style="font-size:1.5rem;">✨</span>
+            <div class="oc-title" style="margin-top:.4em;">Créer une espèce personnalisée</div>
+          </div>
+        </a>
       </div>
       <div id="espece-preview" style="margin-top:1.6em;"></div>
     `;
@@ -222,11 +228,17 @@ export function renderWizard(container, existingDraft){
             <div class="oc-media">${imgWithFallback(classImageLocal(c.image), c.classe_title, { fallbackEmoji:'⚔️' })}</div>
             <div class="oc-body">
               <span class="oc-title">${escapeHtml(c.classe_title)}</span><span class="oc-check">✓</span>
-              <span class="oc-meta">${escapeHtml(t.caracteristique)} · D${t.deVieFaces}</span>
+              <span class="oc-meta">${c._homebrew ? '✨ Homebrew · ' : ''}${escapeHtml(t.caracteristique)} · D${t.deVieFaces}</span>
             </div>
           </button>
         `;
         }).join('')}
+        <a href="#homebrew/classes" class="option-card" style="aspect-ratio:auto;align-items:center;justify-content:center;display:flex;">
+          <div class="oc-body" style="padding:18px 14px;text-align:center;">
+            <span style="font-size:1.5rem;">✨</span>
+            <div class="oc-title" style="margin-top:.4em;">Créer une classe personnalisée</div>
+          </div>
+        </a>
       </div>
       <div id="classe-detail" style="margin-top:1.6em;"></div>
     `;
@@ -483,7 +495,8 @@ export function renderWizard(container, existingDraft){
   function renderInfosStep(panel){
     if(!draft.languages.length) draft.languages = ['Commun'];
     if(draft.profile.avatar === undefined) draft.profile.avatar = null;
-    const fallbackHTML = draft.species ? imgWithFallback(speciesImage(draft.species), draft.species, { fallbackEmoji:'🧬' }) : '🧬';
+    const draftSpeciesObj = DATA.species.find(x => x.espece === draft.species);
+    const fallbackHTML = draft.species ? imgWithFallback(draftSpeciesObj?._homebrew ? null : speciesImage(draft.species), draft.species, { fallbackEmoji:'🧬' }) : '🧬';
     panel.innerHTML = `
       <h2>Qui est votre personnage ?</h2>
       ${beginnerTip('Donnez vie à votre personnage : un nom suffit pour continuer, le reste est facultatif et modifiable à tout moment.')}
@@ -658,6 +671,7 @@ export function renderWizard(container, existingDraft){
     draft.complete = true;
     draft.step = STEPS.length - 1;
     persist();
+    markMilestone('created');
     toast('Personnage créé !', { type:'success' });
     navigate('personnage');
   }

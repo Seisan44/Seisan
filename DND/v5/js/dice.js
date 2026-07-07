@@ -2,12 +2,14 @@
 
 import { openModal } from './modal.js';
 import { escapeHtml } from './utils.js';
+import { markMilestone } from './beginner.js';
 
 function rollOne(sides){ return 1 + Math.floor(Math.random() * sides); }
 
 export function rollDice(count, sides, modifier = 0){
   const rolls = Array.from({ length: count }, () => rollOne(sides));
   const total = rolls.reduce((a,b) => a+b, 0) + modifier;
+  markMilestone('dice');
   return { rolls, total, sides, modifier };
 }
 

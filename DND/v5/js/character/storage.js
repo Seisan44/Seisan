@@ -86,5 +86,6 @@ export function createCharacterShell(){
     metamagic: [],
     manifestations: [],
     weaponMasteries: [],
+    feats: [],
   };
 }

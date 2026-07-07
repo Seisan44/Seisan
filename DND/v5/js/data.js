@@ -7,6 +7,7 @@ import { slugify, stripAccents, normKey } from './utils.js';
 import { buildGlossaryIndex, buildSpellIndex } from './enrich.js';
 import { parseEquipmentString } from './equipment.js';
 import { spellPrimaryName, spellAltName } from './images.js';
+import { ABILITIES, SKILL_ABILITY } from './character/rules.js';
 
 const FILES = {
   species: 'data/species.json',
@@ -38,6 +39,16 @@ export async function loadData(onProgress){
   }));
   for(const [key, json] of results) DATA[key] = json;
 
+  deriveAll();
+
+  return DATA;
+}
+
+// Dérive toutes les structures secondaires (slugs, index, tables croisées) à partir des
+// tableaux "bruts" de DATA (DATA.species/DATA.dons/DATA.classesRaw/...). Extrait de loadData()
+// pour pouvoir être rejoué après une fusion de contenu homebrew (voir js/character/homebrew.js
+// refreshHomebrew()), sans avoir à recharger les fichiers JSON.
+export function deriveAll(){
   // --- glossaire : index + enrichissement de texte ---
   DATA.glossaryIndex = buildGlossaryIndex(DATA.glossaireRaw).index;
 
@@ -105,11 +116,9 @@ export async function loadData(onProgress){
 
   // --- index de recherche globale ---
   DATA.searchIndex = buildSearchIndex();
-
-  return DATA;
 }
 
-function buildSearchIndex(){
+export function buildSearchIndex(){
   const idx = [];
   for(const s of DATA.species) idx.push({ cat:'Races', label:s.espece, sub:s.infos?.['Type de créature']||'', route:'races', key:s.slug });
   for(const c of DATA.classes) idx.push({ cat:'Classes', label:c.classe_title, sub:'Classe', route:'classes', key:c.slug });
@@ -125,5 +134,10 @@ function buildSearchIndex(){
   for(const o of DATA.objetsMagiques) idx.push({ cat:'Équipement', label:o.nom, sub:`${o.type} · ${o.rarete}`, route:'equipements', key:'magiques' });
   idx.push({ cat:'Référence', label:'Combat', sub:'Règles de combat', route:'combat', key:'' });
   idx.push({ cat:'Référence', label:'Personnage', sub:'Créateur de personnage', route:'personnage', key:'' });
+  for(const a of ABILITIES) idx.push({ cat:'Référence', label:a.label, sub:'Caractéristique', route:'carac-competences', key:a.key });
+  for(const [skill, abilityKey] of Object.entries(SKILL_ABILITY)){
+    const ability = ABILITIES.find(a => a.key === abilityKey);
+    idx.push({ cat:'Référence', label:skill, sub:`Compétence (${ability?.label||''})`, route:'carac-competences', key:abilityKey });
+  }
   return idx;
 }

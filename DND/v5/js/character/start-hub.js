@@ -10,6 +10,7 @@ import { speciesImage, imgWithFallback } from '../images.js';
 import { ABILITIES } from './rules.js';
 import { CLASS_ARCHETYPES } from '../pages/class-tips.js';
 import { createCharacterShell, saveCharacter, setActiveId } from './storage.js';
+import { markMilestone } from '../beginner.js';
 import { renderWizard } from './wizard.js';
 import { navigate } from '../router.js';
 import { toast } from '../toast.js';
@@ -134,6 +135,9 @@ export function renderStartHub(container){
     const ranked = scorePregens(quizAnswers, PREGEN_DEFS);
     const top = ranked[0].def;
     const matched = top.tags.filter(t => pickedTags.includes(t)).map(t => TAG_LABELS[t] || t);
+    // Personnages suivants dans le classement, à score non nul : évite de proposer un
+    // "faux choix" quand le quiz ne permet pas de départager clairement le meilleur profil.
+    const alternatives = ranked.slice(1).filter(r => r.score > 0).slice(0, 2).map(r => r.def);
 
     container.innerHTML = `
       <header class="page-header">
@@ -143,9 +147,14 @@ export function renderStartHub(container){
         ${matched.length ? `<p class="page-lede">Parce que vous aimez ${escapeHtml(formatList(matched))}.</p>` : ''}
       </header>
       <div class="pregen-grid" style="max-width:360px;" id="reco-grid">${pregenCardHTML(top)}</div>
+      ${alternatives.length ? `
+      <p class="field-label" style="margin-top:1.6em;">Ça pourrait aussi vous correspondre</p>
+      <div class="pregen-grid" id="reco-alt-grid">${alternatives.map(pregenCardHTML).join('')}</div>
+      ` : ''}
     `;
     container.querySelector('#hub-back').addEventListener('click', showBrowse);
     wireBrowseGrid(container.querySelector('#reco-grid'));
+    if(alternatives.length) wireBrowseGrid(container.querySelector('#reco-alt-grid'));
   }
 
   function abilGridHTML(finalAbilities){
@@ -217,6 +226,7 @@ export function renderStartHub(container){
       const character = buildPregenCharacter(def, name);
       saveCharacter(character);
       setActiveId(character.id);
+      markMilestone('created');
       toast('Personnage créé — prêt à jouer !', { type:'success' });
       navigate('personnage');
     });

@@ -1,6 +1,8 @@
 import { enrichHTML, getGlossaryEntry } from '../enrich.js';
 import { escapeHtml } from '../utils.js';
 import { openDiceRoller } from '../dice.js';
+import { markMilestone } from '../beginner.js';
+import { openCombatTutorial } from './combat-tutorial.js';
 import * as C from './combat-content.js';
 
 const TABS = [
@@ -316,6 +318,7 @@ const SECTION_RENDERERS = {
 };
 
 export async function renderCombat(container, parts){
+  markMilestone('combat');
   container.innerHTML = `
     <header class="page-header">
       <p class="eyebrow">Référence rapide</p>
@@ -325,7 +328,10 @@ export async function renderCombat(container, parts){
         <span class="cbt-callout-icon">🎓</span>
         <div>Mode Découverte : on garde seulement l'essentiel — <strong>votre tour</strong>, <strong>vos actions</strong> (attaquer, lancer un sort…) et le détail d'une <strong>attaque</strong>. Les règles avancées (couvert, états spéciaux…) reviendront quand vous désactiverez ce mode.</div>
       </div>
-      <button class="btn btn-primary" id="combat-dice-btn" style="margin-top:1em;"><svg class="i"><use href="#i-dice"/></svg> Lancer les dés</button>
+      <div class="flex-gap" style="margin-top:1em;">
+        <button class="btn btn-primary" id="combat-dice-btn"><svg class="i"><use href="#i-dice"/></svg> Lancer les dés</button>
+        <button class="btn btn-ghost cbt-tutorial-btn" id="combat-tutorial-btn">🎓 Faire un tour d'essai</button>
+      </div>
     </header>
     <div class="tabs" role="tablist" id="combat-tabs">
       ${TABS.map((t,i) => `<button class="tab" role="tab" data-tab="${t.id}" aria-selected="${i===0}">${t.icon} ${t.label}</button>`).join('')}
@@ -333,6 +339,7 @@ export async function renderCombat(container, parts){
     <div class="cbt-content" id="combat-panel"></div>
   `;
   container.querySelector('#combat-dice-btn').addEventListener('click', (e) => openDiceRoller(e.currentTarget));
+  container.querySelector('#combat-tutorial-btn').addEventListener('click', (e) => openCombatTutorial(e.currentTarget));
 
   const panel = container.querySelector('#combat-panel');
   const tabBtns = container.querySelectorAll('.tab');

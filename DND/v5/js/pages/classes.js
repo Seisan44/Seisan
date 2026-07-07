@@ -34,6 +34,7 @@ function renderGrid(container){
         <div class="card-meta">
           <span class="pill pill-muted">${escapeHtml(traits.caracteristique)}</span>
           <span class="pill pill-muted">D${traits.deVieFaces}</span>
+          ${c._homebrew ? `<span class="pill">✨ Homebrew</span>` : ''}
         </div>
         <p class="card-desc">${c.subclasses.length} sous-classe${c.subclasses.length>1?'s':''} : ${escapeHtml(c.subclasses.map(s=>s.classe_title).join(', '))}</p>
       </div>
@@ -62,6 +63,7 @@ function renderDetail(container, c, subSlugFromUrl){
         <p class="eyebrow">Classe</p>
         <h1 class="page-title" style="font-size:2.2rem;">${escapeHtml(c.classe_title)}</h1>
         <div class="detail-badges">
+          ${c._homebrew ? `<span class="pill">✨ Homebrew</span>` : ''}
           <span class="pill">${escapeHtml(traits.caracteristique)}</span>
           <span class="pill">D${traits.deVieFaces} par niveau</span>
           <span class="pill">JS : ${escapeHtml(traits.sauvegardes.join(', '))}</span>
@@ -144,7 +146,10 @@ function renderPanel(key, c, traits, isCaster){
         ${c.subclasses.map(sc => `
           <button type="button" class="card" data-subslug="${sc.slug}">
             <div class="card-media">${imgWithFallback(classImageLocal(sc.image), sc.classe_title, { fallbackEmoji:'✦' })}</div>
-            <div class="card-body"><h2 class="card-title">${escapeHtml(sc.classe_title)}</h2></div>
+            <div class="card-body">
+              <h2 class="card-title">${escapeHtml(sc.classe_title)}</h2>
+              ${sc._homebrew ? `<div class="card-meta"><span class="pill">✨ Homebrew</span></div>` : ''}
+            </div>
           </button>
         `).join('')}
       </div>
@@ -197,7 +202,7 @@ function wireCapaciteToggles(root){
 
 function openSubclassModal(sc, parentClass, originEl){
   openModal({
-    eyebrow: `Sous-classe de ${parentClass.classe_title}`,
+    eyebrow: (sc._homebrew ? '✨ Homebrew · ' : '') + `Sous-classe de ${parentClass.classe_title}`,
     title: escapeHtml(sc.classe_title),
     originEl,
     wide: true,

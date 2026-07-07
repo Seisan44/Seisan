@@ -115,12 +115,66 @@ export function computeArmorClass({ dexMod, armorCA, hasShield }){
   };
 }
 
-/** Vitesse de base de l'espèce (ex. "9 m") réduite de 3 m si l'armure requiert plus de Force que le personnage n'en a. */
-export function computeSpeed({ speciesSpeedLabel, forceScore, armorForceReq }){
+/** Vitesse de base de l'espèce (ex. "9 m") réduite de 3 m si l'armure requiert plus de Force que
+ * le personnage n'en a, et réduite en plus par la pénalité d'encombrement le cas échéant
+ * (voir encumbranceState) — les deux pénalités de vitesse se cumulent, ce sont deux règles
+ * indépendantes. */
+export function computeSpeed({ speciesSpeedLabel, forceScore, armorForceReq, encumbrancePenalty = 0 }){
   const m = String(speciesSpeedLabel || '9 m').match(/(\d+(?:[.,]\d+)?)/);
   const base = m ? parseFloat(m[1].replace(',', '.')) : 9;
-  const penalized = armorForceReq != null && (forceScore || 0) < armorForceReq;
-  return { value: penalized ? Math.max(0, base - 3) : base, penalized, base };
+  const armorPenalized = armorForceReq != null && (forceScore || 0) < armorForceReq;
+  const totalPenalty = (armorPenalized ? 3 : 0) + encumbrancePenalty;
+  return { value: Math.max(0, base - totalPenalty), penalized: armorPenalized, encumbrancePenalty, base };
+}
+
+// ---------- Poids porté, capacité de charge & encombrement ----------
+// "Capacité de charge = valeur de Force x 7,5" (en kg) ; pousser/tirer/soulever va jusqu'au
+// double de cette capacité. Seule une taille G double ce total, et une taille TP le réduit de
+// moitié — aucune des 9 espèces jouables du Codex n'atteint ces tailles (voir data/species.json
+// -> infos.Taille, toujours "M" ou "P"), donc le multiplicateur reste x1 en pratique pour un
+// personnage, mais la règle générale reste correcte si elle sert un jour pour un familier/monture.
+const SIZE_CARRY_MULT = { TP:0.5, P:1, M:1, G:2, TG:4, GIG:8 };
+
+/** Extrait le code de taille (TP/P/M/G/TG/GIG) d'un libellé du type "M (entre 1,50 m et 2,15 m)". */
+export function sizeCategoryFromLabel(tailleLabel){
+  const m = String(tailleLabel || '').match(/\b(TP|TG|GIG|G|P|M)\b/);
+  return m ? m[1] : 'M';
+}
+
+export function carryingCapacity(forceScore, sizeCategory = 'M'){
+  const mult = SIZE_CARRY_MULT[sizeCategory] ?? 1;
+  return Math.round((Number(forceScore) || 0) * 7.5 * mult * 10) / 10;
+}
+export function pushDragLiftCapacity(forceScore, sizeCategory = 'M'){
+  return carryingCapacity(forceScore, sizeCategory) * 2;
+}
+
+/** Convertit un champ "poids" du compendium ("2 kg", "0,5 kg", "125 g", null) en kilogrammes. */
+export function parseWeightKg(poidsStr){
+  const m = String(poidsStr || '').trim().match(/^([\d.,]+)\s*(kg|g)?$/i);
+  if(!m) return 0;
+  const n = parseFloat(m[1].replace(',', '.'));
+  if(!Number.isFinite(n)) return 0;
+  return m[2]?.toLowerCase() === 'g' ? n / 1000 : n;
+}
+
+/**
+ * Règle variante "Encombrement" (Manuel des Joueurs) : au-delà de 2,5x la valeur de Force,
+ * la créature est Encombrée (vitesse -3 m) ; au-delà de 5x la valeur de Force, elle est
+ * Fortement encombrée (vitesse -6 m, désavantage aux jets de caractéristique, de sauvegarde
+ * et d'attaque basés sur la Force, la Dextérité ou la Constitution). Exprimé ici en fraction
+ * de la capacité de charge (2,5x Force = capacité/3 ; 5x Force = capacité x2/3) pour ne pas
+ * dupliquer le multiplicateur de taille.
+ */
+export function encumbranceState({ totalWeightKg, forceScore, sizeCategory = 'M' }){
+  const capacity = carryingCapacity(forceScore, sizeCategory);
+  const lightThreshold = capacity / 3;
+  const heavyThreshold = capacity * 2 / 3;
+  const weight = Number(totalWeightKg) || 0;
+  let status = 'normal', speedPenalty = 0, disadvantage = false;
+  if(capacity > 0 && weight > heavyThreshold){ status = 'heavy'; speedPenalty = 6; disadvantage = true; }
+  else if(capacity > 0 && weight > lightThreshold){ status = 'light'; speedPenalty = 3; }
+  return { capacity, lightThreshold, heavyThreshold, totalWeightKg: weight, status, speedPenalty, disadvantage, overCapacity: capacity > 0 && weight > capacity };
 }
 
 export function spellSaveDC(prof, abilityMod){ return 8 + prof + abilityMod; }
@@ -137,24 +191,24 @@ export function passivePerception(perceptionSkillBonus){ return 10 + perceptionS
 // repos long). `kind:'info'` = valeur affichée mais non consommable (pas de jetons à cocher).
 export const CLASS_RESOURCE_DEFS = {
   'Barbare': [
-    { key:'rage', label:'Rage', icon:'🔥', column:'Rages', recovery:'rage', kind:'pool' },
-    { key:'ragedmg', label:'Bonus aux dégâts de Rage', icon:'💥', column:'Dégâts de Rage', kind:'info' },
+    { key:'rage', label:'Rage', icon:'🔥', giIcon:'gi-rage', column:'Rages', recovery:'rage', kind:'pool' },
+    { key:'ragedmg', label:'Bonus aux dégâts de Rage', icon:'💥', giIcon:'gi-ragedmg', column:'Dégâts de Rage', kind:'info' },
   ],
   'Guerrier': [
-    { key:'secondsouffle', label:'Second souffle', icon:'💨', column:'Second souffle', recovery:'rest', kind:'pool' },
-    { key:'fougue', label:'Fougue (action supplémentaire)', icon:'⚡', staticMax: (lvl) => lvl>=17?2:lvl>=2?1:0, recovery:'rest', kind:'pool' },
+    { key:'secondsouffle', label:'Second souffle', icon:'💨', giIcon:'gi-secondsouffle', column:'Second souffle', recovery:'rest', kind:'pool' },
+    { key:'fougue', label:'Fougue (action supplémentaire)', icon:'⚡', giIcon:'gi-fougue', staticMax: (lvl) => lvl>=17?2:lvl>=2?1:0, recovery:'rest', kind:'pool' },
   ],
   'Moine': [
-    { key:'credo', label:'Points de Credo', icon:'☯️', column:'Points de credo', recovery:'rest', kind:'pool' },
+    { key:'credo', label:'Points de Credo', icon:'☯️', giIcon:'gi-credo', column:'Points de credo', recovery:'rest', kind:'pool' },
   ],
   'Ensorceleur': [
-    { key:'sorcellerie', label:'Points de Sorcellerie', icon:'✨', column:'Sorcellerie', recovery:'long', kind:'pool' },
+    { key:'sorcellerie', label:'Points de Sorcellerie', icon:'✨', giIcon:'gi-sorcellerie', column:'Sorcellerie', recovery:'long', kind:'pool' },
   ],
   'Clerc': [
-    { key:'conduit', label:'Conduit divin', icon:'☀️', column:'divin', recovery:'rest', kind:'pool' },
+    { key:'conduit', label:'Conduit divin', icon:'☀️', giIcon:'gi-conduit', column:'divin', recovery:'rest', kind:'pool' },
   ],
   'Paladin': [
-    { key:'conduit', label:'Conduit divin', icon:'☀️', column:'divin', recovery:'rest', kind:'pool' },
+    { key:'conduit', label:'Conduit divin', icon:'☀️', giIcon:'gi-conduit', column:'divin', recovery:'rest', kind:'pool' },
   ],
 };
 

@@ -2,7 +2,7 @@ import { DATA } from '../data.js';
 import { escapeHtml, clamp, stripAccents } from '../utils.js';
 import { enrichHTML } from '../enrich.js';
 import { speciesImage, spellImage, imgWithFallback } from '../images.js';
-import { ABILITIES, proficiencyBonus, isCasterClass, SPELLCASTING_ABILITY, PREPARED_CASTERS, SKILL_ABILITY, CASTER_TYPE, computeArmorClass, computeSpeed, spellSaveDC, spellAttackBonus, passivePerception, CLASS_RESOURCE_DEFS, classResourceValue, weaponMasteryCount, hasWeaponMastery, superiorityDice, maneuversKnownCount, MANEUVERS_2024, metamagicKnownCount, METAMAGIC_2024, manifestationsKnownCount } from './rules.js';
+import { ABILITIES, proficiencyBonus, isCasterClass, SPELLCASTING_ABILITY, PREPARED_CASTERS, SKILL_ABILITY, CASTER_TYPE, computeArmorClass, computeSpeed, spellSaveDC, spellAttackBonus, passivePerception, CLASS_RESOURCE_DEFS, classResourceValue, weaponMasteryCount, hasWeaponMastery, superiorityDice, maneuversKnownCount, MANEUVERS_2024, metamagicKnownCount, METAMAGIC_2024, manifestationsKnownCount, sizeCategoryFromLabel, carryingCapacity, parseWeightKg, encumbranceState } from './rules.js';
 import { parseClassTraits, parseSpellcastingTable, parseClassResourceColumns, ALL_SKILLS } from '../class-traits.js';
 import { saveCharacter, deleteCharacter, setActiveId } from './storage.js';
 import { attachPopover } from '../popover.js';
@@ -14,6 +14,7 @@ import { openSpellDetail, SCHOOL_ICON, SCHOOL_COLOR, castingTimeShort } from '..
 import { openDiceRoller, rollDice } from '../dice.js';
 import { COMBAT_ACTIONS } from '../pages/combat-content.js';
 import { openAvatarPicker } from './avatar.js';
+import { saveHomebrewEntry, refreshHomebrew } from './homebrew.js';
 
 const TABS = [
   { key:'actions', label:'Actions' },
@@ -28,7 +29,7 @@ const TABS = [
 // Conversion standard des pièces vers l'équivalent en pièces d'or (règles D&D).
 const COIN_RATES = [['pp','Platine',10],['po','Or',1],['pe','Électrum',0.5],['pa','Argent',0.1],['pc','Cuivre',0.01]];
 
-const ITEM_KIND_LABEL = { materiel:'Matériel', outil:'Outil', arme:'Arme', armure:'Armure', objet_magique:'Objet magique' };
+const ITEM_KIND_LABEL = { materiel:'Matériel', outil:'Outil', arme:'Arme', armure:'Armure', objet_magique:'Objet magique', homebrew:'✨ Personnalisé' };
 
 // Bloc de description repliable par défaut : allège la lecture d'une longue liste de
 // capacités — on ouvre seulement celles qui nous intéressent.
@@ -91,19 +92,25 @@ export function renderSheet(container, character){
   ch.metamagic = ch.metamagic || [];
   ch.manifestations = ch.manifestations || [];
   ch.weaponMasteries = ch.weaponMasteries || [];
+  ch.feats = ch.feats || [];
 
   function persist(){ ch.updatedAt = Date.now(); saveCharacter(ch); }
 
+  function speciesFallbackImage(){
+    if(!ch.species) return null;
+    const speciesObj = DATA.species.find(x => x.espece === ch.species);
+    return speciesObj?._homebrew ? null : speciesImage(ch.species);
+  }
   function avatarInnerHTML(){
     if(ch.profile?.avatar) return `<img src="${ch.profile.avatar}" alt="Portrait de ${escapeHtml(ch.profile?.name||'')}">`;
-    return ch.species ? imgWithFallback(speciesImage(ch.species), ch.species, { fallbackEmoji:'🐉' }) : '🐉';
+    return ch.species ? imgWithFallback(speciesFallbackImage(), ch.species, { fallbackEmoji:'🐉' }) : '🐉';
   }
   function wireAvatar(){
     const btn = container.querySelector('#char-avatar-btn');
     btn.addEventListener('click', () => {
       openAvatarPicker({
         currentSrc: ch.profile?.avatar || null,
-        fallbackHTML: ch.species ? imgWithFallback(speciesImage(ch.species), ch.species, { fallbackEmoji:'🐉' }) : '🐉',
+        fallbackHTML: ch.species ? imgWithFallback(speciesFallbackImage(), ch.species, { fallbackEmoji:'🐉' }) : '🐉',
         originEl: btn,
         onSave: (dataURL) => {
           ch.profile.avatar = dataURL;
@@ -265,15 +272,23 @@ export function renderSheet(container, character){
     container.querySelector('.sub').textContent = `${ch.species||''}${ch.speciesChoiceSubrace?` (${ch.speciesChoiceSubrace})`:''} · ${ch.className||''} niv. ${ch.level||1} · ${ch.background||''}`;
   }
 
+  const ENCUMBRANCE_ABILITIES = ['force','dexterite','constitution'];
+  const ABILITY_ICON = { force:'gi-force', dexterite:'gi-dexterite', constitution:'gi-constitution', intelligence:'gi-intelligence', sagesse:'gi-sagesse', charisme:'gi-charisme' };
+
   function renderStatGrid(){
     const grid = container.querySelector('#stat-grid');
-    grid.innerHTML = ABILITIES.map(a => `
-      <div class="stat-block">
-        <div class="label">${a.short}</div>
+    const heavilyEncumbered = currentEncumbrance().status === 'heavy';
+    grid.innerHTML = ABILITIES.map(a => {
+      const warn = heavilyEncumbered && ENCUMBRANCE_ABILITIES.includes(a.key);
+      return `
+      <div class="stat-block${warn ? ' is-encumbered' : ''}" ${warn ? `title="Fortement encombré : désavantage aux jets de ${a.label}"` : ''}>
+        <svg class="i stat-icon"><use href="#${ABILITY_ICON[a.key]}"/></svg>
+        <div class="label">${a.short}${warn ? ' ⚠' : ''}</div>
         <input type="number" class="stat-score-input" data-abil="${a.key}" value="${ch.abilities?.[a.key] ?? 10}" min="1" max="30" aria-label="${escapeHtml(a.label)}">
         <div class="mod">${fmtMod(abilityMod(a.key))}</div>
       </div>
-    `).join('');
+    `;
+    }).join('');
     grid.querySelectorAll('.stat-score-input').forEach(input => {
       input.addEventListener('change', () => {
         const key = input.dataset.abil;
@@ -296,13 +311,15 @@ export function renderSheet(container, character){
   function renderSaveGrid(){
     const grid = container.querySelector('#save-grid');
     const prof = proficiencyBonus(ch.level||1);
+    const heavilyEncumbered = currentEncumbrance().status === 'heavy';
     grid.innerHTML = ABILITIES.map(a => {
       const isProf = isSaveProficient(a.key);
       const bonus = abilityMod(a.key) + (isProf ? prof : 0);
+      const warn = heavilyEncumbered && ENCUMBRANCE_ABILITIES.includes(a.key);
       return `
-        <div class="save-block ${isProf?'is-proficient':''}">
+        <div class="save-block ${isProf?'is-proficient':''}" ${warn ? `title="Fortement encombré : désavantage à ce jet de sauvegarde"` : ''}>
           <span class="save-dot"></span>
-          <span class="save-label">${a.short}</span>
+          <span class="save-label">${a.short}${warn ? ' ⚠' : ''}</span>
           <span class="save-bonus">${fmtMod(bonus)}</span>
         </div>
       `;
@@ -357,6 +374,19 @@ export function renderSheet(container, character){
     return ch.inventory.some(i => i.equipped === 'off' && itemLookedUp(i)?.categorie === 'Boucliers');
   }
 
+  // Poids total porté (tous les objets de l'inventaire, équipés ou non — les pièces d'or ne
+  // sont pas comptées, comme le font la plupart des tables qui appliquent déjà cette règle
+  // optionnelle "Encombrement" sans aller jusqu'au poids des pièces).
+  function totalInventoryWeightKg(){
+    return ch.inventory.reduce((sum, it) => sum + parseWeightKg(itemLookedUp(it)?.poids) * (it.qty || 1), 0);
+  }
+  function fmtKg(n){ return (Math.round(n*10)/10).toLocaleString('fr-FR'); }
+  function currentEncumbrance(){
+    const speciesObj = DATA.species.find(x => x.espece === ch.species);
+    const sizeCategory = sizeCategoryFromLabel(speciesObj?.infos?.['Taille']);
+    return encumbranceState({ totalWeightKg: totalInventoryWeightKg(), forceScore: ch.abilities?.force, sizeCategory });
+  }
+
   function renderVitals(){
     const el = container.querySelector('#char-vitals');
     const dexMod = abilityMod('dexterite');
@@ -367,7 +397,8 @@ export function renderSheet(container, character){
 
     const speciesObj = DATA.species.find(x => x.espece === ch.species);
     const forceReq = armorLooked && armorLooked.force != null ? Number(armorLooked.force) : null;
-    const speed = computeSpeed({ speciesSpeedLabel: speciesObj?.infos?.['Vitesse'], forceScore: ch.abilities?.force, armorForceReq: forceReq });
+    const enc = currentEncumbrance();
+    const speed = computeSpeed({ speciesSpeedLabel: speciesObj?.infos?.['Vitesse'], forceScore: ch.abilities?.force, armorForceReq: forceReq, encumbrancePenalty: enc.speedPenalty });
 
     const perceptionBonus = abilityMod(SKILL_ABILITY['Perception']) + ((ch.classSkills||[]).includes('Perception') ? prof : 0);
     const passivePerc = passivePerception(perceptionBonus);
@@ -376,28 +407,52 @@ export function renderSheet(container, character){
     const spellAbilMod = abilKey ? abilityMod(abilKey) : null;
     const abilLabel = abilKey ? ABILITIES.find(a => a.key === abilKey)?.label : '';
 
+    const speedTips = [];
+    if(speed.penalized) speedTips.push(`réduite de 3 m : l’armure portée exige plus de Force que vous n’en avez`);
+    if(enc.speedPenalty) speedTips.push(`réduite de ${enc.speedPenalty} m : vous êtes ${enc.status === 'heavy' ? 'Fortement encombré' : 'Encombré'} (voir la tuile Charge)`);
+    const speedTip = speedTips.length ? `Vitesse de base ${speed.base} m, ${speedTips.join(' ; ')}.` : `Vitesse de base de votre espèce (${speed.base} m). Distance que vous pouvez parcourir par tour.`;
+
     const tiles = [
-      { label:'CA', value: ac.value, tip:`Classe d'Armure = ${ac.breakdown.join(' ')}.${armorLooked ? '' : ' Équipez une armure depuis l’onglet Inventaire pour affiner ce calcul.'}` },
-      { label:'Initiative', value: fmtMod(dexMod), tip:`Initiative = modificateur de Dextérité (${fmtMod(dexMod)}). Lancée en 1d20 + Initiative pour déterminer l’ordre d’action au début du combat.` },
-      { label:'Vitesse', value: `${speed.value} m`, tip: speed.penalized ? `Vitesse de base ${speed.base} m, réduite de 3 m : l’armure portée exige plus de Force que vous n’en avez.` : `Vitesse de base de votre espèce (${speed.base} m). Distance que vous pouvez parcourir par tour.` },
-      { label:'Maîtrise', value: fmtMod(prof), tip:`Bonus de maîtrise selon le niveau (niv. ${ch.level||1} → ${fmtMod(prof)}). S’ajoute aux jets où vous êtes formé : compétences maîtrisées, jets de sauvegarde de classe, attaques avec une arme maîtrisée…` },
+      { label:'CA', icon:'gi-ca', value: ac.value, tip:`Classe d'Armure = ${ac.breakdown.join(' ')}.${armorLooked ? '' : ' Équipez une armure depuis l’onglet Inventaire pour affiner ce calcul.'}` },
+      { label:'Initiative', icon:'gi-initiative', value: fmtMod(dexMod), tip:`Initiative = modificateur de Dextérité (${fmtMod(dexMod)}). Lancée en 1d20 + Initiative pour déterminer l’ordre d’action au début du combat.` },
+      { label:'Vitesse', icon:'gi-vitesse', value: `${speed.value} m`, tip: speedTip, variant: enc.speedPenalty ? (enc.status === 'heavy' ? 'danger' : 'warning') : null },
+      { label:'Maîtrise', icon:'gi-maitrise', value: fmtMod(prof), tip:`Bonus de maîtrise selon le niveau (niv. ${ch.level||1} → ${fmtMod(prof)}). S’ajoute aux jets où vous êtes formé : compétences maîtrisées, jets de sauvegarde de classe, attaques avec une arme maîtrisée…` },
+      { label:'Charge', icon:'gi-charge', value: `${fmtKg(enc.totalWeightKg)} / ${fmtKg(enc.capacity)} kg`, variant: enc.status === 'heavy' ? 'danger' : (enc.status === 'light' ? 'warning' : null),
+        tip: `Capacité de charge = valeur de Force × 7,5 (${fmtKg(enc.capacity)} kg). Poids total de votre inventaire : ${fmtKg(enc.totalWeightKg)} kg (pièces d’or non comptées).`
+          + (enc.status === 'heavy' ? ` Fortement encombré : Vitesse -6 m et désavantage à tous les jets de Force, Dextérité et Constitution (caractéristique, sauvegarde, attaque) tant que la charge dépasse ${fmtKg(enc.heavyThreshold)} kg.`
+            : enc.status === 'light' ? ` Encombré : Vitesse -3 m tant que la charge dépasse ${fmtKg(enc.lightThreshold)} kg.`
+            : ` En dessous de ${fmtKg(enc.lightThreshold)} kg, aucune pénalité.`)
+          + (enc.overCapacity ? ` Au-delà de la capacité de charge, vous ne pouvez tout simplement pas transporter ce poids.` : ''),
+      },
     ];
     if(abilKey){
-      tiles.push({ label:'DD sorts', value: spellSaveDC(prof, spellAbilMod), tip:`DD des sorts = 8 + maîtrise (${fmtMod(prof)}) + modificateur de ${abilLabel} (${fmtMod(spellAbilMod)}). C’est le DD que doivent battre les jets de sauvegarde contre vos sorts.` });
-      tiles.push({ label:'Attaque sort', value: fmtMod(spellAttackBonus(prof, spellAbilMod)), tip:`Bonus au jet d’attaque de sort = maîtrise (${fmtMod(prof)}) + modificateur de ${abilLabel} (${fmtMod(spellAbilMod)}).` });
+      tiles.push({ label:'DD sorts', icon:'gi-dd-sorts', value: spellSaveDC(prof, spellAbilMod), tip:`DD des sorts = 8 + maîtrise (${fmtMod(prof)}) + modificateur de ${abilLabel} (${fmtMod(spellAbilMod)}). C’est le DD que doivent battre les jets de sauvegarde contre vos sorts.` });
+      tiles.push({ label:'Attaque sort', icon:'gi-attaque-sort', value: fmtMod(spellAttackBonus(prof, spellAbilMod)), tip:`Bonus au jet d’attaque de sort = maîtrise (${fmtMod(prof)}) + modificateur de ${abilLabel} (${fmtMod(spellAbilMod)}).` });
     }
-    tiles.push({ label:'Perception passive', value: passivePerc, tip:`10 + bonus de Perception (${fmtMod(perceptionBonus)}). Utilisée sans jet actif, par exemple pour repérer une embuscade ou un piège évident.` });
+    tiles.push({ label:'Perception passive', icon:'gi-perception', value: passivePerc, tip:`10 + bonus de Perception (${fmtMod(perceptionBonus)}). Utilisée sans jet actif, par exemple pour repérer une embuscade ou un piège évident.` });
 
     el.innerHTML = `
       <p class="field-label" style="margin-bottom:10px;">Statistiques de combat <span class="hint-inline">(survolez pour le détail)</span></p>
       <div class="vital-grid">
         ${tiles.map((t,i) => `
-          <div class="vital-tile" data-vital-idx="${i}" tabindex="0">
+          <div class="vital-tile${t.variant ? ` is-${t.variant}` : ''}" data-vital-idx="${i}" tabindex="0">
+            <svg class="i stat-icon"><use href="#${t.icon}"/></svg>
             <div class="vital-value">${escapeHtml(String(t.value))}</div>
             <div class="vital-label">${escapeHtml(t.label)}</div>
           </div>
         `).join('')}
       </div>
+      ${enc.status === 'heavy' ? `
+        <div class="cbt-callout c-danger" style="margin-top:12px;">
+          <span class="cbt-callout-icon">⚠</span>
+          <div><strong>Fortement encombré</strong> — Vitesse réduite de 6 m et désavantage à tous les jets de Force, de Dextérité et de Constitution (caractéristique, sauvegarde, attaque) tant que votre charge dépasse ${fmtKg(enc.heavyThreshold)} kg. Allégez votre inventaire depuis l’onglet Inventaire.</div>
+        </div>
+      ` : enc.status === 'light' ? `
+        <div class="cbt-callout c-warning" style="margin-top:12px;">
+          <span class="cbt-callout-icon">🎒</span>
+          <div><strong>Encombré</strong> — Vitesse réduite de 3 m tant que votre charge dépasse ${fmtKg(enc.lightThreshold)} kg.</div>
+        </div>
+      ` : ''}
     `;
     el.querySelectorAll('[data-vital-idx]').forEach(tile => {
       const t = tiles[Number(tile.dataset.vitalIdx)];
@@ -466,8 +521,8 @@ export function renderSheet(container, character){
       <div class="hp-bar-wrap">
         <div class="hp-bar-track"><div class="hp-bar-fill ${cls}" style="width:${pct}%;"></div></div>
         <div class="hp-nums">
-          <span>PV ${ch.hp.current} / ${ch.hp.max}${ch.hp.temp ? ` <span class="hp-temp">(+${ch.hp.temp} temp.)</span>` : ''}</span>
-          <span>Maîtrise ${fmtMod(proficiencyBonus(ch.level||1))}</span>
+          <span><svg class="i stat-icon-inline"><use href="#gi-pv"/></svg> PV ${ch.hp.current} / ${ch.hp.max}${ch.hp.temp ? ` <span class="hp-temp">(+${ch.hp.temp} temp.)</span>` : ''}</span>
+          <span><svg class="i stat-icon-inline"><use href="#gi-maitrise"/></svg> Maîtrise ${fmtMod(proficiencyBonus(ch.level||1))}</span>
         </div>
       </div>
       <div class="hp-controls">
@@ -793,10 +848,11 @@ export function renderSheet(container, character){
       return `<div class="spell-slots-row">
         ${resourceDefs.map(def => {
           const v = classResourceValue(def, level, resourceTable);
+          const iconSvg = `<svg class="i stat-icon-inline"><use href="#${def.giIcon}"/></svg>`;
           if(def.kind === 'info'){
-            return `<div class="spell-slot-lvl frame"><div class="lvl-label">${def.icon} ${escapeHtml(def.label)}</div><div class="abil-final" style="font-size:1.1rem;margin-top:4px;">${escapeHtml(String(v))}</div></div>`;
+            return `<div class="spell-slot-lvl frame"><div class="lvl-label">${iconSvg} ${escapeHtml(def.label)}</div><div class="abil-final" style="font-size:1.1rem;margin-top:4px;">${escapeHtml(String(v))}</div></div>`;
           }
-          return `<div class="spell-slot-lvl frame"><div class="lvl-label">${def.icon} ${escapeHtml(def.label)}</div>${resourceDotsHTML(def.key, v)}</div>`;
+          return `<div class="spell-slot-lvl frame"><div class="lvl-label">${iconSvg} ${escapeHtml(def.label)}</div>${resourceDotsHTML(def.key, v)}</div>`;
         }).join('')}
       </div>`;
     }
@@ -903,6 +959,24 @@ export function renderSheet(container, character){
         </div>
       ` : ''}
 
+      <h3 class="level-heading">Dons acquis</h3>
+      <div class="capacite-list" id="feats-list" style="margin-bottom:1em;"></div>
+      <article class="capacite-block is-collapsible" id="feats-picker-block">
+        <button type="button" class="capacite-toggle" data-cap-toggle>
+          <span class="capacite-toggle-title">➕ Ajouter / retirer un don</span>
+          <svg class="i chevron"><use href="#i-chevron"/></svg>
+        </button>
+        <div class="capacite-body">
+          <div class="search-field" style="max-width:340px;margin-bottom:.8em;">
+            <svg class="i"><use href="#i-search"/></svg>
+            <input type="text" class="field" id="feats-search" placeholder="Filtrer les dons…">
+          </div>
+          <div class="chip-group" id="feats-chips" style="margin-bottom:.8em;"></div>
+          <a href="#homebrew/traits" class="btn btn-sm btn-ghost">✨ Créer un don personnalisé</a>
+        </div>
+      </article>
+      <div style="margin-bottom:1.8em;"></div>
+
       <h3 class="level-heading">Capacités de classe</h3>
       <div class="capacite-list">
         ${merged.map(cap => capaciteBlockHTML(
@@ -913,6 +987,38 @@ export function renderSheet(container, character){
       </div>
     `;
     wireCollapsibles(panel);
+
+    function renderFeatsList(){
+      const list = panel.querySelector('#feats-list');
+      list.innerHTML = ch.feats.map(slug => {
+        const d = DATA.dons.find(x => x.slug === slug);
+        if(!d) return '';
+        return capaciteBlockHTML(d._primaryName, enrichHTML(d.html_description), d._homebrew ? '<span class="pill" style="margin-right:6px;">✨</span>' : '');
+      }).join('') || '<p class="page-lede" style="font-size:.9em;">Aucun don sélectionné.</p>';
+      wireCollapsibles(list);
+    }
+    function renderFeatsChips(query = ''){
+      const q = stripAccents(query.trim().toLowerCase());
+      const chips = panel.querySelector('#feats-chips');
+      const list = q ? DATA.dons.filter(d => stripAccents(d._primaryName.toLowerCase()).includes(q)) : DATA.dons;
+      chips.innerHTML = list.map(d => `
+        <button type="button" class="chip ${ch.feats.includes(d.slug)?'is-selected':''}" data-feat="${d.slug}">
+          <svg class="i"><use href="#i-check"/></svg>${d._homebrew?'✨ ':''}${escapeHtml(d._primaryName)}
+        </button>
+      `).join('') || '<p class="page-lede" style="font-size:.88em;">Aucun don ne correspond.</p>';
+      chips.querySelectorAll('[data-feat]').forEach(chip => chip.addEventListener('click', () => {
+        const slug = chip.dataset.feat;
+        const idx = ch.feats.indexOf(slug);
+        if(idx >= 0) ch.feats.splice(idx, 1); else ch.feats.push(slug);
+        persist();
+        chip.classList.toggle('is-selected');
+        renderFeatsList();
+      }));
+    }
+    renderFeatsChips();
+    renderFeatsList();
+    if(ch.feats.length === 0) panel.querySelector('#feats-picker-block').classList.add('is-expanded');
+    panel.querySelector('#feats-search').addEventListener('input', (e) => renderFeatsChips(e.target.value));
 
     panel.querySelector('#char-level').addEventListener('change', (e) => {
       ch.level = Number(e.target.value);
@@ -1245,7 +1351,9 @@ export function renderSheet(container, character){
         </div>
         <input type="number" class="field" id="inv-new-qty" value="1" min="1" style="width:80px;">
         <button class="btn btn-sm btn-primary" id="inv-add"><svg class="i"><use href="#i-plus"/></svg> Ajouter</button>
+        <button class="btn btn-sm btn-ghost" id="inv-add-custom" type="button">✨ Objet personnalisé</button>
       </div>
+      <div class="inv-capacity-bar" id="inv-capacity" tabindex="0"></div>
       <p class="page-lede" style="font-size:.85em;margin-bottom:1em;">Équipez une arme en main principale/secondaire (ou à deux mains), une armure ou un bouclier — les emplacements de mains suivent les règles D&amp;D : une arme à deux mains occupe les deux mains, un bouclier occupe la main secondaire.</p>
       <div class="table-scroll">
         <table class="inv-table" id="inv-table">
@@ -1276,7 +1384,26 @@ export function renderSheet(container, character){
       const on = it.equipped === slot;
       return `<button type="button" class="btn btn-sm ${on?'btn-primary':'btn-ghost'}" data-equip="${idx}" data-slot="${slot}">${on?'Déséquiper':(isShield?'Équiper le bouclier':"Équiper l’armure")}</button>`;
     }
+    function renderCapacity(){
+      const bar = panel.querySelector('#inv-capacity');
+      const enc = currentEncumbrance();
+      const pct = enc.capacity > 0 ? Math.min(100, (enc.totalWeightKg / enc.capacity) * 100) : 0;
+      const statusLabel = enc.status === 'heavy' ? 'Fortement encombré' : enc.status === 'light' ? 'Encombré' : 'Charge normale';
+      bar.className = `inv-capacity-bar${enc.status !== 'normal' ? ` is-${enc.status}` : ''}`;
+      bar.innerHTML = `
+        <div class="inv-capacity-head">
+          <span>🎒 ${fmtKg(enc.totalWeightKg)} / ${fmtKg(enc.capacity)} kg</span>
+          <span class="inv-capacity-status">${statusLabel}</span>
+        </div>
+        <div class="inv-capacity-track"><div class="inv-capacity-fill is-${enc.status}" style="width:${pct}%"></div></div>
+      `;
+      attachPopover(bar, () => `<div class="popover-title"><span>Capacité de charge</span></div><div>Capacité de charge = valeur de Force × 7,5 (${fmtKg(enc.capacity)} kg). Au-delà de ${fmtKg(enc.lightThreshold)} kg : Encombré (Vitesse -3 m). Au-delà de ${fmtKg(enc.heavyThreshold)} kg : Fortement encombré (Vitesse -6 m, désavantage aux jets de Force/Dex/Con).</div>`);
+    }
     function renderRows(){
+      renderCapacity();
+      renderVitals();
+      renderStatGrid();
+      renderSaveGrid();
       const tbody = panel.querySelector('#inv-table tbody');
       if(!ch.inventory.length){ tbody.innerHTML = `<tr><td colspan="5" style="color:var(--ink-faint);">Inventaire vide.</td></tr>`; return; }
       tbody.innerHTML = ch.inventory.map((it, idx) => {
@@ -1303,7 +1430,7 @@ export function renderSheet(container, character){
         persist(); renderRows();
       }));
       tbody.querySelectorAll('[data-rm]').forEach(b => b.addEventListener('click', () => {
-        ch.inventory.splice(Number(b.dataset.rm), 1); persist(); renderRows(); renderVitals();
+        ch.inventory.splice(Number(b.dataset.rm), 1); persist(); renderRows();
       }));
       tbody.querySelectorAll('[data-equip]').forEach(b => b.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -1322,7 +1449,7 @@ export function renderSheet(container, character){
     const nameInput = panel.querySelector('#inv-new-name');
     const qtyInput = panel.querySelector('#inv-new-qty');
     const suggestBox = panel.querySelector('#inv-suggest');
-    const catalog = [...DATA.itemLookup.values()];
+    let catalog = [...DATA.itemLookup.values()];
     let matches = [];
     let activeIdx = -1;
 
@@ -1380,6 +1507,84 @@ export function renderSheet(container, character){
       ch.inventory.push({ name, qty: Math.max(1, parseInt(qtyInput.value,10)||1), equipped:null });
       persist(); renderRows(); closeSuggest();
       nameInput.value=''; qtyInput.value='1'; nameInput.focus();
+    });
+
+    panel.querySelector('#inv-add-custom').addEventListener('click', () => openCustomItemModal((item) => {
+      catalog = [...DATA.itemLookup.values()];
+      nameInput.value = item.nom;
+      qtyInput.focus(); qtyInput.select();
+    }));
+  }
+
+  // Formulaire compact de création d'objet homebrew, accessible directement depuis
+  // l'onglet Inventaire — mêmes champs que l'Atelier (voir js/pages/homebrew.js), en modale.
+  function openCustomItemModal(onCreated){
+    openModal({
+      eyebrow: 'Atelier',
+      title: 'Objet personnalisé',
+      build(body){
+        const state = { nom:'', type:'objet_magique', poids:'', prix:'', rarete:'commun', lien:'', description:'' };
+        function draw(){
+          body.innerHTML = `
+            <div class="abil-grid" style="grid-template-columns:1fr 1fr;gap:14px;">
+              <div style="grid-column:1/-1;">
+                <label class="field-label" for="ci-nom">Nom de l'objet</label>
+                <input type="text" class="field" id="ci-nom" value="${escapeHtml(state.nom)}" placeholder="Ex. Amulette du Veilleur">
+              </div>
+              <div>
+                <label class="field-label" for="ci-type">Type</label>
+                <select class="field" id="ci-type">
+                  ${Object.entries({ arme:'Arme', armure:'Armure', materiel:'Matériel', outil:'Outil', objet_magique:'Objet magique', autre:'Autre' }).map(([k,l]) => `<option value="${k}" ${state.type===k?'selected':''}>${l}</option>`).join('')}
+                </select>
+              </div>
+              <div></div>
+              <div>
+                <label class="field-label" for="ci-poids">Poids (kg)</label>
+                <input type="number" class="field" id="ci-poids" min="0" step="0.1" value="${escapeHtml(state.poids)}">
+              </div>
+              <div>
+                <label class="field-label" for="ci-prix">Prix (po)</label>
+                <input type="number" class="field" id="ci-prix" min="0" step="0.1" value="${escapeHtml(state.prix)}">
+              </div>
+              ${state.type === 'objet_magique' ? `
+                <div>
+                  <label class="field-label" for="ci-rarete">Rareté</label>
+                  <select class="field" id="ci-rarete">
+                    ${['commun','peu commun','rare','très rare','légendaire'].map(r => `<option value="${r}" ${state.rarete===r?'selected':''}>${r}</option>`).join('')}
+                  </select>
+                </div>
+                <div>
+                  <label class="field-label" for="ci-lien">Lien (attunement)</label>
+                  <input type="text" class="field" id="ci-lien" value="${escapeHtml(state.lien)}" placeholder="Ex. nécessite un lien">
+                </div>
+              ` : ''}
+              <div style="grid-column:1/-1;">
+                <label class="field-label" for="ci-desc">Description</label>
+                <textarea class="field" id="ci-desc" rows="4">${escapeHtml(state.description)}</textarea>
+              </div>
+            </div>
+            <div class="flex-gap" style="margin-top:1.4em;">
+              <button class="btn btn-primary" id="ci-save" type="button">Créer l'objet</button>
+            </div>
+          `;
+          body.querySelector('#ci-nom').addEventListener('input', e => state.nom = e.target.value);
+          body.querySelector('#ci-type').addEventListener('change', e => { state.type = e.target.value; draw(); });
+          body.querySelector('#ci-poids').addEventListener('input', e => state.poids = e.target.value);
+          body.querySelector('#ci-prix').addEventListener('input', e => state.prix = e.target.value);
+          body.querySelector('#ci-rarete')?.addEventListener('change', e => state.rarete = e.target.value);
+          body.querySelector('#ci-lien')?.addEventListener('input', e => state.lien = e.target.value);
+          body.querySelector('#ci-desc').addEventListener('input', e => state.description = e.target.value);
+          body.querySelector('#ci-save').addEventListener('click', () => {
+            if(!state.nom.trim()){ toast("Donnez un nom à l'objet.", { type:'error' }); return; }
+            const item = saveHomebrewEntry('items', state);
+            refreshHomebrew();
+            toast('Objet créé !', { type:'success' });
+            closeModal();
+            onCreated?.(item);
+          });
+        }
+        draw();
+      },
     });
   }
 
@@ -1445,6 +1650,7 @@ export function renderSheet(container, character){
     const dexMod = abilityMod('dexterite');
     const armorLooked = equippedArmorLooked();
     const ac = computeArmorClass({ dexMod, armorCA: armorLooked?.ca ?? null, hasShield: hasShieldEquipped() });
+    const enc = currentEncumbrance();
     box.innerHTML = `
       <h1>${escapeHtml(ch.profile.name||'Aventurier')}</h1>
       <p>${escapeHtml(ch.species||'')} ${ch.speciesChoiceSubrace?`(${escapeHtml(ch.speciesChoiceSubrace)})`:''} — ${escapeHtml(ch.className||'')} niveau ${ch.level} — ${escapeHtml(ch.background||'')}</p>
@@ -1455,6 +1661,7 @@ export function renderSheet(container, character){
       <p>Compétences : ${(ch.classSkills||[]).join(', ')||'—'}<br>Langues : ${(ch.languages||[]).join(', ')||'—'}</p>
       <h3>Inventaire</h3>
       <p>${ch.inventory.map(i=>`${i.qty>1?`${i.qty}× `:''}${escapeHtml(i.name)}`).join(', ')||'—'} — Bourse : ${ch.gold?.pp||0} pp, ${ch.gold?.po||0} po, ${ch.gold?.pe||0} pe, ${ch.gold?.pa||0} pa, ${ch.gold?.pc||0} pc</p>
+      <p>Charge : ${fmtKg(enc.totalWeightKg)} / ${fmtKg(enc.capacity)} kg${enc.status !== 'normal' ? ` (${enc.status === 'heavy' ? 'Fortement encombré' : 'Encombré'})` : ''}</p>
       <h3>Notes</h3>
       <p>${escapeHtml(ch.profile.notes||'—')}</p>
     `;

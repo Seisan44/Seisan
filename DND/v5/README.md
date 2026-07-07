@@ -36,7 +36,8 @@ js/
   favorites.js                  Favoris (sorts, dons, objets magiques)
   dice.js                       Lanceur de dés
   pages/                          Un module par page (races, classes, sorts, dons, glossaire,
-                                    équipements, combat, historiques, accueil, personnage)
+                                    équipements, combat, historiques, carac-competences, accueil,
+                                    personnage)
   character/                      Créateur de personnage : wizard, fiche, règles, stockage, avatar
 ```
 
@@ -108,7 +109,7 @@ données, corrigés à la source plutôt que contournés :
 
 ## Au-delà de la parité fonctionnelle
 
-Six améliorations ont été retenues plutôt que saupoudrées :
+Dix améliorations ont été retenues plutôt que saupoudrées :
 
 1. **PWA installable** (`manifest.json` + `sw.js`) — cache complet du code, des données et
    des pages consultées, pour un usage hors-ligne à la table de jeu.
@@ -122,6 +123,50 @@ Six améliorations ont été retenues plutôt que saupoudrées :
    (jets de dés génériques, et jets "toucher"/"dégâts" pré-remplis pour chaque arme portée).
 6. **Export/impression de la fiche** — une mise en page dédiée à l'impression, indépendante
    de l'interface à onglets.
+7. **Mode Découverte** — pensé pour un joueur qui n'a jamais fait de JDR, activable/désactivable
+   à tout moment (`js/beginner.js`) : nav et page Combat simplifiées aux règles essentielles,
+   encarts explicatifs dans l'assistant de création, et surtout un point d'entrée dédié sur la
+   page Personnage (`js/character/start-hub.js`) — soit l'assistant complet, soit 6 personnages
+   prêts à jouer (`js/character/pregens.js`), orientés par un quiz de 4 questions
+   (`js/character/quiz.js`) qui recoupe les tags des réponses avec ceux des personnages (et
+   propose 2 alternatives quand le score ne départage pas clairement un favori). Un suivi de
+   progression (jalons "Personnage créé" / "Combat consulté" / "Premier jet de dés",
+   persistés en local) donne un retour concret sur l'avancement, via une pastille sur le bouton
+   Mode Découverte et une ligne dans le bandeau. Un tutoriel interactif du premier tour de combat
+   (`js/pages/combat-tutorial.js`), accessible depuis la page Combat, fait enchaîner action → jet
+   d'attaque → dégâts en réutilisant le lanceur de dés, pour un premier geste de jeu avant la
+   vraie partie.
+8. **Page "Carac. / Compét."** (`js/pages/carac-competences.js` + `carac-competences-content.js`)
+   — un onglet "Les bases" qui pose le schéma d20 + modificateur + maîtrise ≥ DD (table des
+   modificateurs, Avantage/Désavantage, bonus de maîtrise, DD, oppositions, jets passifs,
+   travailler ensemble), un onglet par caractéristique avec sa description en langage simple,
+   un exemple de jet sans compétence, une carte dépliable par compétence associée, la liste des
+   "autres jets" et des mécaniques que la caractéristique détermine (CA, Initiative, PV,
+   capacité de charge, DD de sorts...), et un onglet Sauvegardes. Indexée dans la recherche
+   globale (ex. taper "Perception" ouvre directement l'onglet Sagesse).
+9. **Capacité de charge & encombrement** (`js/character/rules.js` -> `carryingCapacity`,
+   `encumbranceState`) — le poids total de l'inventaire (parsé depuis le champ `poids` du
+   compendium) est comparé en continu à Force × 7,5 kg. Au-delà de 2,5× / 5× la valeur de
+   Force, le personnage devient Encombré / Fortement encombré : la tuile "Charge" et la barre
+   de l'onglet Inventaire se colorent en conséquence, la Vitesse est réduite (-3 m / -6 m, en
+   plus de la pénalité d'armure existante), et un bandeau d'alerte rappelle le désavantage aux
+   jets de Force/Dextérité/Constitution qui s'ajoute au-delà du second seuil — matérialisé par
+   un repère ⚠ sur les blocs Force/Dex/Con des caractéristiques et des jets de sauvegarde (cette
+   règle variante du Manuel des Joueurs a été appliquée automatiquement plutôt que laissée
+   informative, par choix explicite).
+10. **Atelier homebrew** (`js/character/homebrew.js` + `js/pages/homebrew.js`, page "Atelier") —
+    création de dons, espèces, classes (y compris des sous-classes de classes existantes) et
+    objets personnalisés via des formulaires guidés (avec un encart "Guide de conception" par
+    type, rappelant les repères d'équilibrage 2024), sans jamais toucher aux fichiers `data/*.json`
+    (stockage `localStorage`). Le contenu créé est fusionné dans les mêmes structures que le
+    contenu officiel au démarrage et après chaque création/édition/suppression (`refreshHomebrew()`) :
+    il apparaît donc automatiquement dans l'assistant de création (espèces/classes sélectionnables
+    comme les 9/12 officielles), sur les pages Races/Classes/Dons/Équipement (repéré par une
+    pastille "✨ Homebrew"), dans la recherche globale et les favoris. Une classe homebrew lanceuse
+    de sorts réutilise la table de progression (emplacements, sorts disponibles) d'une classe
+    officielle au choix plutôt que d'en inventer une nouvelle. Depuis la fiche de personnage,
+    l'onglet Inventaire permet de créer un objet personnalisé à la volée, et l'onglet Traits
+    propose d'attacher n'importe quel don (officiel ou personnalisé) via une section "Dons acquis".
 
 ## Enrichissement du texte
 
@@ -152,3 +197,16 @@ saturer une description longue de liens répétés.
   préparés pour les autres classes suit la formule officielle (niveau + modificateur).
 - Le glossaire fait de son mieux pour détecter les termes cités en toutes lettres dans un
   texte libre ; ce n'est pas un moteur linguistique complet (accords, synonymes).
+- Les personnages prêts à jouer du Mode Découverte couvrent 6 classes sur 12 (Guerrier,
+  Roublard, Magicien, Clerc, Barbare, Rôdeur) — un choix assumé plutôt qu'un oubli : ce sont
+  les 6 archétypes les plus simples à prendre en main pour un tout premier personnage. Les
+  6 classes restantes (Barde, Druide, Ensorceleur, Moine, Occultiste, Paladin) restent
+  accessibles via l'assistant de création complet.
+- Les objets homebrew de l'Atelier restent volontairement simples : pas de dégâts ni de bonus
+  de CA chiffrés exploitables dans les jets, seulement des objets d'inventaire décrits (comme le
+  matériel et les objets magiques du compendium officiel).
+- Une classe homebrew avec une ressource de classe propre (façon Rage/Ki) n'est pas suivie par un
+  widget dédié sur la fiche — elle se décrit dans le texte de ses capacités par niveau.
+- L'espèce et la classe d'un personnage se choisissent à la création (assistant) et ne sont pas
+  modifiables ensuite depuis la fiche — ceci vaut aussi bien pour le contenu officiel que pour le
+  contenu homebrew créé après coup.
