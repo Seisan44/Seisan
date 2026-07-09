@@ -1531,7 +1531,150 @@
       ],
       "image": "https://www.aidedd.org/assets/regles/2024/warlock.jpg",
       "html_traits_table": "<table class=\"core\">\n<tbody>\n<tr>\n<th colspan=\"2\">Traits de base de l'occultiste</th>\n</tr>\n<tr>\n<td><strong>Caractéristique principale</strong></td>\n<td>Charisme</td>\n</tr>\n<tr>\n<td><strong>Dé de vie</strong></td>\n<td>D8 par niveau d'occultiste</td>\n</tr>\n<tr>\n<td><strong>Maîtrise des jets de sauvegarde</strong></td>\n<td>Sagesse et Charisme</td>\n</tr>\n<tr>\n<td><strong>Maîtrises de compétence</strong></td>\n<td>2 au choix parmi : Arcanes, Tromperie, Histoire, Intimidation, Investigation, Nature et Religion</td>\n</tr>\n<tr>\n<td><strong>Maîtrises d'arme</strong></td>\n<td>Armes courantes</td>\n</tr>\n<tr>\n<td><strong>Formation aux armures</strong></td>\n<td>Armures légères</td>\n</tr>\n<tr>\n<td><strong>Équipement de départ</strong></td>\n<td>Choisissez A ou B : (A) Armure de cuir, serpe, 2 dagues, focaliseur arcanique (orbe), livre (savoir occulte), sac d'érudit et 15 po ; ou (B) 100 po</td>\n</tr>\n</tbody>\n</table>",
-      "html_capacites_table": "<table>\n<tbody>\n<tr>\n<th class=\"text-center\">Niveau</th>\n<th class=\"text-center\">Bonus de<br/>maîtrise</th>\n<th>Capacités de classe</th>\n<th class=\"text-center\">Manifestations<br/>occultes</th>\n<th class=\"text-center\">Sorts<br/>mineurs</th>\n<th class=\"text-center\">Sorts<br/>préparés</th>\n<th class=\"text-center\">Emplacements<br/>de sort</th>\n<th class=\"text-center\">Niveau des<br/>emplacements</th>\n</tr>\n<tr>\n<td class=\"text-center\">1</td>\n<td class=\"text-center\">+2</td>\n<td>Manifestions occultes, Magie de pacte</td>\n<td class=\"text-center\">1</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">1</td>\n<td class=\"text-center\">1</td>\n</tr>\n<tr>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">+2</td>\n<td>Rouerie magique</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">1</td>\n</tr>\n<tr>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">+2</td>\n<td>Sous-classe d'occultiste</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">2</td>\n</tr>\n<tr>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">+2</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">2</td>\n</tr>\n<tr>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">+3</td>\n<td>–</td>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">3</td>\n</tr>\n<tr>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">+3</td>\n<td>Capacité de sous-classe</td>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">3</td>\n</tr>\n<tr>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">+3</td>\n<td>–</td>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">4</td>\n</tr>\n<tr>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">+3</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">4</td>\n</tr>\n<tr>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">+4</td>\n<td>Communication avec le protecteur</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">+4</td>\n<td>Capacité de sous-classe</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">11</td>\n<td class=\"text-center\">+4</td>\n<td>Arcanum mystique (sort de niveau 6)</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">11</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">12</td>\n<td class=\"text-center\">+4</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">11</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">13</td>\n<td class=\"text-center\">+5</td>\n<td>Arcanum mystique (sort de niveau 7)</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">12</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">14</td>\n<td class=\"text-center\">+5</td>\n<td>Capacité de sous-classe</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">12</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">15</td>\n<td class=\"text-center\">+5</td>\n<td>Arcanum mystique (sort de niveau 8)</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">13</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">16</td>\n<td class=\"text-center\">+5</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">13</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">17</td>\n<td class=\"text-center\">+6</td>\n<td>Arcanum mystique (sort de niveau 9)</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">14</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">18</td>\n<td class=\"text-center\">+6</td>\n<td>–</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">14</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">19</td>\n<td class=\"text-center\">+6</td>\n<td>Faveur épique</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">15</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">20</td>\n<td class=\"text-center\">+6</td>\n<td>Maître de l’occulte</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">15</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n</tbody>\n</table>"
+      "html_capacites_table": "<table>\n<tbody>\n<tr>\n<th class=\"text-center\">Niveau</th>\n<th class=\"text-center\">Bonus de<br/>maîtrise</th>\n<th>Capacités de classe</th>\n<th class=\"text-center\">Manifestations<br/>occultes</th>\n<th class=\"text-center\">Sorts<br/>mineurs</th>\n<th class=\"text-center\">Sorts<br/>préparés</th>\n<th class=\"text-center\">Emplacements<br/>de sort</th>\n<th class=\"text-center\">Niveau des<br/>emplacements</th>\n</tr>\n<tr>\n<td class=\"text-center\">1</td>\n<td class=\"text-center\">+2</td>\n<td>Manifestions occultes, Magie de pacte</td>\n<td class=\"text-center\">1</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">1</td>\n<td class=\"text-center\">1</td>\n</tr>\n<tr>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">+2</td>\n<td>Rouerie magique</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">1</td>\n</tr>\n<tr>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">+2</td>\n<td>Sous-classe d'occultiste</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">2</td>\n</tr>\n<tr>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">+2</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">2</td>\n</tr>\n<tr>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">+3</td>\n<td>–</td>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">3</td>\n</tr>\n<tr>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">+3</td>\n<td>Capacité de sous-classe</td>\n<td class=\"text-center\">5</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">3</td>\n</tr>\n<tr>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">+3</td>\n<td>–</td>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">4</td>\n</tr>\n<tr>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">+3</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">6</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">4</td>\n</tr>\n<tr>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">+4</td>\n<td>Communication avec le protecteur</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">+4</td>\n<td>Capacité de sous-classe</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">2</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">11</td>\n<td class=\"text-center\">+4</td>\n<td>Arcanum mystique (sort de niveau 6)</td>\n<td class=\"text-center\">7</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">11</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">12</td>\n<td class=\"text-center\">+4</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">11</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">13</td>\n<td class=\"text-center\">+5</td>\n<td>Arcanum mystique (sort de niveau 7)</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">12</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">14</td>\n<td class=\"text-center\">+5</td>\n<td>Capacité de sous-classe</td>\n<td class=\"text-center\">8</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">12</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">15</td>\n<td class=\"text-center\">+5</td>\n<td>Arcanum mystique (sort de niveau 8)</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">13</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">16</td>\n<td class=\"text-center\">+5</td>\n<td>Amélioration de caractéristique</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">13</td>\n<td class=\"text-center\">3</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">17</td>\n<td class=\"text-center\">+6</td>\n<td>Arcanum mystique (sort de niveau 9)</td>\n<td class=\"text-center\">9</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">14</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">18</td>\n<td class=\"text-center\">+6</td>\n<td>–</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">14</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">19</td>\n<td class=\"text-center\">+6</td>\n<td>Faveur épique</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">15</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n<tr>\n<td class=\"text-center\">20</td>\n<td class=\"text-center\">+6</td>\n<td>Maître de l’occulte</td>\n<td class=\"text-center\">10</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">15</td>\n<td class=\"text-center\">4</td>\n<td class=\"text-center\">5</td>\n</tr>\n</tbody>\n</table>",
+      "manifestations": [
+        {
+          "nom": "Armure d'ombres",
+          "prerequis": null,
+          "description": "Vous pouvez lancer armure de mage sur vous-même sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Buveuse de vie",
+          "prerequis": "Occultiste de niveau 9+, manifestation Pacte de la lame",
+          "description": "Une fois par tour, lorsque vous touchez une créature avec votre arme de pacte, vous pouvez infliger 1d6 dégâts nécrotiques, psychiques ou radiants supplémentaires (au choix) à la créature, et vous pouvez dépenser un de vos dés de points de vie pour le lancer et regagner un nombre de points de vie égal au résultat du jet plus votre modificateur de Constitution (minimum de 1 point de vie)."
+        },
+        {
+          "nom": "Châtiment occulte",
+          "variantes_nom": ["Frappe occulte"],
+          "prerequis": "Occultiste de niveau 5+, manifestation Pacte de la lame",
+          "description": "Une fois par tour, lorsque vous touchez une créature avec votre arme de pacte, vous pouvez dépenser un emplacement de sort de Magie de pacte pour infliger 1d8 dégâts de force supplémentaires à la cible, plus 1d8 dégâts supplémentaires par niveau d'emplacement de sort, et vous pouvez infliger l'état À terre à la cible si elle est de taille TG ou inférieure."
+        },
+        {
+          "nom": "Décharge déchirante",
+          "prerequis": "Occultiste de niveau 2+, un sort mineur d'occultiste infligeant des dégâts",
+          "description": "Choisissez un de vos sorts connus d'occultiste infligeant des dégâts. Vous pouvez ajouter votre modificateur de Charisme aux jets de dégâts de ce sort. Répétable. Vous pouvez obtenir cette manifestation plusieurs fois. À chaque fois, choisissez un sort mineur éligible différent."
+        },
+        {
+          "nom": "Décharge répulsive",
+          "prerequis": "Occultiste de niveau 2+, un sort mineur d'occultiste infligeant des dégâts via un jet d'attaque",
+          "description": "Choisissez un de vos sorts mineurs connus d'occultiste qui nécessite un jet d'attaque. Lorsque vous touchez une créature de taille G ou inférieure avec ce sort, vous pouvez la repousser jusqu'à 3 mètres de distance. Répétable. Vous pouvez obtenir cette manifestation plusieurs fois. À chaque fois, choisissez un sort mineur éligible différent."
+        },
+        {
+          "nom": "Engagement du maître des chaînes",
+          "prerequis": "Occultiste de niveau 5+, manifestation Pacte de la chaîne",
+          "description": "Lorsque vous lancez appel de familier, vous imprégnez le familier invoqué d'une partie de votre pouvoir surnaturel, lui conférant les avantages suivants : Aérien ou aquatique. Le familier gagne une Vitesse de vol ou de nage (au choix) de 12 mètres. | Attaque rapide. Par une action Bonus, vous pouvez ordonner au familier de prendre l'action Attaque. | Dégâts nécrotiques ou radiants. Chaque fois que le familier inflige des dégâts contondants, perforants ou tranchants, vous pouvez lui faire infliger des dégâts nécrotiques ou radiants à la place. | Votre DD de sauvegarde. Si le familier force une créature à effectuer un jet de sauvegarde, il utilise le DD de sauvegarde de votre sort. | Résistance. Lorsque le familier subit des dégâts, vous pouvez prendre une Réaction pour lui accorder une Résistance contre ces dégâts."
+        },
+        {
+          "nom": "Enseignement des Premiers-Nés",
+          "prerequis": "Occultiste de niveau 2+",
+          "description": "Vous avez reçu des connaissances d'une entité ancestrale du multivers, vous permettant d'obtenir un don d'origines de votre choix. Répétable. Vous pouvez obtenir cette manifestation plusieurs fois. À chaque fois, choisissez un don d'origines différent."
+        },
+        {
+          "nom": "Esprit occulte",
+          "prerequis": null,
+          "description": "Vous avez un Avantage aux jets de sauvegarde de Constitution que vous effectuez pour maintenir la Concentration."
+        },
+        {
+          "nom": "Lame assoiffée",
+          "prerequis": "Occultiste de niveau 5+, manifestation Pacte de la lame",
+          "description": "Vous obtenez la capacité Attaque supplémentaire uniquement pour votre arme de pacte. Grâce à cette capacité, vous pouvez attaquer deux fois avec l'arme au lieu d'une lorsque vous prenez l'action Attaque à votre tour."
+        },
+        {
+          "nom": "Lame dévorante",
+          "prerequis": "Occultiste de niveau 12+, manifestation Lame assoiffée",
+          "description": "L'attaque supplémentaire de votre manifestation Lame assoiffée confère deux attaques supplémentaires au lieu d'une."
+        },
+        {
+          "nom": "Lance occulte",
+          "prerequis": "Occultiste de niveau 2+, un sort mineur d'occultiste infligeant des dégâts",
+          "description": "Choisissez un de vos sorts mineurs connus d'occultiste infligeant des dégâts et ayant une portée de 3 mètres ou plus. Lorsque vous lancez ce sort, sa portée augmente d'un nombre de mètres égal à 9 fois votre niveau d'occultiste. Répétable. Vous pouvez obtenir cette manifestation plusieurs fois. À chaque fois, choisissez un sort mineur éligible différent."
+        },
+        {
+          "nom": "Maître des formes",
+          "prerequis": "Occultiste de niveau 5+",
+          "description": "Vous pouvez lancer modification d'apparence sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Maître des ombres",
+          "prerequis": "Occultiste de niveau 5+",
+          "description": "Lorsque vous vous trouvez dans une zone de Lumière faible ou de Ténèbres, vous pouvez lancer invisibilité sur vous-même sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Mille visages",
+          "prerequis": "Occultiste de niveau 2+",
+          "description": "Vous pouvez lancer déguisement sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Murmures de la tombe",
+          "prerequis": "Occultiste de niveau 7+",
+          "description": "Vous pouvez lancer communication avec les morts sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Pacte de la chaîne",
+          "prerequis": null,
+          "description": "Vous apprenez le sort appel de familier et pouvez le lancer avec une action Magie sans dépenser d'emplacement de sort. Lorsque vous lancez le sort, vous choisissez l'une des formes normales pour votre familier ou l'une des formes spéciales suivantes : diablotin, pseudodragon, quasit, squelette, slaad tétard, sphinx merveilleux, esprit follet ou serpent venimeux. De plus, lorsque vous prenez l'action Attaque, vous pouvez renoncer à l'une de vos propres attaques pour permettre à votre familier d'effectuer sa propre attaque avec sa Réaction."
+        },
+        {
+          "nom": "Pacte de la lame",
+          "prerequis": null,
+          "description": "Par une action Bonus, vous pouvez invoquer une arme de pacte dans votre main (une arme de corps à corps courante ou de guerre de votre choix avec laquelle vous vous liez) ou créer un lien avec une arme magique que vous touchez ; vous ne pouvez pas vous lier à une arme magique si quelqu'un d'autre est lié avec elle ou si un autre occultiste a établi en lien avec elle. Tant que le lien est actif, vous maîtrisez l'arme et pouvez l'utiliser comme focaliseur d'incantation. Chaque fois que vous attaquez avec l'arme liée, vous pouvez utiliser votre modificateur de Charisme pour les jets d'attaque et de dégâts au lieu d'utiliser la Force ou la Dextérité ; et vous pouvez faire en sorte que l'arme inflige des dégâts nécrotiques, psychiques ou radiants, ou son type de dégâts normal. Votre lien avec l'arme prend fin si vous utilisez à nouveau l'action Bonus de cette capacité, si l'arme se trouve à plus de 1,50 mètre de vous pendant 1 minute ou plus, ou si vous mourez. Une arme invoquée disparaît à la fin du lien."
+        },
+        {
+          "nom": "Pacte du grimoire",
+          "prerequis": null,
+          "description": "En assemblant des fils d'ombre, vous invoquez un livre dans votre main à la fin d'un Repos court ou long. Ce Codex des Ombres (dont vous déterminez l'apparence) contains une magie surnaturelle à laquelle vous seul avez accès, vous conférant les avantages ci-dessous. Le livre disparaît si vous invoquez un autre livre doté de cette capacité ou si vous mourez. Sorts mineurs et rituels. Lorsque le livre apparaît, choisissez trois sorts mineurs et deux sorts de niveau 1 qui ont l'étiquette Rituel. Les sorts peuvent provenir de la liste de sorts de n'importe quelle classe, et doivent être des sorts que vous n'avez pas déjà préparés. Tant que le livre est sur vous, vous avez les sorts choisis préparés et ils fonctionnent comme des sorts d'occultiste. Focaliseur d'incantation. Vous pouvez utiliser le livre comme focaliseur d'incantation."
+        },
+        {
+          "nom": "Pas aérien",
+          "prerequis": "Occultiste de niveau 5+",
+          "description": "Vous pouvez lancer lévitation sur vous-même sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Perception transférée",
+          "prerequis": "Occultiste de niveau 5+",
+          "description": "Vous pouvez utiliser une action Bonus pour toucher une créature consentante et percevoir par ses sens jusqu'à la fin de votre prochain tour. Tant que la créature est sur le même plan d'existence que vous, vous pouvez utiliser une action Bonus lors des tours suivants pour maintenir cette connexion, prolongeant ainsi sa durée jusqu'à la fin de votre prochain tour. La connexion prend fin si vous ne la maintenez plus de cette manière. Lorsque vous percevez par les sens de l'autre créature, vous bénéficiez de tous les sens spéciaux de cette créature et vous pouvez lancer des sorts comme si vous étiez dans votre espace ou dans celui de l'autre créature si vous êtes 18 mètres ou moins l'un de l'autre."
+        },
+        {
+          "nom": "Présent des profondeurs",
+          "prerequis": "Occultiste de niveau 5+",
+          "description": "Vous pouvez respirer sous l'eau et votre Vitesse de nage est égale à votre Vitesse. Vous pouvez également lancer respiration aquatique une fois sans dépenser un emplacement de sort. Vous pouvez le lancer de nouveau de cette manière après un Repos Long."
+        },
+        {
+          "nom": "Présent des sauveurs",
+          "prerequis": "Occultiste de niveau 9+, manifestation Pacte du grimoire",
+          "description": "Une nouvelle page apparaît dans votre Codex des Ombres lorsque vous l'invoquez. Avec votre permission, une créature peut prendre une action pour écrire son nom sur cette page, qui peut contenir un nombre de noms égal à votre modificateur de Charisme (minimum un nom). Lorsqu'une créature dont le nom figure sur la page est réduite à 0 point de vie sans être tuée, elle passe magiquement à 1 point de vie. Une fois cette magie déclenchée, aucune créature ne peut plus en bénéficier jusqu'à ce que vous ne finissiez un Repos Long. Par une action Magie, vous pouvez effacer un nom sur la page en le touchant."
+        },
+        {
+          "nom": "Royaumes lointains",
+          "prerequis": "Occultiste de niveau 9+",
+          "description": "Vous pouvez lancer oeil du mage sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Saut d'Outremonde",
+          "prerequis": "Occultiste de niveau 2+",
+          "description": "Vous pouvez lancer saut sur vous-même sans dépenser un emplacement de sort."
+        },
+        {
+          "nom": "Vigueur fiélonne",
+          "prerequis": "Occultiste de niveau 2+",
+          "description": "Vous pouvez lancer simulacre de vie sur vous-même sans dépenser un emplacement de sort. Lorsque vous lancez le sort avec cette capacité, vous ne lancez pas le dé pour les points de vie temporaires ; vous obtenez automatiquement le nombre le plus élevé du dé."
+        },
+        {
+          "nom": "Vision du diable",
+          "prerequis": "Occultiste de niveau 2+",
+          "description": "Vous pouvez voir normalement dans une zone de Lumière faible ou de Ténèbres, qu'elles soient magiques ou non, jusqu'à une distance de 36 mètres."
+        },
+        {
+          "nom": "Vision sorcière",
+          "prerequis": "Occultiste de niveau 15+",
+          "description": "Vous possédez Vision véritable avec une portée de 9 mètres."
+        },
+        {
+          "nom": "Visions embrumées",
+          "prerequis": "Occultiste de niveau 2+",
+          "description": "Vous pouvez lancer image silentieuse sans dépenser un emplacement de sort."
+        }
+      ]
     },
     {
       "classe_title": "Protecteur Archifée",
