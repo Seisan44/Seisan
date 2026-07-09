@@ -19,6 +19,14 @@ function propChip(name){
   return `<span class="chip" ${def ? `title="${escapeHtml(def)}"` : ''}>${escapeHtml(name)}</span>`;
 }
 
+// Cellule à en-tête embarqué : sur mobile le tableau devient des cartes et
+// data-label sert de libellé ; les cellules vides y sont masquées (is-empty).
+function td(label, html, cls = ''){
+  const isEmpty = !html || html === '—' || html === '-';
+  const classes = [isEmpty ? 'is-empty' : '', cls].filter(Boolean).join(' ');
+  return `<td data-label="${escapeHtml(label)}"${classes ? ` class="${classes}"` : ''}><span class="td-val">${isEmpty ? '—' : html}</span></td>`;
+}
+
 function armesHTML(query){
   let html = `<div class="beginner-note"><b>Lire une arme.</b> « 1d8 tranchants » = lance un dé à 8 faces,
     le résultat est le nombre de dégâts. La <em>botte</em> est un effet bonus si ta classe maîtrise
@@ -27,15 +35,15 @@ function armesHTML(query){
     const items = grp.armes.filter(a => !query || stripAccents(a.nom).toLowerCase().includes(query));
     if(items.length === 0) continue;
     html += `<h2 class="spell-group-title">${escapeHtml(grp.categorie)}</h2>
-    <div class="table-scroll"><table class="core">
+    <div class="table-scroll"><table class="core eq-table">
       <tr><th>Arme</th><th>Dégâts</th><th>Propriétés</th><th>Botte</th><th>Poids</th><th>Prix</th></tr>
       ${items.map(a => `<tr>
-        <td><strong>${escapeHtml(a.nom)}</strong></td>
-        <td>${enrichHTML(a.degats || '—', { isPlainText: true })}</td>
-        <td>${(a.proprietes || []).map(propChip).join(' ') || '—'}</td>
-        <td>${escapeHtml(a.botte || '—')}</td>
-        <td>${escapeHtml(a.poids || '—')}</td>
-        <td>${escapeHtml(a.prix || '—')}</td>
+        <td class="td-name"><strong>${escapeHtml(a.nom)}</strong></td>
+        ${td('Dégâts', a.degats ? enrichHTML(a.degats, { isPlainText: true }) : '')}
+        ${td('Propriétés', (a.proprietes || []).map(propChip).join(' '))}
+        ${td('Botte', escapeHtml(a.botte || ''))}
+        ${td('Poids', escapeHtml(a.poids || ''))}
+        ${td('Prix', escapeHtml(a.prix || ''))}
       </tr>`).join('')}
     </table></div>`;
   }
@@ -50,15 +58,15 @@ function armuresHTML(query){
     const items = grp.armures.filter(a => !query || stripAccents(a.nom).toLowerCase().includes(query));
     if(items.length === 0) continue;
     html += `<h2 class="spell-group-title">${escapeHtml(grp.categorie)}</h2>
-    <div class="table-scroll"><table class="core">
+    <div class="table-scroll"><table class="core eq-table">
       <tr><th>Armure</th><th>CA</th><th>Force</th><th>Discrétion</th><th>Poids</th><th>Prix</th></tr>
       ${items.map(a => `<tr>
-        <td><strong>${escapeHtml(a.nom)}</strong></td>
-        <td>${escapeHtml(a.ca || '—')}</td>
-        <td>${escapeHtml(a.force || '—')}</td>
-        <td>${escapeHtml(a.discretion || '—')}</td>
-        <td>${escapeHtml(a.poids || '—')}</td>
-        <td>${escapeHtml(a.cout || '—')}</td>
+        <td class="td-name"><strong>${escapeHtml(a.nom)}</strong></td>
+        ${td('CA', escapeHtml(a.ca || ''))}
+        ${td('Force', escapeHtml(a.force || ''))}
+        ${td('Discrétion', escapeHtml(a.discretion || ''))}
+        ${td('Poids', escapeHtml(a.poids || ''))}
+        ${td('Prix', escapeHtml(a.cout || ''))}
       </tr>`).join('')}
     </table></div>`;
   }
@@ -83,13 +91,13 @@ function outilsHTML(query){
 
 function materielHTML(query){
   const items = DATA.materiels.filter(m => !query || stripAccents(m.nom).toLowerCase().includes(query));
-  return `<div class="table-scroll"><table class="core">
+  return `<div class="table-scroll"><table class="core eq-table">
     <tr><th>Objet</th><th>Prix</th><th>Poids</th><th>Description</th></tr>
     ${items.map(m => `<tr>
-      <td><strong>${escapeHtml(m.nom)}</strong></td>
-      <td>${escapeHtml(m.prix || '—')}</td>
-      <td>${escapeHtml(m.poids || '—')}</td>
-      <td>${enrichHTML(m.description || '', { isPlainText: true })}</td>
+      <td class="td-name"><strong>${escapeHtml(m.nom)}</strong></td>
+      ${td('Prix', escapeHtml(m.prix || ''))}
+      ${td('Poids', escapeHtml(m.poids || ''))}
+      ${td('Description', m.description ? enrichHTML(m.description, { isPlainText: true }) : '', 'td-wide')}
     </tr>`).join('')}
   </table></div>`;
 }
