@@ -10,6 +10,7 @@ import { parseClassTraits, parseStartingEquipmentChoices, parseSpellcastingTable
 import { ABILITIES } from './rules.js';
 import { parseBackgroundEquipment } from './wizard.js';
 import { sortRecommendedFirst } from './recommendations.js';
+import { ensureEquipSlots } from './equipment.js';
 
 export const PREGEN_DEFS = [
   {
@@ -223,6 +224,8 @@ export function buildPregenCharacter(def, customName){
     else if(known.kind === 'armure' && !/bouclier/i.test(known.categorie) && !armorDone){ item.equipped = true; armorDone = true; }
     else if(known.kind === 'arme') item.equipped = true;
   }
+  // Puis répartit ce qui tient vraiment dans les deux mains (slots md / mg / 2m).
+  ensureEquipSlots({ inventory });
 
   const spellPick = pickSpells(cls);
   const hpMax = Math.max(1, traits.deVieFaces + abilityMod(abilities.constitution));

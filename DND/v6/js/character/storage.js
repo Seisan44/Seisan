@@ -76,6 +76,8 @@ export function sanitizeImportedCharacter(raw){
   clean.tools = Array.isArray(clean.tools) ? clean.tools.filter(t => typeof t === 'string') : [];
   clean.conditions = Array.isArray(clean.conditions) ? clean.conditions.filter(c => typeof c === 'string') : [];
   clean.unprepared = Array.isArray(clean.unprepared) ? clean.unprepared.filter(s => typeof s === 'string') : [];
+  // Traits activés (Rage, Forme de géant…) : de simples clés, la fiche revalide.
+  clean.activeTraits = Array.isArray(clean.activeTraits) ? clean.activeTraits.filter(k => typeof k === 'string') : [];
   if(clean.coins && typeof clean.coins === 'object'){
     const c = {};
     for(const k of ['pp', 'po', 'pe', 'pa', 'pc']) c[k] = Math.max(0, Math.round(Number(clean.coins[k]) || 0));

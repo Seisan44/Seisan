@@ -15,6 +15,7 @@ import { navigate } from '../router.js';
 import { openSpellModal } from '../pages/sorts.js';
 import { openItemModal } from './sheet.js';
 import { actionBadge, spellActionKind } from './action-economy.js';
+import { ensureEquipSlots } from './equipment.js';
 import {
   CLASS_ABILITY_PRIORITY, optimizedAbilities, recommendedBonusChoice,
   isRecommendedBackground, isRecommendedSpell, sortRecommendedFirst,
@@ -595,6 +596,9 @@ export function startWizard(view){
             <label class="btn btn-sm"><svg class="icon"><use href="#i-camera"/></svg> Photo
               <input type="file" id="wiz-photo" accept="image/*" hidden></label>
             <button class="btn btn-ghost btn-sm" type="button" id="wiz-photo-reset" ${draft.portrait ? '' : 'hidden'}>Retirer</button>
+            <p class="photo-hint">Pas encore d'image ? Crée l'apparence de ton héros sur
+              <a href="https://www.heroforge.com/" target="_blank" rel="noopener">HeroForge</a>,
+              puis importe une capture d'écran.</p>
           </div>
           <div class="identity-fields">
             <label class="field-label" for="wiz-name">Nom du personnage</label>
@@ -676,6 +680,8 @@ export function startWizard(view){
       else if(known.kind === 'armure' && !/bouclier/i.test(known.categorie) && !armorDone){ item.equipped = true; armorDone = true; }
       else if(known.kind === 'arme') item.equipped = true;
     }
+    // Puis répartit ce qui tient vraiment dans les deux mains (slots md / mg / 2m).
+    ensureEquipSlots({ inventory });
 
     const conMod = abilityMod(abilities.constitution);
     const hpMax = traits.deVieFaces + conMod;

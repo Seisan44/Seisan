@@ -23,6 +23,12 @@ import { openSpellModal } from '../pages/sorts.js';
 import { historiqueDetailHTML } from '../pages/historiques.js';
 import { actionBadge, spellActionKind, featureActionKind, collectFeatureActions } from './action-economy.js';
 import { isRecommendedSpell } from './recommendations.js';
+import {
+  INVENTORY_CATEGORIES, itemCategory,
+  ensureEquipSlots, setEquipSlot,
+  isShield, isBodyArmor, isTwoHandedOnly, isVersatile, isLightWeapon, versatileDice,
+} from './equipment.js';
+import { traitInsights, traitToggleable, traitKey, speciesTraitResources, plainText } from './trait-insights.js';
 
 const TABS = [
   { key: 'actions', label: 'Actions' },
@@ -57,6 +63,8 @@ function glossExcerpt(text, n = 220){
 // Onglet interne actif des blocs Action / Action bonus (persiste entre re-rendus).
 let actionSubTab = 'attaque';
 let bonusSubTab = 'caps';
+// Onglet Action / Action bonus / Réaction affiché (une seule section à la fois).
+let actionKindView = 'action';
 
 function derive(ch){
   const cls = DATA.classesBySlug.get(ch.classSlug);
@@ -163,13 +171,13 @@ function derive(ch){
     perception, perceptionAuto, saveProf, toolProfs,
     totalWeight, capacity, overloaded, sizeCat, resourceCols, hasWeaponMastery,
     fightingStyle: FIGHTING_STYLES.find(f => f.id === ch.fightingStyle) || null,
+    spResources: speciesTraitResources(ch, sp, prof),
   };
 }
 
-function weaponAttack(ch, d, item, known){
+function weaponAttack(ch, d, item, known, { offHand = false } = {}){
   const ranged = /distance/i.test(known.categorie || '');
   const finesse = (known.proprietes || []).some(p => /finesse/i.test(p));
-  const twoHanded = (known.proprietes || []).some(p => /deux mains/i.test(p));
   const thrown = (known.proprietes || []).some(p => /lancer/i.test(p));
   let mod;
   if(ranged) mod = d.mods.dexterite;
@@ -181,15 +189,31 @@ function weaponAttack(ch, d, item, known){
   let atk = mod + (proficient ? d.prof : 0);
   let dmgBonus = mod;
 
-  // Style de combat (effets chiffrés simples).
+  const twoHandedGrip = item.slot === '2m' || isTwoHandedOnly(known);
+
+  // Style de combat (effets chiffrés simples). Duel : arme de corps à corps
+  // maniée à une main — l'appli ne suit plus l'occupation des mains, le style
+  // s'applique donc dès que la poigne est à une main.
   if(ch.fightingStyle === 'archerie' && ranged) atk += 2;
-  if(ch.fightingStyle === 'duel' && !ranged && !twoHanded) dmgBonus += 2;
+  if(ch.fightingStyle === 'duel' && !ranged && !twoHandedGrip) dmgBonus += 2;
   if(ch.fightingStyle === 'armes-de-lancer' && thrown) dmgBonus += 2;
 
-  const dice = (String(known.degats || '').match(/(\d+d\d+)/i) || [])[1] || '1d4';
+  // Combat à deux armes (propriété Légère) : l'attaque d'action bonus n'ajoute
+  // pas le modificateur aux dégâts — sauf s'il est négatif, ou avec le style.
+  if(offHand && dmgBonus > 0 && ch.fightingStyle !== 'combat-a-deux-armes'){
+    dmgBonus -= mod;
+  }
+
+  // Arme polyvalente maniée à deux mains : les dégâts entre parenthèses.
+  let dice = (String(known.degats || '').match(/(\d+d\d+)/i) || [])[1] || '1d4';
+  let versatileUsed = false;
+  if(item.slot === '2m' && isVersatile(known)){
+    const vd = versatileDice(known);
+    if(vd){ dice = vd; versatileUsed = true; }
+  }
   const dmgType = String(known.degats || '').replace(/^\s*\d+d\d+\s*/i, '');
   const dmg = `${dice}${dmgBonus ? (dmgBonus > 0 ? '+' + dmgBonus : dmgBonus) : ''}`;
-  return { atk, dmg, dmgType, ranged, finesse, proficient };
+  return { atk, dmg, dmgType, ranged, finesse, proficient, versatileUsed };
 }
 
 // Fiche en mode édition (overrides à la main) : id du personnage en cours d'édition,
@@ -211,6 +235,10 @@ export function renderSheet(view, ch, activeTab = 'actions'){
   if(!Array.isArray(ch.conditions)) ch.conditions = [];
   if(!Array.isArray(ch.tools)) ch.tools = [];
   if(!Array.isArray(ch.unprepared)) ch.unprepared = [];
+  if(!Array.isArray(ch.activeTraits)) ch.activeTraits = [];
+  if(!Array.isArray(ch.inventory)) ch.inventory = [];
+  // Mains : valide les slots d'équipement (et migre les anciens personnages).
+  ensureEquipSlots(ch);
   // Suivi du tour de combat (action / action bonus / réaction / déplacement).
   if(!ch.turn || typeof ch.turn !== 'object') ch.turn = {};
   const turnDefaults = { actionMax: 1, actionUsed: 0, bonusUsed: 0, reactionUsed: 0, moveUsed: 0 };
@@ -757,6 +785,10 @@ function openShortRestModal(ch, d, persist, rerender){
       for(const def of CLASS_RESOURCES[d.cls.classe_title] || []){
         if(def.reset && /court/i.test(def.reset)) delete ch.usedRes[def.key];
       }
+      // Traits d'espèce à recharge « repos court » (Poussée d'adrénaline…).
+      for(const def of d.spResources || []){
+        if(/court/i.test(def.reset)) delete ch.usedRes[def.key];
+      }
       if(CASTER_TYPE[d.cls.classe_title] === 'pact') ch.usedSlots = {};
       persist();
       m.close();
@@ -772,14 +804,20 @@ function openShortRestModal(ch, d, persist, rerender){
    qui atteint le niveau 3 — ou à la première montée suivante si le personnage
    l'a dépassé sans choisir. Ensuite, ses capacités arrivent avec les niveaux. */
 
-function capaciteAcc(c, { tag = null, open = false } = {}){
+function capaciteAcc(c, { tag = null, open = false, toggle = null } = {}){
   const kind = featureActionKind(c.capacite_name, String(c.description_html || '').replace(/<[^>]+>/g, ' '));
+  const memo = traitMemoHTML(c.capacite_name, c.description_html || '');
   return `<details class="acc" ${open ? 'open' : ''}>
     <summary><span class="acc-level">Niv. ${escapeHtml(c.niveau)}</span>${escapeHtml(c.capacite_name)}
       ${kind ? `<span style="margin-left:8px">${actionBadge(kind)}</span>` : ''}
       ${tag ? `<span class="chip chip-arcane" style="margin-left:8px">${escapeHtml(tag)}</span>` : ''}
+      ${toggle ? `<button type="button" class="trait-toggle ${toggle.active ? 'is-on' : ''}" data-trait-toggle="${toggle.key}"
+        title="${toggle.active ? 'Effet en cours — clique pour le terminer (checklist)' : 'Activer ce trait : une checklist rappelle tout ce qu\'il faut appliquer'}">${toggle.active ? '⚡ Actif' : 'Activer'}</button>` : ''}
       <svg class="icon acc-chevron"><use href="#i-chevron"/></svg></summary>
-    <div class="acc-body prose">${enrichHTML(c.description_html || '')}</div>
+    <div class="acc-body ${memo ? 'has-memo' : ''}">
+      <div class="prose">${enrichHTML(c.description_html || '')}</div>
+      ${memo}
+    </div>
   </details>`;
 }
 
@@ -1095,6 +1133,9 @@ function openIdentityModal(ch, d, persist, rerender){
         <label class="btn btn-sm"><svg class="icon"><use href="#i-camera"/></svg> Photo
           <input type="file" id="id-photo" accept="image/*" hidden></label>
         <button class="btn btn-ghost btn-sm" type="button" id="id-photo-reset" ${portrait ? '' : 'hidden'}>Retirer</button>
+        <p class="photo-hint">Pas encore d'image ? Crée l'apparence de ton héros sur
+          <a href="https://www.heroforge.com/" target="_blank" rel="noopener">HeroForge</a>,
+          puis importe une capture d'écran.</p>
       </div>
       <div class="identity-fields">
         <label class="field-label" for="id-name">Nom du personnage</label>
@@ -1165,6 +1206,7 @@ function openFeatureModal(f){
     </div>
     <div class="prose" style="margin-top:12px">${enrichHTML(f.html || '', { isPlainText: !!f.isPlain })}</div>
     ${(f.tables || []).map(t => `<h4 class="carac-sub" style="margin-top:14px">${escapeHtml(t.titre || '')}</h4><div class="prose">${t.html || ''}</div>`).join('')}
+    ${traitMemoHTML(f.name, f.html)}
   `;
   openModal({ title: escapeHtml(f.name), node });
 }
@@ -1313,6 +1355,127 @@ function spellSlotCardsHTML(ch, d){
   return html;
 }
 
+/* ----------------- Ressources issues des traits d'espèce -----------------
+   Utilisations limitées détectées dans le texte des traits (Froid mordant du
+   goliath, Souffle du drakéide, Poussée d'adrénaline de l'orc…) : des jetons
+   comme les ressources de classe, clé `sp-…` dans ch.usedRes.               */
+function speciesResourceCardsHTML(ch, d){
+  let html = '';
+  for(const def of d.spResources || []){
+    const used = clamp(ch.usedRes?.[def.key] || 0, 0, def.max);
+    const excerpt = glossExcerpt(plainText(def.trait.description), 200);
+    html += `<div class="res-card" style="--res:var(--res-espece)">
+      <div class="res-card-name" title="${escapeHtml(excerpt)}">🧬 ${escapeHtml(def.label)} <span class="chip chip-arcane">trait d'espèce</span></div>
+      <div class="token-row">${Array.from({ length: def.max }, (_, i) =>
+        `<button type="button" class="token ${i < used ? 'is-spent' : ''}" data-res="${def.key}" data-max="${def.max}" data-i="${i}" aria-label="${escapeHtml(def.label)} ${i + 1}" title="${i < used ? 'Dépensé — clique pour récupérer' : 'Disponible — clique pour dépenser'}"></button>`).join('')}
+        <span style="color:var(--ink-faint);font-size: calc(13px * var(--font-scale))">${def.max - used} restant${def.max - used > 1 ? 's' : ''} · ${escapeHtml(def.usesLabel)} · récup. repos ${escapeHtml(def.reset)}</span>
+      </div>
+    </div>`;
+  }
+  return html;
+}
+
+/* --------------------- Traits activables (Rage, Forme de géant…) ---------------------
+   Un trait « activable » a un état allumé / éteint à suivre en jeu : bouton
+   Activer dans l'onglet Traits, checklist à l'activation et à la fin d'effet,
+   rappel « Effets actifs » dans l'onglet Actions. */
+function collectToggleableTraits(ch, d){
+  const list = [];
+  const push = (key, name, html, isPlain, source, sourceKind) => {
+    if(!list.some(t => t.key === key)) list.push({ key, name, html, isPlain, source, sourceKind });
+  };
+  for(const c of d.cls?.capacites || []){
+    const lvl = parseInt(c.niveau, 10);
+    if(!Number.isFinite(lvl) || lvl > ch.level) continue;
+    if(traitToggleable(c.capacite_name, c.description_html))
+      push(traitKey(c.capacite_name), c.capacite_name, c.description_html || '', false, d.cls.classe_title, 'classe');
+  }
+  for(const c of d.sub?.capacites || []){
+    const lvl = parseInt(c.niveau, 10);
+    if(!Number.isFinite(lvl) || lvl > ch.level) continue;
+    if(traitToggleable(c.capacite_name, c.description_html))
+      push(traitKey(c.capacite_name), c.capacite_name, c.description_html || '', false, d.sub.classe_title, 'sous-classe');
+  }
+  for(const c of d.sp?.capacites || []){
+    if(traitToggleable(c.nom, c.description))
+      push(traitKey(c.nom), c.nom, c.description || '', true, d.sp.espece, 'espèce');
+  }
+  return list;
+}
+
+/** Antisèche latérale d'un trait : points télégraphiques reformulés, jamais inventés. */
+function traitMemoHTML(name, html){
+  const lines = traitInsights(name, html);
+  if(!lines.length) return '';
+  return `<aside class="trait-memo">
+    <div class="trait-memo-head">🧠 À ne pas oublier</div>
+    <ul class="trait-memo-list">${lines.map(l =>
+      `<li><span class="memo-ico" aria-hidden="true">${l.icon}</span><span>${escapeHtml(l.text)}</span></li>`).join('')}</ul>
+    <p class="trait-memo-note">⚠️ Antisèche automatique, possiblement incomplète — la description complète fait foi.</p>
+  </aside>`;
+}
+
+/** Checklist d'activation ('on') ou de fin d'effet ('off') d'un trait activable. */
+function openTraitChecklist(def, mode, { resLine = null, onConfirm } = {}){
+  const lines = traitInsights(def.name, def.html);
+  const items = [
+    ...lines.map(l => `${l.icon} ${l.text}`),
+    '🔗 Interactions : objets, dons, sous-classe ou autres capacités de la fiche concernés ?',
+  ];
+  const node = el('div');
+  const m = openModal({
+    title: mode === 'on' ? `⚡ Activer : ${escapeHtml(def.name)}` : `🌙 Fin d'effet : ${escapeHtml(def.name)}`,
+    node, className: 'modal-sm',
+  });
+  node.innerHTML = `
+    <p style="color:var(--ink-dim);margin-bottom:10px">${mode === 'on'
+      ? 'Passe chaque point en revue en l\'appliquant — c\'est ton aide-mémoire, rien ne se coche tout seul.'
+      : 'L\'effet se termine : pense à <strong>retirer</strong> ce qu\'il donnait.'}</p>
+    ${resLine ? `<p class="trait-check-res">${resLine}</p>` : ''}
+    <div class="trait-checklist">${items.map(t =>
+      `<label class="trait-check"><input type="checkbox"><span>${escapeHtml(t)}</span></label>`).join('')}</div>
+    <p class="trait-memo-note">⚠️ Checklist générée automatiquement depuis la description — la fiche fait foi.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-ghost" type="button" id="tc-cancel">Annuler</button>
+      <button class="btn ${mode === 'on' ? 'btn-gold' : 'btn-primary'}" type="button" id="tc-ok">${mode === 'on' ? '⚡ Activer' : 'Terminer l\'effet'}</button>
+    </div>`;
+  qs('#tc-cancel', node).addEventListener('click', () => m.close());
+  qs('#tc-ok', node).addEventListener('click', () => { m.close(); onConfirm?.(); });
+}
+
+/** Activation d'un trait : checklist + dépense automatique de la ressource liée. */
+function activateTrait(ch, d, def, persist, rerender, backTab){
+  let resLine = null;
+  let spend = null;
+  const classDef = def.sourceKind !== 'espèce' ? matchResourceDef(d, ch, def.name) : null;
+  const spDef = def.sourceKind === 'espèce' ? (d.spResources || []).find(r => r.trait.nom === def.name) : null;
+  const linked = classDef
+    ? { key: classDef.key, label: classDef.label, max: resourceMax(classDef, ch, d) }
+    : spDef ? { key: spDef.key, label: spDef.label, max: spDef.max } : null;
+  if(linked && linked.max > 0){
+    const used = clamp(ch.usedRes?.[linked.key] || 0, 0, linked.max);
+    if(used >= linked.max){
+      resLine = `⚠️ Plus d'utilisation de « ${escapeHtml(linked.label)} » disponible (${linked.max} / ${linked.max} dépensées) — vérifie avant d'activer quand même.`;
+    } else {
+      resLine = `🎟️ 1 utilisation de « ${escapeHtml(linked.label)} » sera dépensée automatiquement (il en restera ${linked.max - used - 1}).`;
+      spend = () => {
+        if(!ch.usedRes) ch.usedRes = {};
+        ch.usedRes[linked.key] = Math.min(linked.max, (ch.usedRes[linked.key] || 0) + 1);
+      };
+    }
+  }
+  openTraitChecklist(def, 'on', {
+    resLine,
+    onConfirm: () => {
+      spend?.();
+      if(!ch.activeTraits.includes(def.key)) ch.activeTraits.push(def.key);
+      persist();
+      toast(`« ${def.name} » activé ! Retrouve le rappel dans l'onglet Actions.`, { icon: '⚡' });
+      rerender(backTab);
+    },
+  });
+}
+
 function bindResourceHandlers(zone, ch, persist, redraw){
   qsa('.act-resources [data-res]', zone).forEach(t => t.addEventListener('click', () => {
     const key = t.dataset.res;
@@ -1346,40 +1509,73 @@ function bindResourceHandlers(zone, ch, persist, redraw){
 function tabActions(zone, ch, d, persist, rerender){
   const weapons = (ch.inventory || []).filter(it => it.equipped && DATA.lookupItem(it.name)?.kind === 'arme');
 
-  // Mains nues (règles 2024) : toujours disponible — For + maîtrise au toucher,
-  // dégâts fixes 1 + For (pas de dé), ou Agripper / Pousser (DD 8 + For + maîtrise).
+  // Mains nues : toujours disponible — For + maîtrise au toucher. Dégâts fixes
+  // de 1 (pas de dé) ; le don Bagarreur de tavernes les passe à 1d4 + For.
+  // Agripper / Pousser reste possible (DD 8 + For + maîtrise).
   const unarmedAtk = d.mods.force + d.prof;
   const unarmedDC = 8 + d.mods.force + d.prof;
+  const tavernBrawler = normFeat(d.bg?.don) === normFeat('Bagarreur de tavernes');
+  const unarmedDmg = `1d4${d.mods.force ? (d.mods.force > 0 ? '+' + d.mods.force : d.mods.force) : ''}`;
   const unarmedCard = `<div class="attack-card">
     <div class="attack-card-name">Mains nues 👊 ${actionBadge('action', { compact: true })}</div>
     <div class="attack-card-row">
       <button class="btn btn-primary btn-sm" type="button" data-roll="1d20+${unarmedAtk}" data-roll-label="Attaque — mains nues">Attaque ${fmtMod(unarmedAtk)}</button>
-      <span title="Pas de dé de dégâts : les mains nues infligent toujours 1 + modificateur de Force">Dégâts ${Math.max(0, 1 + d.mods.force)} (fixe) ${colorizeDamageString('contondant')}</span>
+      ${tavernBrawler
+        ? `<button class="btn btn-sm" type="button" data-roll="${unarmedDmg}" data-roll-label="Dégâts — mains nues">Dégâts ${unarmedDmg}</button>
+      <span>${colorizeDamageString('contondant')}</span>`
+        : `<span title="Pas de dé de dégâts : sans don dédié, les mains nues infligent toujours 1 dégât fixe">Dégâts 1 (fixe) ${colorizeDamageString('contondant')}</span>`}
     </div>
     <div class="attack-card-row">
+      ${tavernBrawler ? `<span class="chip chip-gold" title="Don d'origine Bagarreur de tavernes : les dégâts passent à 1d4 + Force ; si le dé de dégâts donne 1, relance-le (garde le nouveau résultat) ; et une fois par tour, une frappe qui touche pendant l'action Attaque peut aussi repousser la cible de 1,50 m.">✓ don Bagarreur de tavernes : 1d4 + For</span>` : ''}
       <span class="chip" title="Au lieu d'infliger des dégâts, tu peux Agripper ou Pousser la cible : elle doit réussir un jet de sauvegarde de Force ou de Dextérité contre ce DD.">🤼 ou Agripper / Pousser — DD ${unarmedDC}</span>
     </div>
   </div>`;
 
+  // Cartes volontairement épurées : attaque, dégâts, type de dégâts et botte —
+  // les propriétés de l'arme se lisent dans sa fiche (clic sur le nom).
   let cards = '';
   for(const it of weapons){
     const known = DATA.lookupItem(it.name);
     const w = weaponAttack(ch, d, it, known);
+    const chips = [
+      w.proficient ? '' : '<span class="chip chip-conc" title="Ta classe ne maîtrise pas cette arme : pas de bonus de maîtrise au jet d\'attaque">✗ non maîtrisée — sans bonus de maîtrise</span>',
+      known.botte && w.proficient && d.hasWeaponMastery ? `<button type="button" class="chip chip-arcane chip-clickable" data-botte="${escapeHtml(known.botte)}" title="Botte d'arme (capacité de ta classe) — clique pour lire la règle">⚡ Botte : ${escapeHtml(known.botte)} ?</button>` : '',
+    ].join('');
     cards += `<div class="attack-card">
-      <div class="attack-card-name"><button type="button" class="link-item" data-item="${escapeHtml(it.name)}" title="Voir les détails de l'arme">${escapeHtml(it.name)}</button> ${w.ranged ? '🏹' : '⚔️'} ${actionBadge('action', { compact: true })}</div>
+      <div class="attack-card-name"><button type="button" class="link-item" data-item="${escapeHtml(it.name)}" title="Voir les détails de l'arme">${escapeHtml(it.name)}</button>${w.proficient ? ' <span title="Ta classe maîtrise cette arme : bonus de maîtrise inclus au jet d\'attaque">★</span>' : ''} ${w.ranged ? '🏹' : '⚔️'} ${actionBadge('action', { compact: true })}</div>
       <div class="attack-card-row">
         <button class="btn btn-primary btn-sm" type="button" data-roll="1d20+${w.atk}" data-roll-label="Attaque — ${escapeHtml(it.name)}">Attaque ${fmtMod(w.atk)}</button>
         <button class="btn btn-sm" type="button" data-roll="${w.dmg}" data-roll-label="Dégâts — ${escapeHtml(it.name)}">Dégâts ${w.dmg}</button>
         <span>${colorizeDamageString(w.dmgType)}</span>
       </div>
-      <div class="attack-card-row">
-        ${w.proficient
-          ? '<span class="chip chip-gold" title="Ta classe maîtrise cette arme : bonus de maîtrise inclus au jet d\'attaque">✓ maîtrisée</span>'
-          : '<span class="chip chip-conc" title="Ta classe ne maîtrise pas cette arme : pas de bonus de maîtrise au jet d\'attaque">✗ non maîtrisée — sans bonus de maîtrise</span>'}
-        ${known.botte && w.proficient && d.hasWeaponMastery ? `<button type="button" class="chip chip-arcane chip-clickable" data-botte="${escapeHtml(known.botte)}" title="Botte d'arme (capacité de ta classe) — clique pour lire la règle">⚡ Botte : ${escapeHtml(known.botte)} ?</button>` : ''}
-        ${(known.proprietes || []).map(p => `<span class="chip">${escapeHtml(p)}</span>`).join('')}
-      </div>
+      ${chips ? `<div class="attack-card-row">${chips}</div>` : ''}
     </div>`;
+  }
+
+  /* --- Combat à deux armes (propriété Légère, règles 2024) : deux armes
+     Légères équipées (deux armes différentes, ou une pile d'au moins deux
+     exemplaires) → attaque supplémentaire en action bonus avec la seconde,
+     sans le modificateur aux dégâts (sauf négatif, ou style Combat à deux
+     armes). --- */
+  const lights = weapons.filter(it => isLightWeapon(DATA.lookupItem(it.name)));
+  const offIt = lights.length >= 2 ? lights[1]
+    : lights.length === 1 && (lights[0].qty || 1) >= 2 ? lights[0] : null;
+  let offhandHTML = '';
+  if(offIt){
+    const w = weaponAttack(ch, d, offIt, DATA.lookupItem(offIt.name), { offHand: true });
+    const twfStyle = ch.fightingStyle === 'combat-a-deux-armes';
+    offhandHTML = `<div class="card-grid card-grid-lg" style="margin-bottom:14px"><div class="attack-card offhand-card">
+      <div class="attack-card-name">🗡️ Combat à deux armes — <button type="button" class="link-item" data-item="${escapeHtml(offIt.name)}" title="Voir les détails de l'arme">${escapeHtml(offIt.name)}</button> ${actionBadge('bonus', { compact: true })}</div>
+      <div class="attack-card-row">
+        <button class="btn btn-primary btn-sm" type="button" data-roll="1d20+${w.atk}" data-roll-label="Attaque (seconde arme) — ${escapeHtml(offIt.name)}">Attaque ${fmtMod(w.atk)}</button>
+        <button class="btn btn-sm" type="button" data-roll="${w.dmg}" data-roll-label="Dégâts (seconde arme) — ${escapeHtml(offIt.name)}">Dégâts ${w.dmg}</button>
+        <span>${colorizeDamageString(w.dmgType)}</span>
+      </div>
+      <div class="attack-card-row">
+        <span class="chip" title="Propriété Légère : après avoir attaqué avec une arme Légère (action Attaque), tu peux faire une attaque supplémentaire avec l'autre arme Légère par une action bonus.">après une attaque d'arme Légère à ton tour</span>
+        ${twfStyle ? '<span class="chip chip-gold" title="Style Combat à deux armes : le modificateur de caractéristique s\'ajoute aux dégâts de cette seconde attaque">✓ style : modificateur aux dégâts inclus</span>' : ''}
+      </div>
+    </div></div>`;
   }
 
   const feats = collectFeatureActions(ch, d);
@@ -1421,16 +1617,22 @@ function tabActions(zone, ch, d, persist, rerender){
   const featureRowHTML = (f) => {
     const i = allFeats.indexOf(f);
     let tokens = '';
+    let resDef = null;
     if(f.sourceKind === 'classe'){
       const def = matchResourceDef(d, ch, f.name);
       const max = def ? resourceMax(def, ch, d) : 0;
-      if(def && max > 0){
-        const used = clamp(ch.usedRes?.[def.key] || 0, 0, max);
-        tokens = max <= 8
-          ? `<span class="feature-tokens" ${def.tone ? `style="--res:var(--res-${def.tone})"` : ''} title="Utilisations — clique un jeton pour dépenser / récupérer">${Array.from({ length: max }, (_, j) =>
-              `<button type="button" class="token ${j < used ? 'is-spent' : ''}" data-res="${def.key}" data-max="${max}" data-i="${j}" aria-label="${escapeHtml(def.label)} ${j + 1}"></button>`).join('')}</span>`
-          : `<span class="chip chip-gold" title="Utilisations restantes — gère le détail dans l'onglet Traits">${max - used} / ${max}</span>`;
-      }
+      if(def && max > 0) resDef = { key: def.key, label: def.label, max, tone: def.tone };
+    } else if(f.sourceKind === 'espèce'){
+      const def = d.spResources.find(r => r.trait.nom === f.name);
+      if(def) resDef = { key: def.key, label: def.label, max: def.max, tone: 'espece' };
+    }
+    if(resDef){
+      const { key, label, max, tone } = resDef;
+      const used = clamp(ch.usedRes?.[key] || 0, 0, max);
+      tokens = max <= 8
+        ? `<span class="feature-tokens" ${tone ? `style="--res:var(--res-${tone})"` : ''} title="Utilisations — clique un jeton pour dépenser / récupérer">${Array.from({ length: max }, (_, j) =>
+            `<button type="button" class="token ${j < used ? 'is-spent' : ''}" data-res="${key}" data-max="${max}" data-i="${j}" aria-label="${escapeHtml(label)} ${j + 1}"></button>`).join('')}</span>`
+        : `<span class="chip chip-gold" title="Utilisations restantes — gère le détail dans l'onglet Traits">${max - used} / ${max}</span>`;
     }
     return `<div class="feature-row" role="button" tabindex="0" data-feature="${i}" title="Clique pour lire la description complète">
       ${actionBadge(f.kind)}
@@ -1457,10 +1659,24 @@ function tabActions(zone, ch, d, persist, rerender){
     `<button type="button" class="turn-pip ${i < used ? 'is-spent' : ''}" data-turn-pip="${key}:${i}"
       title="${what} — clique pour ${i < used ? 'récupérer' : 'dépenser'}" aria-label="${what} ${i + 1}"></button>`).join('');
 
-  const resCards = classResourceCardsHTML(ch, d) + spellSlotCardsHTML(ch, d);
+  const resCards = classResourceCardsHTML(ch, d) + speciesResourceCardsHTML(ch, d) + spellSlotCardsHTML(ch, d);
 
-  const subtabBtn = (group, key, label, current) =>
-    `<button type="button" class="subtab ${current === key ? 'is-active' : ''}" data-subtab="${group}:${key}">${label}</button>`;
+  /* --- Effets actifs (traits activés dans l'onglet Traits) : rappel en combat --- */
+  const toggleables = collectToggleableTraits(ch, d);
+  const activeDefs = toggleables.filter(t => ch.activeTraits.includes(t.key));
+  const activeHTML = activeDefs.length ? `
+    <div class="active-traits no-print">
+      <span class="active-traits-label">⚡ Effets actifs :</span>
+      ${activeDefs.map(t => `<span class="chip chip-active-trait">
+        <button type="button" class="active-trait-open" data-trait-memo="${t.key}" title="Relire le mémo de « ${escapeHtml(t.name)} »">${escapeHtml(t.name)}</button>
+        <button type="button" class="active-trait-off" data-trait-off="${t.key}" title="Désactiver — checklist de fin d'effet" aria-label="Désactiver ${escapeHtml(t.name)}">✕</button>
+      </span>`).join('')}
+      <span class="active-traits-hint">clique un nom pour son mémo · ✕ pour terminer l'effet</span>
+    </div>` : '';
+
+  const countBadge = (n) => `<span class="tab-count" title="${n} option${n > 1 ? 's' : ''} disponible${n > 1 ? 's' : ''}">${n}</span>`;
+  const subtabBtn = (group, key, label, current, count) =>
+    `<button type="button" class="subtab ${current === key ? 'is-active' : ''}" data-subtab="${group}:${key}">${label}${count != null ? countBadge(count) : ''}</button>`;
   const paneDiv = (group, key, current, inner) =>
     `<div class="subtab-pane" data-pane="${group}:${key}" ${current === key ? '' : 'hidden'}>${inner}</div>`;
 
@@ -1475,12 +1691,23 @@ function tabActions(zone, ch, d, persist, rerender){
       <span class="feature-help" aria-hidden="true">?</span>
     </div>`;
 
+  /* --- Compteurs d'options par coût en temps, affichés sur les onglets ---
+     Ils recomptent exactement ce que chaque bloc / sous-onglet liste. */
+  const spellCount = (kind) => knownSpells.filter(s => spellActionKind(s) === kind).length;
+  const attackCount = 1 + weapons.length; // mains nues + armes équipées
+  const otherActionCount = actionFeats.length + stdActions.length;
+  const actionSpellCount = caster ? spellCount('action') : 0;
+  const bonusSpellCount = caster ? spellCount('bonus') : 0;
+  const actionCount = attackCount + actionSpellCount + otherActionCount;
+  const bonusCount = (offIt ? 1 : 0) + bonusFeats.length + bonusSpellCount;
+  const reactionCount = reactionFeats.length + spellCount('reaction');
+
   zone.innerHTML = `
-    <div class="quick-jump no-print">
-      <span class="quick-jump-label">Voir rapidement :</span>
-      <button type="button" class="quick-link tone-act" data-jump="act-action"><span class="quick-dot" aria-hidden="true"></span>Action</button>
-      <button type="button" class="quick-link tone-bon" data-jump="act-bonus"><span class="quick-dot" aria-hidden="true"></span>Action bonus</button>
-      <button type="button" class="quick-link tone-rea" data-jump="act-reaction"><span class="quick-star" aria-hidden="true">★</span>Réaction</button>
+    <div class="quick-jump no-print" role="tablist" aria-label="Type d'action affiché">
+      <span class="quick-jump-label">Afficher :</span>
+      <button type="button" role="tab" aria-selected="${actionKindView === 'action'}" class="quick-link tone-act ${actionKindView === 'action' ? 'is-active' : ''}" data-kind-tab="action" title="N'afficher que le bloc Action"><span class="quick-dot" aria-hidden="true"></span>Action${countBadge(actionCount)}</button>
+      <button type="button" role="tab" aria-selected="${actionKindView === 'bonus'}" class="quick-link tone-bon ${actionKindView === 'bonus' ? 'is-active' : ''}" data-kind-tab="bonus" title="N'afficher que le bloc Action bonus"><span class="quick-dot" aria-hidden="true"></span>Action bonus${countBadge(bonusCount)}</button>
+      <button type="button" role="tab" aria-selected="${actionKindView === 'reaction'}" class="quick-link tone-rea ${actionKindView === 'reaction' ? 'is-active' : ''}" data-kind-tab="reaction" title="N'afficher que le bloc Réaction"><span class="quick-star" aria-hidden="true">★</span>Réaction${countBadge(reactionCount)}</button>
     </div>
 
     <div class="panel turn-tracker">
@@ -1523,18 +1750,20 @@ function tabActions(zone, ch, d, persist, rerender){
       </div>
     </div>
 
+    ${activeHTML}
+
     ${resCards ? `<section class="act-resources">
       <h3 class="act-res-title"><svg class="icon"><use href="#i-rage"/></svg> Ressources</h3>
       <div class="card-grid card-grid-lg">${resCards}</div>
       <p class="act-res-hint">Clique un jeton pour dépenser / récupérer — les repos les restaurent.</p>
     </section>` : ''}
 
-    <section class="act-group tone-act" id="act-action">
+    <section class="act-group tone-act" id="act-action" data-kind-pane="action" ${actionKindView === 'action' ? '' : 'hidden'}>
       <h3 class="act-group-title">${actionBadge('action')} Action <span class="act-group-hint">une par tour</span></h3>
       <div class="subtabs">
-        ${subtabBtn('action', 'attaque', '⚔️ Attaquer', actionSubTab)}
-        ${caster ? subtabBtn('action', 'magie', '✨ Magie', actionSubTab) : ''}
-        ${subtabBtn('action', 'autres', '🎯 Autres actions', actionSubTab)}
+        ${subtabBtn('action', 'attaque', '⚔️ Attaquer', actionSubTab, attackCount)}
+        ${caster ? subtabBtn('action', 'magie', '✨ Magie', actionSubTab, actionSpellCount) : ''}
+        ${subtabBtn('action', 'autres', '🎯 Autres actions', actionSubTab, otherActionCount)}
       </div>
       ${paneDiv('action', 'attaque', actionSubTab, `
         <div class="card-grid card-grid-lg">${unarmedCard}${cards}</div>
@@ -1547,11 +1776,12 @@ function tabActions(zone, ch, d, persist, rerender){
         ${stdActions.map(stdRowHTML).join('')}`)}
     </section>
 
-    <section class="act-group tone-bon" id="act-bonus">
+    <section class="act-group tone-bon" id="act-bonus" data-kind-pane="bonus" ${actionKindView === 'bonus' ? '' : 'hidden'}>
       <h3 class="act-group-title">${actionBadge('bonus')} Action bonus <span class="act-group-hint">une par tour, si une capacité te la donne</span></h3>
+      ${offhandHTML}
       ${caster ? `<div class="subtabs">
-        ${subtabBtn('bonus', 'caps', '🎯 Capacités', bonusSubTab)}
-        ${subtabBtn('bonus', 'magie', '✨ Magie', bonusSubTab)}
+        ${subtabBtn('bonus', 'caps', '🎯 Capacités', bonusSubTab, bonusFeats.length)}
+        ${subtabBtn('bonus', 'magie', '✨ Magie', bonusSubTab, bonusSpellCount)}
       </div>` : ''}
       ${paneDiv('bonus', 'caps', caster ? bonusSubTab : 'caps', bonusFeats.length
         ? bonusFeats.map(featureRowHTML).join('')
@@ -1560,7 +1790,7 @@ function tabActions(zone, ch, d, persist, rerender){
         spellRows('bonus', 'Sorts en action bonus') || '<p class="empty-note">Aucun sort préparé ne se lance en action bonus.</p>') : ''}
     </section>
 
-    <section class="act-group tone-rea" id="act-reaction">
+    <section class="act-group tone-rea" id="act-reaction" data-kind-pane="reaction" ${actionKindView === 'reaction' ? '' : 'hidden'}>
       <h3 class="act-group-title">${actionBadge('reaction')} Réaction <span class="act-group-hint">une par round, même hors de ton tour</span></h3>
       ${reactionFeats.map(featureRowHTML).join('')}
       ${spellRows('reaction', 'Sorts en réaction')}
@@ -1613,9 +1843,32 @@ function tabActions(zone, ch, d, persist, rerender){
     qsa(`[data-pane^="${group}:"]`, zone).forEach(p => { p.hidden = p.dataset.pane !== `${group}:${key}`; });
   }));
 
-  /* --- Ancres « Voir rapidement » --- */
-  qsa('[data-jump]', zone).forEach(b => b.addEventListener('click', () => {
-    qs('#' + b.dataset.jump, zone)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  /* --- Onglets Action / Action bonus / Réaction (un seul bloc affiché) --- */
+  qsa('[data-kind-tab]', zone).forEach(b => b.addEventListener('click', () => {
+    actionKindView = b.dataset.kindTab;
+    qsa('[data-kind-tab]', zone).forEach(x => {
+      x.classList.toggle('is-active', x === b);
+      x.setAttribute('aria-selected', String(x === b));
+    });
+    qsa('[data-kind-pane]', zone).forEach(p => { p.hidden = p.dataset.kindPane !== actionKindView; });
+  }));
+
+  /* --- Effets actifs : mémo au clic, checklist de fin d'effet sur ✕ --- */
+  qsa('[data-trait-memo]', zone).forEach(b => b.addEventListener('click', () => {
+    const t = toggleables.find(x => x.key === b.dataset.traitMemo);
+    if(t) openFeatureModal({ name: t.name, kind: null, source: t.source, sourceKind: t.sourceKind, html: t.html, isPlain: t.isPlain });
+  }));
+  qsa('[data-trait-off]', zone).forEach(b => b.addEventListener('click', () => {
+    const t = toggleables.find(x => x.key === b.dataset.traitOff);
+    if(!t) return;
+    openTraitChecklist(t, 'off', {
+      onConfirm: () => {
+        ch.activeTraits = ch.activeTraits.filter(k => k !== t.key);
+        persist();
+        toast(`« ${t.name} » désactivé.`, { icon: '🌙' });
+        rerender('actions');
+      },
+    });
   }));
 
   /* --- Tracker de tour --- */
@@ -1912,15 +2165,29 @@ export function openItemModal(name){
   });
 }
 
-/* -------------------------------- Inventaire -------------------------------- */
+/* -------------------------------- Inventaire --------------------------------
+   Objets rangés par catégorie (Équipements, Outils, Matériels, Objets magiques,
+   Autres) ; les armes s'équipent librement (sans limite — chacune apparaît
+   dans l'onglet Actions), le bouclier se tient, l'armure se porte. */
 function tabInventaire(zone, ch, d, persist, rerender){
-  const rows = (ch.inventory || []).map((it, i) => {
+  const rowHTML = (it, i) => {
     const known = DATA.lookupItem(it.name);
-    const equippable = known && (known.kind === 'arme' || known.kind === 'armure');
     const wKg = known?.poids ? parseWeightKg(known.poids) * (it.qty || 1) : 0;
+    let equipCtrl = '';
+    if(known?.kind === 'arme'){
+      const twoOnly = isTwoHandedOnly(known);
+      equipCtrl = `<span class="hand-ctrl" role="group" aria-label="Équiper ${escapeHtml(it.name)}">
+        <button type="button" class="inv-equip ${it.slot ? 'is-on' : ''}" data-hand="${i}:tenu" title="${twoOnly ? 'Équiper — cette arme se manie à deux mains (propriété Deux mains)' : 'Équiper — l\'arme apparaît dans l\'onglet Actions avec ses jets pré-remplis'}">${it.slot ? '✓ Équipée' : 'Équiper'}</button>
+        ${!twoOnly && isVersatile(known) ? `<button type="button" class="hand-btn ${it.slot === '2m' ? 'is-on' : ''}" data-hand="${i}:2m" title="Manier à deux mains — une arme Polyvalente y gagne son dé de dégâts entre parenthèses">🙌 2M</button>` : ''}
+      </span>`;
+    } else if(isShield(known)){
+      equipCtrl = `<button type="button" class="inv-equip ${it.slot ? 'is-on' : ''}" data-hand="${i}:tenu" title="Bouclier en main (+2 CA)">${it.slot ? '✓ Équipé' : 'Équiper'}</button>`;
+    } else if(isBodyArmor(known)){
+      equipCtrl = `<button type="button" class="inv-equip ${it.slot === 'armure' ? 'is-on' : ''}" data-hand="${i}:armure" title="Une seule armure portée à la fois — elle fixe ta CA">${it.slot === 'armure' ? '✓ Portée' : 'Porter'}</button>`;
+    }
     return `<div class="inv-row">
       <span class="inv-name">${known
-        ? `<button type="button" class="link-item" data-item="${escapeHtml(it.name)}" title="Voir les détails">${escapeHtml(it.name)}</button> <span style="color:var(--ink-faint);font-size:.85em">(${known.kind === 'armure' ? known.categorie : known.kind})</span>`
+        ? `<button type="button" class="link-item" data-item="${escapeHtml(it.name)}" title="Voir les détails">${escapeHtml(it.name)}</button> <span style="color:var(--ink-faint);font-size:.85em">(${known.kind === 'armure' ? known.categorie : known.kind === 'objet_magique' ? 'objet magique' : known.kind})</span>`
         : escapeHtml(it.name)}</span>
       <span class="inv-qty-ctrl">
         <button class="inv-qty-btn" type="button" data-qty="${i}:-1" aria-label="Moins">−</button>
@@ -1928,10 +2195,22 @@ function tabInventaire(zone, ch, d, persist, rerender){
         <button class="inv-qty-btn" type="button" data-qty="${i}:1" aria-label="Plus">+</button>
       </span>
       <span class="inv-weight">${wKg ? wKg.toLocaleString('fr-FR', { maximumFractionDigits: 2 }) + ' kg' : '—'}</span>
-      ${equippable ? `<button type="button" class="inv-equip ${it.equipped ? 'is-on' : ''}" data-equip="${i}">${it.equipped ? 'Équipé' : 'Équiper'}</button>` : ''}
+      ${equipCtrl}
       <button class="icon-btn" type="button" data-del="${i}" aria-label="Retirer" style="width:30px;height:30px"><svg class="icon" style="width:15px;height:15px"><use href="#i-trash"/></svg></button>
     </div>`;
-  }).join('');
+  };
+
+  /* --- Objets groupés par catégorie (l'ordre vient d'INVENTORY_CATEGORIES) --- */
+  const groups = INVENTORY_CATEGORIES.map(cat => ({ cat, items: [] }));
+  (ch.inventory || []).forEach((it, i) => {
+    const key = itemCategory(DATA.lookupItem(it.name));
+    groups.find(g => g.cat.key === key).items.push(i);
+  });
+  const listHTML = groups.filter(g => g.items.length).map(g => `
+    <section class="inv-cat">
+      <h4 class="inv-cat-title" title="${escapeHtml(g.cat.hint || '')}">${g.cat.icon} ${g.cat.title} <span class="inv-cat-count">${g.items.length}</span></h4>
+      <div class="list-rows">${g.items.map(i => rowHTML(ch.inventory[i], i)).join('')}</div>
+    </section>`).join('');
 
   const pct = d.capacity.carry > 0 ? clamp(Math.round((d.totalWeight / d.capacity.carry) * 100), 0, 100) : 0;
   const fmtKg = (n) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
@@ -1973,14 +2252,17 @@ function tabInventaire(zone, ch, d, persist, rerender){
       ${d.overloaded ? '<p class="carry-warn">⚠️ Charge dépassée : ta Vitesse est plafonnée à 1,50 m tant que tu portes tout ça.</p>' : ''}
     </div>
 
-    <div class="list-rows" style="margin-top:14px">${rows || '<p class="empty-note">Sacoche vide.</p>'}</div>
+    <div style="margin-top:14px">${listHTML || '<p class="empty-note">Sacoche vide.</p>'}</div>
     <form id="inv-add" class="initiative-form autocomplete-wrap" style="max-width:480px">
       <input class="input" id="inv-name" placeholder="Ajouter un objet (ex. Potion de soins)" autocomplete="off" role="combobox" aria-expanded="false" aria-label="Ajouter un objet">
       <button class="btn btn-sm" type="submit"><svg class="icon"><use href="#i-plus"/></svg></button>
       <div class="autocomplete" id="inv-suggest" hidden></div>
     </form>
-    <div class="beginner-note"><b>Équiper compte !</b> L'armure et le bouclier équipés fixent ta CA ;
-    les armes équipées apparaissent dans l'onglet Actions avec leurs jets pré-remplis.</div>
+    <div class="beginner-note"><b>Équiper compte !</b> L'armure portée et le bouclier en main fixent ta CA ;
+    chaque arme équipée apparaît dans l'onglet Actions avec ses jets pré-remplis — équipes-en autant que
+    tu veux. Deux armes <strong>Légères</strong> équipées (ou 2 exemplaires, ex. 2 dagues) ? La seconde
+    attaque en action bonus t'attend là-bas. 🙌 2M : manier une arme Polyvalente à deux mains pour
+    profiter de son dé de dégâts supérieur.</div>
   `;
 
   qsa('[data-coin]', zone).forEach(inp => inp.addEventListener('change', () => {
@@ -1990,17 +2272,9 @@ function tabInventaire(zone, ch, d, persist, rerender){
     persist();
   }));
   qsa('[data-item]', zone).forEach(b => b.addEventListener('click', () => openItemModal(b.dataset.item)));
-  qsa('[data-equip]', zone).forEach(b => b.addEventListener('click', () => {
-    const it = ch.inventory[Number(b.dataset.equip)];
-    const known = DATA.lookupItem(it.name);
-    if(!it.equipped && known?.kind === 'armure' && !/bouclier/i.test(known.categorie)){
-      // Une seule armure portée à la fois.
-      for(const other of ch.inventory){
-        const ok = DATA.lookupItem(other.name);
-        if(ok?.kind === 'armure' && !/bouclier/i.test(ok.categorie)) other.equipped = false;
-      }
-    }
-    it.equipped = !it.equipped;
+  qsa('[data-hand]', zone).forEach(b => b.addEventListener('click', () => {
+    const [i, slot] = b.dataset.hand.split(':');
+    setEquipSlot(ch, Number(i), slot);
     persist();
     rerender('inventaire');
   }));
@@ -2085,6 +2359,13 @@ function tabInventaire(zone, ch, d, persist, rerender){
 function tabTraits(zone, ch, d, persist, rerender){
   const classCaps = (d.cls.capacites || []).filter(c => parseInt(c.niveau, 10) <= ch.level);
 
+  /* ----- Traits activables : bouton Activer + checklist (Rage, Forme de géant…) ----- */
+  const toggleables = collectToggleableTraits(ch, d);
+  const toggleFor = (name) => {
+    const key = traitKey(name);
+    return toggleables.some(t => t.key === key) ? { key, active: ch.activeTraits.includes(key) } : null;
+  };
+
   /* ----- Sous-classe : capacités acquises, ou invitation à la choisir ----- */
   const subs = d.cls.subclasses || [];
   let subclassHTML = '';
@@ -2093,7 +2374,7 @@ function tabTraits(zone, ch, d, persist, rerender){
     const futureLvls = [...new Set((d.sub.capacites || []).map(c => parseInt(c.niveau, 10)).filter(n => Number.isFinite(n) && n > ch.level))].sort((a, b) => a - b);
     subclassHTML = `
       <h3 class="section-title">⚜️ Sous-classe : ${escapeHtml(d.sub.classe_title)}</h3>
-      ${gained.map(c => capaciteAcc(c)).join('') || '<p class="empty-note">Ses capacités arrivent aux prochains niveaux.</p>'}
+      ${gained.map(c => capaciteAcc(c, { toggle: toggleFor(c.capacite_name) })).join('') || '<p class="empty-note">Ses capacités arrivent aux prochains niveaux.</p>'}
       ${futureLvls.length ? `<p style="color:var(--ink-faint);font-size: calc(13.5px * var(--font-scale));margin-top:6px">À venir sur cette voie : nouvelles capacités aux niveaux ${futureLvls.join(', ')}.</p>` : ''}`;
   } else if(ch.level >= 3 && subs.length){
     subclassHTML = `
@@ -2112,14 +2393,18 @@ function tabTraits(zone, ch, d, persist, rerender){
     || DATA.dons.find(dn => stripAccents(dn._primaryName).toLowerCase() === donNorm
       || stripAccents(dn._altName || '').toLowerCase() === donNorm)
     || null;
+  const donMemo = donEntry ? traitMemoHTML(donName, donEntry.html_description || '') : '';
   const donHTML = donName ? `
     <details class="acc" open>
       <summary>🎁 Don d'origine : ${escapeHtml(donName)}
         <span class="chip chip-arcane" style="margin-left:8px">offert par « ${escapeHtml(d.bg.nom)} »</span>
         <svg class="icon acc-chevron"><use href="#i-chevron"/></svg></summary>
-      <div class="acc-body prose">${donEntry
-        ? enrichHTML(donEntry.html_description || '')
-        : `<p>Description introuvable dans les données — retrouve ce don sur la page <a href="#dons">Dons</a>.</p>`}</div>
+      <div class="acc-body ${donMemo ? 'has-memo' : ''}">
+        <div class="prose">${donEntry
+          ? enrichHTML(donEntry.html_description || '')
+          : `<p>Description introuvable dans les données — retrouve ce don sur la page <a href="#dons">Dons</a>.</p>`}</div>
+        ${donMemo}
+      </div>
     </details>` : '';
 
   /* ----- Style de combat (si la classe y a droit) ----- */
@@ -2162,14 +2447,24 @@ function tabTraits(zone, ch, d, persist, rerender){
     ${fsHTML}
     ${profHTML}
     <h3 class="section-title">Capacités de ${escapeHtml(d.cls.classe_title.toLowerCase())} (niveau ${ch.level})</h3>
-    ${classCaps.map(c => capaciteAcc(c)).join('')}
+    ${classCaps.map(c => capaciteAcc(c, { toggle: toggleFor(c.capacite_name) })).join('')}
     ${subclassHTML}
     <h3 class="section-title">Traits de ${escapeHtml(d.sp.espece)}</h3>
     ${(d.sp.capacites || []).map(c => {
       const kind = featureActionKind(c.nom, c.description || '');
+      const memo = traitMemoHTML(c.nom, c.description || '');
+      const tg = toggleFor(c.nom);
+      const spRes = (d.spResources || []).find(r => r.trait.nom === c.nom);
       return `<details class="acc">
-      <summary>${escapeHtml(c.nom)}${kind ? `<span style="margin-left:8px">${actionBadge(kind)}</span>` : ''}<svg class="icon acc-chevron"><use href="#i-chevron"/></svg></summary>
-      <div class="acc-body prose">${enrichHTML(c.description || '', { isPlainText: true })}</div>
+      <summary>${escapeHtml(c.nom)}${kind ? `<span style="margin-left:8px">${actionBadge(kind)}</span>` : ''}
+        ${spRes ? `<span class="chip chip-arcane" style="margin-left:8px" title="Utilisations limitées — jetons dans l'onglet Actions, section Ressources">🔢 ${escapeHtml(spRes.usesLabel)} / repos ${escapeHtml(spRes.reset)}</span>` : ''}
+        ${tg ? `<button type="button" class="trait-toggle ${tg.active ? 'is-on' : ''}" data-trait-toggle="${tg.key}"
+          title="${tg.active ? 'Effet en cours — clique pour le terminer (checklist)' : 'Activer ce trait : une checklist rappelle tout ce qu\'il faut appliquer'}">${tg.active ? '⚡ Actif' : 'Activer'}</button>` : ''}
+        <svg class="icon acc-chevron"><use href="#i-chevron"/></svg></summary>
+      <div class="acc-body ${memo ? 'has-memo' : ''}">
+        <div class="prose">${enrichHTML(c.description || '', { isPlainText: true })}</div>
+        ${memo}
+      </div>
     </details>`;
     }).join('')}
     <h3 class="section-title">Historique : ${escapeHtml(d.bg.nom)}</h3>
@@ -2180,6 +2475,26 @@ function tabTraits(zone, ch, d, persist, rerender){
   `;
 
   qs('#pick-subclass', zone)?.addEventListener('click', () => openSubclassModal(ch, d, persist, rerender));
+
+  /* --- Activer / désactiver un trait : checklist d'aide-mémoire --- */
+  qsa('[data-trait-toggle]', zone).forEach(b => b.addEventListener('click', (e) => {
+    e.preventDefault(); // ne pas ouvrir / fermer le <details> parent
+    e.stopPropagation();
+    const t = toggleables.find(x => x.key === b.dataset.traitToggle);
+    if(!t) return;
+    if(ch.activeTraits.includes(t.key)){
+      openTraitChecklist(t, 'off', {
+        onConfirm: () => {
+          ch.activeTraits = ch.activeTraits.filter(k => k !== t.key);
+          persist();
+          toast(`« ${t.name} » désactivé.`, { icon: '🌙' });
+          rerender('traits');
+        },
+      });
+    } else {
+      activateTrait(ch, d, t, persist, rerender, 'traits');
+    }
+  }));
 
   qs('#fs-select', zone)?.addEventListener('change', (e) => {
     ch.fightingStyle = e.target.value || null;
@@ -2219,7 +2534,7 @@ function printHTML(ch, d){
     ${weapons.length ? `<p><strong>Attaques :</strong> ${weapons.map(it => {
       const known = DATA.lookupItem(it.name);
       const w = weaponAttack(ch, d, it, known);
-      return `${escapeHtml(it.name)} ${fmtMod(w.atk)}${w.proficient ? '' : ' (non maîtrisée)'} (${w.dmg} ${escapeHtml(w.dmgType)})`;
+      return `${escapeHtml(it.name)}${it.slot === '2m' ? ' [à deux mains]' : ''} ${fmtMod(w.atk)}${w.proficient ? '' : ' (non maîtrisée)'} (${w.dmg} ${escapeHtml(w.dmgType)})`;
     }).join(' · ')}</p>` : ''}
     ${(ch.cantrips || []).length ? `<p><strong>Sorts mineurs :</strong> ${escapeHtml(spellNames(ch.cantrips))}</p>` : ''}
     ${(ch.spells || []).length ? `<p><strong>Sorts préparés :</strong> ${escapeHtml(spellNames(ch.spells))}</p>` : ''}

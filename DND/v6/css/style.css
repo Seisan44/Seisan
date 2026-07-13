@@ -71,6 +71,7 @@ p { overflow-wrap: break-word; }
   --res-charme: #d977a8;
   --res-chasse: #cd7f4a;
   --res-ombre: #8a9bb0;
+  --res-espece: #6fb3c8;
   --card-glow: radial-gradient(120% 90% at 50% 0%, rgba(157,127,232,.10), transparent 60%);
   --page-vignette:
     radial-gradient(1200px 600px at 15% -5%, rgba(95,72,171,.16), transparent 60%),
@@ -121,6 +122,7 @@ p { overflow-wrap: break-word; }
   --res-charme: #a8447e;
   --res-chasse: #9c5518;
   --res-ombre: #5c6b80;
+  --res-espece: #2f6f86;
   --card-glow: radial-gradient(120% 90% at 50% 0%, rgba(95,67,173,.06), transparent 60%);
   --shadow-1: 0 2px 8px rgba(80,60,20,.14);
   --shadow-2: 0 12px 36px rgba(80,60,20,.24);
@@ -2447,6 +2449,8 @@ details.acc.cat-etat { border-left: 3px solid var(--danger); }
 .identity-grid { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; }
 .identity-photo { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: none; }
 .identity-avatar { width: 110px; height: 110px; }
+.photo-hint { max-width: 150px; text-align: center; font-size: calc(12px * var(--font-scale)); color: var(--ink-faint); }
+.photo-hint a { color: var(--gold-bright); }
 .identity-fields { flex: 1; min-width: 230px; }
 
 @media (max-width: 980px) {
@@ -2855,6 +2859,18 @@ details.acc.cat-etat { border-left: 3px solid var(--danger); }
 }
 .subtab-pane[hidden] { display: none; }
 
+/* Badge « nombre d'options » sur les onglets Action/Bonus/Réaction et les sous-onglets */
+.tab-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 20px; height: 18px; padding: 0 6px;
+  border-radius: 999px;
+  font-size: calc(11px * var(--font-scale)); font-weight: 700; line-height: 1;
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+  vertical-align: middle;
+}
+.subtab .tab-count { margin-left: 6px; }
+
 /* ----------------- Fiche : grille de sorts (onglet Sorts) ----------------- */
 .sorts-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .sorts-count { font-size: .72em; color: var(--ink-faint); font-weight: 400; }
@@ -2934,3 +2950,150 @@ details.acc.cat-etat { border-left: 3px solid var(--danger); }
   background: color-mix(in srgb, var(--gold) 14%, transparent);
   font-weight: 700;
 }
+
+/* ============ Fiche : onglets Action / Action bonus / Réaction ============ */
+/* La barre « Voir rapidement » est devenue un vrai commutateur : un seul bloc
+   affiché à la fois pour alléger la lecture en combat. */
+.quick-link.is-active {
+  color: var(--tone, var(--gold-bright));
+  border-color: var(--tone, var(--gold));
+  background: color-mix(in srgb, var(--tone, var(--gold)) 22%, transparent);
+  box-shadow: 0 1px 8px color-mix(in srgb, var(--tone, var(--gold)) 30%, transparent);
+  font-weight: 700;
+}
+
+/* ------------------- Fiche : équipement tenu ------------------- */
+.hand-ctrl { display: inline-flex; gap: 4px; flex: none; }
+.hand-btn {
+  font-family: var(--font-title); font-size: calc(11.5px * var(--font-scale)); letter-spacing: .04em;
+  padding: 3px 8px; border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-faint);
+  background: transparent;
+  cursor: pointer;
+  transition: color .14s, border-color .14s, background .14s;
+  white-space: nowrap;
+}
+.hand-btn:hover { color: var(--gold-bright); border-color: var(--gold-dim); }
+.hand-btn.is-on {
+  color: var(--gold-bright); border-color: var(--gold-dim);
+  background: color-mix(in srgb, var(--gold) 16%, transparent);
+  font-weight: 700;
+}
+/* Catégories de l'inventaire */
+.inv-cat { margin-bottom: 16px; }
+.inv-cat-title {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-title); font-size: calc(15px * var(--font-scale)); font-weight: 700;
+  color: var(--gold-bright);
+  margin: 0 0 8px;
+}
+.inv-cat-count {
+  font-size: calc(11.5px * var(--font-scale)); font-weight: 400;
+  color: var(--ink-faint);
+  border: 1px solid var(--line);
+  border-radius: 999px; padding: 1px 8px;
+}
+.inv-row { flex-wrap: wrap; }
+
+/* Carte d'attaque de la main gauche (combat à deux armes) */
+.offhand-card { border-left: 3px solid var(--act-bonus); }
+
+/* ------------------- Fiche : mémo automatique des traits ------------------- */
+.acc-body.has-memo { display: flex; gap: 18px; align-items: flex-start; }
+.acc-body.has-memo > .prose { flex: 1 1 auto; min-width: 0; }
+.trait-memo {
+  flex: 0 0 270px; min-width: 0;
+  border: 1px dashed color-mix(in srgb, var(--arcane) 45%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--arcane) 6%, transparent);
+  padding: 10px 12px;
+}
+.trait-memo-head {
+  font-family: var(--font-title); font-weight: 700; font-size: calc(13px * var(--font-scale));
+  color: var(--arcane);
+  margin-bottom: 7px;
+}
+.trait-memo-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.trait-memo-list li { display: flex; gap: 7px; font-size: calc(12.5px * var(--font-scale)); line-height: 1.45; color: var(--ink-dim); }
+.trait-memo-list .memo-ico { flex: none; }
+.trait-memo-list .memo-tag { color: var(--ink); font-family: var(--font-title); font-weight: 600; }
+.trait-memo-note { color: var(--ink-faint); font-size: calc(11.5px * var(--font-scale)); font-style: italic; margin-top: 8px; }
+@media (max-width: 760px){
+  .acc-body.has-memo { flex-direction: column; }
+  .trait-memo { flex: none; width: 100%; }
+}
+
+/* Bouton Activer / Actif d'un trait (dans le <summary>) */
+.trait-toggle {
+  flex: none; margin-left: 8px;
+  font-family: var(--font-title); font-size: calc(11.5px * var(--font-scale)); letter-spacing: .05em;
+  padding: 3px 10px; border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-dim);
+  background: transparent;
+  cursor: pointer;
+  transition: color .14s, border-color .14s, background .14s, box-shadow .14s;
+}
+.trait-toggle:hover { color: var(--gold-bright); border-color: var(--gold-dim); }
+.trait-toggle.is-on {
+  color: var(--gold-bright); border-color: var(--gold);
+  background: color-mix(in srgb, var(--gold) 18%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--gold) 30%, transparent);
+  font-weight: 700;
+}
+
+/* Checklist d'activation / fin d'effet */
+.trait-checklist { display: flex; flex-direction: column; gap: 8px; margin: 10px 0 4px; }
+.trait-check {
+  display: flex; gap: 10px; align-items: flex-start;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  cursor: pointer;
+  font-size: calc(13.5px * var(--font-scale)); line-height: 1.45;
+  color: var(--ink-dim);
+}
+.trait-check input { margin-top: 3px; accent-color: var(--gold); flex: none; }
+.trait-check:has(input:checked) { border-color: var(--gold-dim); color: var(--ink); }
+.trait-check-res {
+  border: 1px solid color-mix(in srgb, var(--gold) 45%, transparent);
+  background: color-mix(in srgb, var(--gold) 9%, transparent);
+  border-radius: 9px; padding: 8px 12px;
+  font-size: calc(13px * var(--font-scale));
+  margin-bottom: 4px;
+}
+
+/* Rappel « Effets actifs » dans l'onglet Actions */
+.active-traits {
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  border: 1px solid color-mix(in srgb, var(--gold) 40%, transparent);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--gold) 7%, var(--surface));
+}
+.active-traits-label { font-family: var(--font-title); font-weight: 700; color: var(--gold-bright); }
+.chip-active-trait {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--gold-dim);
+  background: color-mix(in srgb, var(--gold) 14%, transparent);
+  border-radius: 999px; padding: 3px 6px 3px 12px;
+}
+.active-trait-open {
+  font-family: var(--font-title); font-weight: 600; font-size: calc(13px * var(--font-scale));
+  color: var(--gold-bright);
+  background: none; border: none; cursor: pointer; padding: 0;
+}
+.active-trait-open:hover { text-decoration: underline; }
+.active-trait-off {
+  width: 20px; height: 20px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid var(--line-strong);
+  color: var(--ink-faint); background: transparent;
+  font-size: calc(11px * var(--font-scale)); cursor: pointer;
+}
+.active-trait-off:hover { color: var(--danger); border-color: var(--danger); }
+.active-traits-hint { color: var(--ink-faint); font-size: calc(12px * var(--font-scale)); font-style: italic; }
