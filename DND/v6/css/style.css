@@ -509,7 +509,7 @@ a.card:hover { text-decoration: none; }
 .card.is-clickable:hover .card-title, a.card:hover .card-title { color: var(--gold-bright); }
 
 .card-media {
-  aspect-ratio: 16/10;
+  aspect-ratio: 3/4;
   overflow: hidden;
   border-bottom: 1px solid var(--line);
   background: radial-gradient(120% 120% at 50% 20%, var(--surface-3), var(--bg-2));
@@ -1599,7 +1599,7 @@ details.acc .acc-body { padding: 15px 18px 17px; }
   background: var(--gold); color: #241a06;
   font-weight: 700; font-size: calc(15px * var(--font-scale));
 }
-.option-card .card-media { aspect-ratio: 16/9; }
+.option-card .card-media { aspect-ratio: 3/4; }
 .option-card .card-body { padding: 12px 14px; }
 
 .ability-assign { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
@@ -3097,3 +3097,4 @@ details.acc.cat-etat { border-left: 3px solid var(--danger); }
 }
 .active-trait-off:hover { color: var(--danger); border-color: var(--danger); }
 .active-traits-hint { color: var(--ink-faint); font-size: calc(12px * var(--font-scale)); font-style: italic; }
+
