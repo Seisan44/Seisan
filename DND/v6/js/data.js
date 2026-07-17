@@ -134,5 +134,6 @@ function buildSearchIndex(){
   idx.push({ cat: 'Guide', label: 'La Voie de l’Aventurier', sub: 'Guide du débutant', route: 'voie', key: '' });
   idx.push({ cat: 'Guide', label: 'Écran du joueur', sub: 'Aide de jeu à la table', route: 'ecran', key: '' });
   idx.push({ cat: 'Guide', label: 'Mes personnages', sub: 'Créateur de personnage', route: 'personnages', key: '' });
+  idx.push({ cat: 'Guide', label: 'Outils de Maître du jeu', sub: 'Campagnes, bestiaire, rencontres', route: 'mj', key: '' });
   return idx;
 }

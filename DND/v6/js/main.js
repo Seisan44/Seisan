@@ -3,10 +3,13 @@
 import { loadData, DATA } from './data.js';
 import { registerRoute, startRouter, navigate } from './router.js';
 import { qs, escapeHtml } from './utils.js';
-import { initTheme, toggleTheme, cycleFontScale, currentTheme } from './theme.js';
+import {
+  initTheme, toggleTheme, cycleFontScale, currentTheme,
+  FONT_FAMILIES, currentFontFamily, applyFontFamily, ensureFontCss,
+} from './theme.js';
 import { initSearch, openSearch } from './search.js';
 import { toggleDiceTray } from './dice.js';
-import { openPopover, openModal, toast, initTooltips } from './ui.js';
+import { openPopover, closePopover, openModal, toast, initTooltips } from './ui.js';
 import { getGlossaryEntry, enrichHTML } from './enrich.js';
 import { refreshBadges } from './progress.js';
 import { spellDetailNode } from './pages/sorts.js';
@@ -35,6 +38,14 @@ function registerRoutes(){
   registerRoute('glossaire', renderGlossaire);
   registerRoute('ecran', renderEcran);
   registerRoute('personnages', renderPersonnages);
+
+  // Outils de Maître du jeu : module chargé paresseusement à la 1re visite,
+  // rien de la section MJ n'est téléchargé ni exécuté avant.
+  let mjModule = null;
+  registerRoute('mj', async (view, params) => {
+    mjModule ??= await import('./mj/index.js');
+    await mjModule.renderMJ(view, params);
+  });
 }
 
 // Popovers de glossaire et fiches de sorts, où que le texte enrichi apparaisse.
@@ -92,6 +103,29 @@ function initChrome(){
   qs('#btn-font').addEventListener('click', () => {
     const s = cycleFontScale();
     toast(`Taille du texte : ${Math.round(s * 100)} %`, { icon: 'Aa' });
+  });
+  // Menu « plume » : police du texte courant et de la saisie (les titres
+  // gardent Cinzel). Chaque option s'affiche dans sa propre police — on charge
+  // donc toutes les feuilles à l'ouverture du menu, pas avant.
+  qs('#btn-fontfamily').addEventListener('click', () => {
+    ensureFontCss();
+    const current = currentFontFamily();
+    openPopover(qs('#btn-fontfamily'), {
+      title: 'Police du texte',
+      category: 'lecture & saisie',
+      bodyHTML: `<div class="font-menu">${FONT_FAMILIES.map(f =>
+        `<button type="button" class="font-choice${f.key === current ? ' is-active' : ''}" data-font-key="${f.key}">`
+        + `<span class="font-choice-name font-sample-${f.key}">${escapeHtml(f.label)}</span>`
+        + `<span class="font-choice-desc">${escapeHtml(f.desc)}</span>`
+        + `</button>`).join('')}</div>`,
+    });
+  });
+  document.addEventListener('click', (e) => {
+    const choice = e.target.closest?.('.font-choice');
+    if(!choice) return;
+    const font = applyFontFamily(choice.dataset.fontKey);
+    closePopover();
+    toast(`Plume « ${font.label} »`, { icon: '🖋️' });
   });
   qs('#btn-search').addEventListener('click', openSearch);
   qs('#btn-dice').addEventListener('click', toggleDiceTray);
