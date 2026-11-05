@@ -1,0 +1,8 @@
+{
+  "name": "grimoire-de-seisan",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test"
+  }
+}

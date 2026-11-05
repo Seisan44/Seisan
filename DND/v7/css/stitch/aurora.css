@@ -1,0 +1,410 @@
+/* ============================================================================
+   AURORA UI — système de design lumineux (fonds profonds + lueurs diffuses)
+
+   Principe : fonds bleu nuit / indigo ; au premier plan, des éléments très
+   contrastés (jaune vif, cyan, vert néon) qui émettent une lueur douce se
+   mêlant au fond, comme un dégradé maillé localisé — jamais une ombre portée.
+   La lueur est un calque (::before) de dégradés radiaux à fondu progressif,
+   pas un box-shadow.
+
+   ── Variables (réglables sur n'importe quel élément) ──
+     --glow         teinte principale, triplet RVB  (ex. var(--au-cyan))
+     --glow-2       teinte secondaire du maillage   (ex. var(--au-violet))
+     --glow-alpha   intensité du halo               (défaut .5)
+     --glow-reach   débordement du halo en px       (défaut 18px)
+     --au-k         intensité globale des lueurs, sur :root (défaut .5)
+
+   ── Classes utilitaires ──
+     Teintes      .glow-yellow  .glow-cyan  .glow-green  .glow-violet  .glow-red
+     Halo         .aurora-glow (rectangulaire/ellipse)  .aurora-orb (rond)
+     Surfaces     .aurora-surface (carte maillée)  .aurora-glass (+ flou d'arrière-plan)
+     Fonds        .aurora-bg (section à maillage)  .aurora-header (en-tête lumineux)
+     Accents      .aurora-btn  .aurora-badge  .aurora-chip  .aurora-gradient-text
+     Placement    .aurora-inset-tl / -tr / -bl / -br  (élément en retrait, dans un coin)
+     Séparateur   .aurora-divider
+
+   Exemple :  <article class="aurora-surface glow-cyan">
+                <span class="aurora-badge glow-yellow aurora-inset-tr">Nouveau</span> …
+   ============================================================================ */
+
+:root {
+  --glow: var(--au-cyan);
+  --glow-2: var(--au-violet);
+  --glow-alpha: calc(.5 * var(--au-k));
+  --glow-reach: 18px;
+  --au-orange: 255 150 90;
+  --au-k: .5;           /* intensité globale des lueurs : 0 = aucune, 1 = pleine */
+}
+
+/* --------------------------------- Teintes --------------------------------- */
+.glow-yellow { --glow: var(--au-yellow); --glow-2: var(--au-orange); }
+.glow-cyan   { --glow: var(--au-cyan);   --glow-2: var(--au-violet); }
+.glow-green  { --glow: var(--au-green);  --glow-2: var(--au-cyan); }
+.glow-violet { --glow: var(--au-violet); --glow-2: var(--au-cyan); }
+.glow-red    { --glow: var(--au-red);    --glow-2: var(--au-orange); }
+
+/* ----------------------- Halo : calque de dégradés diffus ----------------------- */
+.aurora-glow, .aurora-orb { position: relative; isolation: isolate; }
+.aurora-glow::before,
+.aurora-orb::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--glow-reach) * -1);
+  background:
+    radial-gradient(60% 95% at 24% 55%,
+      rgb(var(--glow) / var(--glow-alpha)) 0%,
+      rgb(var(--glow) / calc(var(--glow-alpha) * .55)) 28%,
+      rgb(var(--glow) / calc(var(--glow-alpha) * .18)) 52%,
+      rgb(var(--glow) / 0) 76%),
+    radial-gradient(55% 90% at 82% 45%,
+      rgb(var(--glow-2) / calc(var(--glow-alpha) * .75)) 0%,
+      rgb(var(--glow-2) / calc(var(--glow-alpha) * .25)) 45%,
+      rgb(var(--glow-2) / 0) 74%);
+  opacity: .95;
+  transition: opacity .25s ease, transform .35s ease;
+}
+.aurora-orb::before {
+  background:
+    radial-gradient(closest-side,
+      rgb(var(--glow) / var(--glow-alpha)) 0%,
+      rgb(var(--glow) / calc(var(--glow-alpha) * .5)) 38%,
+      rgb(var(--glow) / calc(var(--glow-alpha) * .15)) 65%,
+      rgb(var(--glow) / 0) 100%);
+}
+.aurora-glow:hover::before { opacity: 1; transform: scale(1.12); }
+
+/* ------------------------------- Surfaces & fonds ------------------------------- */
+.aurora-surface {
+  background:
+    radial-gradient(70% 100% at 100% 0%, rgb(var(--glow) / calc(.14 * var(--au-k))), transparent 62%),
+    radial-gradient(60% 90% at 0% 100%, rgb(var(--glow-2) / calc(.10 * var(--au-k))), transparent 65%),
+    rgb(17 23 51 / .72);
+  box-shadow: inset 0 0 0 1px rgb(160 170 255 / .08), inset 0 1px 0 rgb(255 255 255 / .05);
+  border-radius: var(--st-r-lg, 8px);
+}
+.aurora-glass { backdrop-filter: blur(16px) saturate(1.25); -webkit-backdrop-filter: blur(16px) saturate(1.25); }
+
+.aurora-bg {
+  background:
+    radial-gradient(900px 560px at 10% -10%, rgb(110 90 255 / calc(.28 * var(--au-k))), transparent 62%),
+    radial-gradient(760px 520px at 95% 5%, rgb(var(--au-cyan) / calc(.15 * var(--au-k))), transparent 60%),
+    radial-gradient(860px 640px at 70% 110%, rgb(var(--au-green) / calc(.11 * var(--au-k))), transparent 62%),
+    linear-gradient(180deg, #0a0f24, #070a1a 62%, #060818);
+}
+.aurora-header { position: relative; isolation: isolate; }
+.aurora-header::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: -50px -30px -30px -30px;
+  background:
+    radial-gradient(46% 120% at 14% 40%, rgb(var(--au-yellow) / calc(.16 * var(--au-k))), transparent 70%),
+    radial-gradient(44% 120% at 62% 20%, rgb(var(--au-cyan) / calc(.14 * var(--au-k))), transparent 70%),
+    radial-gradient(40% 110% at 95% 70%, rgb(var(--au-violet) / calc(.14 * var(--au-k))), transparent 70%);
+}
+
+.aurora-gradient-text {
+  color: var(--st-primary);
+  background: linear-gradient(100deg, #fff1b0 0%, var(--st-primary) 38%, var(--st-secondary) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.aurora-divider {
+  height: 1px; border: 0;
+  background: linear-gradient(90deg, transparent, rgb(var(--au-cyan) / calc(.55 * var(--au-k))), rgb(var(--au-yellow) / calc(.55 * var(--au-k))), transparent);
+}
+
+/* --------------------- Accents au premier plan : boutons, badges, chips --------------------- */
+.aurora-btn, .aurora-badge, .aurora-chip {
+  position: relative; isolation: isolate;
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--st-font-body); font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  border: 0;
+}
+.aurora-btn {
+  padding: 10px 18px; border-radius: var(--st-r-md, 4px); font-size: 12px;
+  background: rgb(var(--glow)); color: #0b0f22;
+}
+.aurora-badge {
+  padding: 2px 8px; border-radius: var(--st-r-md, 4px); font-size: 10px;
+  background: rgb(var(--glow)); color: #0b0f22;
+}
+.aurora-chip {
+  padding: 3px 10px; border-radius: 999px; font-size: 11px;
+  background: rgb(var(--glow) / calc(.14 * var(--au-k))); color: rgb(var(--glow));
+}
+.aurora-btn::before, .aurora-badge::before, .aurora-chip::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--glow-reach) * -1);
+  background:
+    radial-gradient(60% 95% at 28% 55%, rgb(var(--glow) / var(--glow-alpha)), rgb(var(--glow) / 0) 74%),
+    radial-gradient(55% 90% at 80% 45%, rgb(var(--glow-2) / calc(var(--glow-alpha) * .7)), rgb(var(--glow-2) / 0) 72%);
+}
+
+/* Placement « en retrait » : dans un coin de l'élément parent (position: relative) */
+.aurora-inset-tl, .aurora-inset-tr, .aurora-inset-bl, .aurora-inset-br { position: absolute; margin: var(--inset, 8px); }
+.aurora-inset-tl { top: 0; left: 0; }
+.aurora-inset-tr { top: 0; right: 0; }
+.aurora-inset-bl { bottom: 0; left: 0; }
+.aurora-inset-br { bottom: 0; right: 0; }
+
+/* ============================================================================
+   APPLICATION AU SITE (skin actif sur toutes les pages en thème nuit)
+   ============================================================================ */
+
+/* ----------------------------- Fond maillé global ----------------------------- */
+body[data-skin="stitch"] { background: #070a1a; }
+body[data-skin="stitch"]::before {
+  content: ""; position: fixed; inset: -6%; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(900px 600px at 12% -4%, rgb(110 90 255 / calc(.32 * var(--au-k))), transparent 62%),
+    radial-gradient(820px 560px at 94% 6%, rgb(var(--au-cyan) / calc(.16 * var(--au-k))), transparent 60%),
+    radial-gradient(900px 700px at 72% 108%, rgb(var(--au-green) / calc(.12 * var(--au-k))), transparent 62%),
+    radial-gradient(700px 520px at 0% 92%, rgb(var(--au-yellow) / calc(.08 * var(--au-k))), transparent 60%),
+    linear-gradient(180deg, #0a0f24, #070a1a 60%, #060818);
+}
+
+/* ------------------------- Calque de halo partagé (éléments vifs) ------------------------- */
+:where(body[data-skin="stitch"] :is(
+  .btn-primary, .btn-gold, .pill.is-active, .tab.is-active, .seg.is-active, .subtab.is-active,
+  .quick-link.is-active, .act-badge, .spell-card-lvl, .flag, .nav-group a.is-active,
+  .brand-mark, .turn-pip, .token, .hp-fill, .feature-row .feature-help, .modal-close
+)) { position: relative; }
+
+body[data-skin="stitch"] :is(
+  .btn-primary, .btn-gold, .pill.is-active, .tab.is-active, .seg.is-active, .subtab.is-active,
+  .quick-link.is-active, .act-badge, .spell-card-lvl, .flag, .nav-group a.is-active,
+  .brand-mark, .hp-fill
+) { isolation: isolate; }
+
+body[data-skin="stitch"] :is(
+  .btn-primary, .btn-gold, .pill.is-active, .tab.is-active, .seg.is-active, .subtab.is-active,
+  .quick-link.is-active, .act-badge, .spell-card-lvl, .flag, .nav-group a.is-active,
+  .brand-mark, .hp-fill
+)::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: calc(var(--glow-reach) * -1);
+  background:
+    radial-gradient(60% 95% at 24% 55%,
+      rgb(var(--glow) / var(--glow-alpha)) 0%,
+      rgb(var(--glow) / calc(var(--glow-alpha) * .5)) 30%,
+      rgb(var(--glow) / calc(var(--glow-alpha) * .15)) 54%,
+      rgb(var(--glow) / 0) 76%),
+    radial-gradient(55% 90% at 82% 45%,
+      rgb(var(--glow-2) / calc(var(--glow-alpha) * .7)) 0%,
+      rgb(var(--glow-2) / calc(var(--glow-alpha) * .2)) 46%,
+      rgb(var(--glow-2) / 0) 74%);
+  transition: opacity .25s ease, transform .3s ease;
+}
+/* Halo rond pour les gemmes (emplacements, jetons, pastilles de tour) */
+body[data-skin="stitch"] :is(.turn-pip, .token)::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: -12px; transform: rotate(-45deg);
+  background: radial-gradient(closest-side,
+    rgb(var(--glow) / calc(.55 * var(--au-k))) 0%, rgb(var(--glow) / calc(.22 * var(--au-k))) 45%, rgb(var(--glow) / 0) 100%);
+}
+body[data-skin="stitch"] :is(.turn-pip, .token) { isolation: isolate; box-shadow: none; }
+body[data-skin="stitch"] :is(.turn-pip, .token).is-spent::before { display: none; }
+body[data-skin="stitch"] :is(.btn-primary, .btn-gold):hover::before { transform: scale(1.14); }
+
+/* Teintes par composant */
+body[data-skin="stitch"] :is(.btn-primary, .btn-gold, .pill.is-active, .spell-card-lvl, .brand-mark, .act-badge.act-action) { --glow: var(--au-yellow); --glow-2: var(--au-orange); }
+body[data-skin="stitch"] :is(.tab.is-active, .seg.is-active, .nav-group a.is-active, .act-badge.act-bonus, .flag-r) { --glow: var(--au-cyan); --glow-2: var(--au-violet); }
+body[data-skin="stitch"] :is(.act-badge.act-reaction) { --glow: var(--au-green); --glow-2: var(--au-cyan); }
+body[data-skin="stitch"] :is(.flag-c) { --glow: var(--au-red); --glow-2: var(--au-orange); }
+body[data-skin="stitch"] .tone-act { --glow: var(--au-yellow); --glow-2: var(--au-orange); }
+body[data-skin="stitch"] .tone-bon { --glow: var(--au-cyan); --glow-2: var(--au-violet); }
+body[data-skin="stitch"] .tone-rea { --glow: var(--au-green); --glow-2: var(--au-cyan); }
+body[data-skin="stitch"] .tone-mov { --glow: var(--au-cyan); --glow-2: var(--au-green); }
+body[data-skin="stitch"] :is(.subtab.is-active, .quick-link.is-active) { --glow-alpha: calc(.38 * var(--au-k)); --glow-reach: 14px; }
+body[data-skin="stitch"] :is(.act-badge, .flag, .spell-card-lvl, .pill.is-active) { --glow-alpha: calc(.42 * var(--au-k)); --glow-reach: 14px; }
+body[data-skin="stitch"] :is(.tab.is-active, .seg.is-active) { --glow-alpha: calc(.3 * var(--au-k)); --glow-reach: 10px; }
+body[data-skin="stitch"] .hp-fill { --glow: var(--au-cyan); --glow-2: var(--au-yellow); --glow-alpha: calc(.4 * var(--au-k)); --glow-reach: 12px; }
+body[data-skin="stitch"] .hp-fill.is-low { --glow: var(--au-yellow); --glow-2: var(--au-orange); }
+body[data-skin="stitch"] .hp-fill.is-critical { --glow: var(--au-red); --glow-2: var(--au-orange); }
+body[data-skin="stitch"] .hp-bar { overflow: visible; }
+body[data-skin="stitch"] .hp-fill { border-radius: 999px; }
+
+/* Éléments vifs : couleurs pleinement saturées au premier plan */
+body[data-skin="stitch"] :is(.btn-primary, .btn-gold) { background: var(--st-primary); }
+body[data-skin="stitch"] .tab.is-active,
+body[data-skin="stitch"] .seg.is-active { color: var(--st-secondary); background: rgb(var(--au-cyan) / calc(.12 * var(--au-k))); }
+body[data-skin="stitch"] .nav-group a.is-active {
+  color: var(--st-secondary);
+  background: linear-gradient(90deg, rgb(var(--au-cyan) / calc(.16 * var(--au-k))), rgb(var(--au-cyan) / 0));
+  border-color: transparent; box-shadow: inset 2px 0 0 var(--st-secondary);
+}
+body[data-skin="stitch"] .spell-card-lvl { background: rgb(6 9 25 / .86); color: var(--st-primary); }
+body[data-skin="stitch"] .act-badge { box-shadow: none; }
+
+/* --------------------- Surfaces maillées : cartes, panneaux, tuiles --------------------- */
+body[data-skin="stitch"] :is(
+  .card, .panel, .ref-card, .attack-card, .res-card, .stat-tile, .ability-tile, .feature-row,
+  .spell-row, .gloss-card, .pregen-card, .option-card, .cast-tile, .carry-panel, .act-resources,
+  .turn-tracker, .sheet-side, .skill-group, .hp-widget.panel, .turn-board, .turn-step, .inv-row,
+  .wizard-step.is-current, .roll-btn
+) {
+  background:
+    radial-gradient(70% 110% at 100% 0%, rgb(var(--glow) / calc(.13 * var(--au-k))), transparent 62%),
+    radial-gradient(60% 90% at 0% 100%, rgb(var(--glow-2) / calc(.09 * var(--au-k))), transparent 66%),
+    rgb(17 23 51 / .74);
+}
+body[data-skin="stitch"] :is(.turn-tracker, .act-resources, .sheet-side, .act-group, .panel, .roll-btn) {
+  background:
+    radial-gradient(70% 110% at 100% 0%, rgb(var(--glow) / calc(.10 * var(--au-k))), transparent 62%),
+    radial-gradient(60% 90% at 0% 100%, rgb(var(--glow-2) / calc(.07 * var(--au-k))), transparent 66%),
+    rgb(12 17 38 / .78);
+}
+body[data-skin="stitch"] .roll-btn { background: rgb(8 12 30 / .7); }
+body[data-skin="stitch"] button.roll-btn:hover,
+body[data-skin="stitch"] :is(.card.is-clickable, a.card, .spell-row, .feature-row, .gloss-card, .pregen-card, .option-card):hover {
+  background:
+    radial-gradient(70% 110% at 100% 0%, rgb(var(--glow) / calc(.26 * var(--au-k))), transparent 62%),
+    radial-gradient(60% 90% at 0% 100%, rgb(var(--glow-2) / calc(.18 * var(--au-k))), transparent 66%),
+    rgb(26 33 68 / .85);
+}
+/* Chaque carte d'une grille reçoit une teinte différente : maillage vivant mais sobre */
+body[data-skin="stitch"] :is(.card-grid, .spell-list, .gloss-grid, .pregen-grid, .option-grid, .stat-band, .ref-grid) > :nth-child(3n+1) { --glow: var(--au-cyan); --glow-2: var(--au-violet); }
+body[data-skin="stitch"] :is(.card-grid, .spell-list, .gloss-grid, .pregen-grid, .option-grid, .stat-band, .ref-grid) > :nth-child(3n+2) { --glow: var(--au-yellow); --glow-2: var(--au-orange); }
+body[data-skin="stitch"] :is(.card-grid, .spell-list, .gloss-grid, .pregen-grid, .option-grid, .stat-band, .ref-grid) > :nth-child(3n) { --glow: var(--au-green); --glow-2: var(--au-cyan); }
+body[data-skin="stitch"] .stat-band > :nth-child(1) { --glow: var(--au-cyan); --glow-2: var(--au-violet); }
+body[data-skin="stitch"] .stat-band > :nth-child(2) { --glow: var(--au-yellow); --glow-2: var(--au-orange); }
+
+/* Cartes de sorts : la lueur reprend la couleur de l'école */
+body[data-skin="stitch"] .spell-card {
+  background:
+    radial-gradient(75% 90% at 100% 100%, color-mix(in srgb, var(--school, #4de8ff) 12%, transparent), transparent 66%),
+    radial-gradient(60% 70% at 0% 0%, color-mix(in srgb, var(--school, #4de8ff) 6%, transparent), transparent 70%),
+    rgb(17 23 51 / .78);
+}
+body[data-skin="stitch"] .spell-card:hover {
+  background:
+    radial-gradient(75% 90% at 100% 100%, color-mix(in srgb, var(--school, #4de8ff) 19%, transparent), transparent 70%),
+    radial-gradient(60% 70% at 0% 0%, color-mix(in srgb, var(--school, #4de8ff) 10%, transparent), transparent 70%),
+    rgb(26 33 68 / .88);
+}
+body[data-skin="stitch"] .spell-card-media { background: rgb(6 9 25 / .55); }
+
+/* Groupes Action / Bonus / Réaction : lueur de la teinte d'économie d'action */
+body[data-skin="stitch"] .act-group {
+  background:
+    radial-gradient(80% 120% at 0% 0%, rgb(var(--glow) / calc(.14 * var(--au-k))), transparent 64%),
+    radial-gradient(60% 100% at 100% 100%, rgb(var(--glow-2) / calc(.08 * var(--au-k))), transparent 66%),
+    rgb(12 17 38 / .78);
+}
+
+/* Ressources & tuiles : jaune/cyan selon la teinte de la ressource */
+body[data-skin="stitch"] .res-card { --glow: var(--au-cyan); }
+
+/* ------------------------------- En-têtes lumineux ------------------------------- */
+body[data-skin="stitch"] .page-head { position: relative; isolation: isolate; }
+body[data-skin="stitch"] .page-head::before {
+  content: ""; position: absolute; z-index: -1; pointer-events: none;
+  inset: -60px -40px -20px -40px;
+  background:
+    radial-gradient(46% 120% at 12% 45%, rgb(var(--au-yellow) / calc(.17 * var(--au-k))), transparent 70%),
+    radial-gradient(42% 120% at 58% 20%, rgb(var(--au-cyan) / calc(.14 * var(--au-k))), transparent 70%),
+    radial-gradient(40% 110% at 96% 75%, rgb(var(--au-violet) / calc(.15 * var(--au-k))), transparent 70%);
+}
+body[data-skin="stitch"] :is(.page-title, .sheet-name, .brand-name) {
+  color: var(--st-primary);
+  background: linear-gradient(100deg, #fff1b0 0%, var(--st-primary) 40%, var(--st-secondary) 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+body[data-skin="stitch"] .sheet-head {
+  background:
+    radial-gradient(50% 130% at 8% 0%, rgb(var(--au-yellow) / calc(.16 * var(--au-k))), transparent 66%),
+    radial-gradient(45% 130% at 60% 120%, rgb(var(--au-cyan) / calc(.15 * var(--au-k))), transparent 66%),
+    radial-gradient(40% 120% at 100% 20%, rgb(var(--au-violet) / calc(.16 * var(--au-k))), transparent 66%),
+    rgb(12 17 38 / .8);
+}
+
+/* ------------------------------- Barre du haut & menu ------------------------------- */
+body[data-skin="stitch"] #topbar {
+  background: rgb(7 10 26 / .62);
+  backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  border-bottom: 0;
+}
+body[data-skin="stitch"] #topbar::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(var(--au-cyan) / calc(.5 * var(--au-k))), rgb(var(--au-yellow) / calc(.5 * var(--au-k))), rgb(var(--au-green) / calc(.4 * var(--au-k))), transparent);
+}
+body[data-skin="stitch"] .brand-name { font-family: var(--st-font-head); font-weight: 700; letter-spacing: .02em; }
+body[data-skin="stitch"] .brand-sub { font-family: var(--st-font-body); font-weight: 700; letter-spacing: .12em; color: var(--st-outline); }
+body[data-skin="stitch"] .brand-mark {
+  border: 0; border-radius: var(--st-r-lg);
+  background: rgb(var(--au-yellow) / calc(.14 * var(--au-k))); color: var(--st-primary);
+  box-shadow: inset 0 0 0 1px rgb(var(--au-yellow) / calc(.28 * var(--au-k)));
+}
+body[data-skin="stitch"] #sidebar {
+  background: rgb(7 10 26 / .5);
+  backdrop-filter: blur(16px) saturate(1.2); -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  border-right: 0;
+  box-shadow: inset -1px 0 0 rgb(160 170 255 / .08);
+}
+body[data-skin="stitch"] .nav-group-title { font-family: var(--st-font-body); font-weight: 700; letter-spacing: .14em; color: var(--st-outline); }
+body[data-skin="stitch"] .nav-group a {
+  font-family: var(--st-font-body); font-size: 13.5px; font-weight: 600;
+  border-radius: var(--st-r-lg); border: 0;
+}
+body[data-skin="stitch"] .nav-group a:hover { background: rgb(var(--au-cyan) / calc(.07 * var(--au-k))); color: var(--st-on-surface); }
+body[data-skin="stitch"] .nav-badge { background: var(--st-primary); color: var(--st-on-primary); font-family: var(--st-font-mono); }
+body[data-skin="stitch"] .nav-foot { border-top: 1px solid rgb(160 170 255 / .1); }
+body[data-skin="stitch"] kbd { border: 0; background: var(--st-surface-high); font-family: var(--st-font-mono); }
+
+/* ---------------------- Fenêtres, palette, infobulles : verre lumineux ---------------------- */
+body[data-skin="stitch"] .modal,
+body[data-skin="stitch"] .popover,
+body[data-skin="stitch"] .palette,
+body[data-skin="stitch"] .dice-tray-inner {
+  background:
+    radial-gradient(60% 50% at 100% 0%, rgb(var(--au-cyan) / calc(.16 * var(--au-k))), transparent 66%),
+    radial-gradient(55% 45% at 0% 100%, rgb(var(--au-violet) / calc(.14 * var(--au-k))), transparent 66%),
+    radial-gradient(40% 30% at 50% -5%, rgb(var(--au-yellow) / calc(.10 * var(--au-k))), transparent 70%),
+    rgb(14 19 43 / .94);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+}
+body[data-skin="stitch"] .modal-overlay { background: rgb(4 6 20 / .72); }
+body[data-skin="stitch"] .toast {
+  border: 0; background: rgb(14 19 43 / .92);
+  box-shadow: inset 0 0 0 1px rgb(var(--au-cyan) / calc(.25 * var(--au-k)));
+}
+body[data-skin="stitch"] .ui-tip {
+  border: 0; background: rgb(14 19 43 / .96); color: var(--st-on-surface);
+  box-shadow: inset 0 0 0 1px rgb(var(--au-cyan) / calc(.25 * var(--au-k)));
+}
+
+/* ------------------- Barre d'onglets mobile (navigation principale) ------------------- */
+#tabbar { display: none; }
+@media (max-width: 980px) {
+  body[data-skin="stitch"] #tabbar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 85;
+    display: flex; justify-content: space-around; align-items: center;
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding: 0 6px env(safe-area-inset-bottom, 0px);
+    background: rgb(6 9 25 / .82);
+    backdrop-filter: blur(18px) saturate(1.3); -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  }
+  body[data-skin="stitch"] #tabbar::before {
+    content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, rgb(var(--au-cyan) / calc(.5 * var(--au-k))), rgb(var(--au-yellow) / calc(.5 * var(--au-k))), rgb(var(--au-green) / calc(.4 * var(--au-k))), transparent);
+  }
+  body[data-skin="stitch"] #tabbar > * {
+    flex: 1 1 0; max-width: 84px; min-height: 48px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+    position: relative; isolation: isolate;
+    font-family: var(--st-font-body); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--st-on-surface-variant); text-decoration: none;
+    border-radius: var(--st-r-lg);
+  }
+  body[data-skin="stitch"] #tabbar .icon { width: 22px; height: 22px; }
+  body[data-skin="stitch"] #tabbar > .is-active { color: var(--st-primary); --glow: var(--au-yellow); --glow-2: var(--au-orange); }
+  body[data-skin="stitch"] #tabbar > .is-active::before {
+    content: ""; position: absolute; z-index: -1; pointer-events: none; inset: -10px -6px;
+    background: radial-gradient(closest-side, rgb(var(--glow) / calc(.38 * var(--au-k))), rgb(var(--glow) / calc(.12 * var(--au-k))) 55%, rgb(var(--glow) / 0));
+  }
+  body[data-skin="stitch"] #view { padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); }
+  body[data-skin="stitch"] .toast-zone { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora-glow::before, .aurora-orb::before { transition: none; }
+}

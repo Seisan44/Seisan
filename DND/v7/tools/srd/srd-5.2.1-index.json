@@ -1,0 +1,5031 @@
+{
+ "source": "Open5e API v2, document srd-2024 (System Reference Document 5.2.1, CC-BY-4.0)",
+ "spells": [
+  "Acid Arrow",
+  "Acid Splash",
+  "Aid",
+  "Alarm",
+  "Alter Self",
+  "Animal Friendship",
+  "Animal Messenger",
+  "Animal Shapes",
+  "Animate Dead",
+  "Animate Objects",
+  "Antilife Shell",
+  "Antimagic Field",
+  "Antipathy/Sympathy",
+  "Arcane Eye",
+  "Arcane Hand",
+  "Arcane Lock",
+  "Arcane Sword",
+  "Arcanist's Magic Aura",
+  "Astral Projection",
+  "Augury",
+  "Aura of Life",
+  "Awaken",
+  "Bane",
+  "Banishment",
+  "Barkskin",
+  "Beacon of Hope",
+  "Befuddlement",
+  "Bestow Curse",
+  "Black Tentacles",
+  "Blade Barrier",
+  "Bless",
+  "Blight",
+  "Blindness/Deafness",
+  "Blink",
+  "Blur",
+  "Burning Hands",
+  "Call Lightning",
+  "Calm Emotions",
+  "Chain Lightning",
+  "Charm Monster",
+  "Charm Person",
+  "Chill Touch",
+  "Chromatic Orb",
+  "Circle of Death",
+  "Clairvoyance",
+  "Clone",
+  "Cloudkill",
+  "Color Spray",
+  "Command",
+  "Commune",
+  "Commune with Nature",
+  "Comprehend Languages",
+  "Compulsion",
+  "Cone of Cold",
+  "Confusion",
+  "Conjure Animals",
+  "Conjure Celestial",
+  "Conjure Elemental",
+  "Conjure Fey",
+  "Conjure Minor Elementals",
+  "Conjure Woodland Beings",
+  "Contact Other Plane",
+  "Contagion",
+  "Contingency",
+  "Continual Flame",
+  "Control Water",
+  "Control Weather",
+  "Counterspell",
+  "Create Food and Water",
+  "Create Undead",
+  "Create or Destroy Water",
+  "Creation",
+  "Cure Wounds",
+  "Dancing Lights",
+  "Darkness",
+  "Darkvision",
+  "Daylight",
+  "Death Ward",
+  "Delayed Blast Fireball",
+  "Demiplane",
+  "Detect Evil and Good",
+  "Detect Magic",
+  "Detect Poison and Disease",
+  "Detect Thoughts",
+  "Dimension Door",
+  "Disguise Self",
+  "Disintegrate",
+  "Dispel Evil and Good",
+  "Dispel Magic",
+  "Dissonant Whispers",
+  "Divination",
+  "Divine Favor",
+  "Divine Smite",
+  "Divine Word",
+  "Dominate Beast",
+  "Dominate Monster",
+  "Dominate Person",
+  "Dragon's Breath",
+  "Dream",
+  "Druidcraft",
+  "Earthquake",
+  "Eldritch Blast",
+  "Elementalism",
+  "Enhance Ability",
+  "Enlarge/Reduce",
+  "Ensnaring Strike",
+  "Entangle",
+  "Enthrall",
+  "Etherealness",
+  "Expeditious Retreat",
+  "Eyebite",
+  "Fabricate",
+  "Faerie Fire",
+  "Faithful Hound",
+  "False Life",
+  "Fear",
+  "Feather Fall",
+  "Find Familiar",
+  "Find Steed",
+  "Find Traps",
+  "Find the Path",
+  "Finger of Death",
+  "Fire Bolt",
+  "Fire Shield",
+  "Fire Storm",
+  "Fireball",
+  "Flame Blade",
+  "Flame Strike",
+  "Flaming Sphere",
+  "Flesh to Stone",
+  "Floating Disk",
+  "Fly",
+  "Fog Cloud",
+  "Forbiddance",
+  "Forcecage",
+  "Foresight",
+  "Freedom of Movement",
+  "Freezing Sphere",
+  "Gaseous Form",
+  "Gate",
+  "Geas",
+  "Gentle Repose",
+  "Giant Insect",
+  "Glibness",
+  "Globe of Invulnerability",
+  "Glyph of Warding",
+  "Goodberry",
+  "Grease",
+  "Greater Invisibility",
+  "Greater Restoration",
+  "Guardian of Faith",
+  "Guards and Wards",
+  "Guidance",
+  "Guiding Bolt",
+  "Gust of Wind",
+  "Hallow",
+  "Hallucinatory Terrain",
+  "Harm",
+  "Haste",
+  "Heal",
+  "Healing Word",
+  "Heat Metal",
+  "Hellish Rebuke",
+  "Heroes' Feast",
+  "Heroism",
+  "Hex",
+  "Hideous Laughter",
+  "Hold Monster",
+  "Hold Person",
+  "Holy Aura",
+  "Hunter's Mark",
+  "Hypnotic Pattern",
+  "Ice Knife",
+  "Ice Storm",
+  "Identify",
+  "Illusory Script",
+  "Imprisonment",
+  "Incendiary Cloud",
+  "Inflict Wounds",
+  "Insect Plague",
+  "Instant Summons",
+  "Invisibility",
+  "Irresistible Dance",
+  "Jump",
+  "Knock",
+  "Legend Lore",
+  "Lesser Restoration",
+  "Levitate",
+  "Light",
+  "Lightning Bolt",
+  "Locate Animals or Plants",
+  "Locate Creature",
+  "Locate Object",
+  "Longstrider",
+  "Mage Armor",
+  "Mage Hand",
+  "Magic Circle",
+  "Magic Jar",
+  "Magic Missile",
+  "Magic Mouth",
+  "Magic Weapon",
+  "Magnificent Mansion",
+  "Major Image",
+  "Mass Cure Wounds",
+  "Mass Heal",
+  "Mass Healing Word",
+  "Mass Suggestion",
+  "Maze",
+  "Meld into Stone",
+  "Mending",
+  "Message",
+  "Meteor Swarm",
+  "Mind Blank",
+  "Mind Spike",
+  "Minor Illusion",
+  "Mirage Arcane",
+  "Mirror Image",
+  "Mislead",
+  "Misty Step",
+  "Modify Memory",
+  "Moonbeam",
+  "Move Earth",
+  "Nondetection",
+  "Pass without Trace",
+  "Passwall",
+  "Phantasmal Force",
+  "Phantasmal Killer",
+  "Phantom Steed",
+  "Planar Ally",
+  "Planar Binding",
+  "Plane Shift",
+  "Plant Growth",
+  "Poison Spray",
+  "Polymorph",
+  "Power Word Heal",
+  "Power Word Kill",
+  "Power Word Stun",
+  "Prayer of Healing",
+  "Prestidigitation",
+  "Prismatic Spray",
+  "Prismatic Wall",
+  "Private Sanctum",
+  "Produce Flame",
+  "Programmed Illusion",
+  "Project Image",
+  "Protection from Energy",
+  "Protection from Evil and Good",
+  "Protection from Poison",
+  "Purify Food and Drink",
+  "Raise Dead",
+  "Ray of Enfeeblement",
+  "Ray of Frost",
+  "Ray of Sickness",
+  "Regenerate",
+  "Reincarnate",
+  "Remove Curse",
+  "Resilient Sphere",
+  "Resistance",
+  "Resurrection",
+  "Reverse Gravity",
+  "Revivify",
+  "Rope Trick",
+  "Sacred Flame",
+  "Sanctuary",
+  "Scorching Ray",
+  "Scrying",
+  "Searing Smite",
+  "Secret Chest",
+  "See Invisibility",
+  "Seeming",
+  "Sending",
+  "Sequester",
+  "Shapechange",
+  "Shatter",
+  "Shield",
+  "Shield of Faith",
+  "Shillelagh",
+  "Shining Smite",
+  "Shocking Grasp",
+  "Silence",
+  "Silent Image",
+  "Simulacrum",
+  "Sleep",
+  "Sleet Storm",
+  "Slow",
+  "Sorcerous Burst",
+  "Spare the Dying",
+  "Speak with Animals",
+  "Speak with Dead",
+  "Speak with Plants",
+  "Spider Climb",
+  "Spike Growth",
+  "Spirit Guardians",
+  "Spiritual Weapon",
+  "Starry Wisp",
+  "Stinking Cloud",
+  "Stone Shape",
+  "Stoneskin",
+  "Storm of Vengeance",
+  "Suggestion",
+  "Summon Dragon",
+  "Sunbeam",
+  "Sunburst",
+  "Symbol",
+  "Telekinesis",
+  "Telepathic Bond",
+  "Teleport",
+  "Teleportation Circle",
+  "Thaumaturgy",
+  "Thunderwave",
+  "Time Stop",
+  "Tiny Hut",
+  "Tongues",
+  "Transport via Plants",
+  "Tree Stride",
+  "True Polymorph",
+  "True Resurrection",
+  "True Seeing",
+  "True Strike",
+  "Tsunami",
+  "Unseen Servant",
+  "Vampiric Touch",
+  "Vicious Mockery",
+  "Vitriolic Sphere",
+  "Wall of Fire",
+  "Wall of Force",
+  "Wall of Ice",
+  "Wall of Stone",
+  "Wall of Thorns",
+  "Warding Bond",
+  "Water Breathing",
+  "Water Walk",
+  "Web",
+  "Weird",
+  "Wind Walk",
+  "Wind Wall",
+  "Wish",
+  "Word of Recall",
+  "Zone of Truth"
+ ],
+ "feats": [
+  "Ability Score Improvement",
+  "Alert",
+  "Archery",
+  "Boon of Combat Prowess",
+  "Boon of Dimensional Travel",
+  "Boon of Fate",
+  "Boon of Irresistible Offense",
+  "Boon of Spell Recall",
+  "Boon of Truesight",
+  "Boon of the Night Spirit",
+  "Defense",
+  "Grappler",
+  "Great Weapon Fighting",
+  "Magic Initiate",
+  "Savage Attacker",
+  "Skilled",
+  "Two-Weapon Fighting"
+ ],
+ "backgrounds": [
+  "Acolyte",
+  "Criminal",
+  "Sage",
+  "Soldier"
+ ],
+ "classes": [
+  "Barbarian",
+  "Bard",
+  "Champion",
+  "Circle of the Land",
+  "Cleric",
+  "College of Lore",
+  "Draconic Sorcery",
+  "Druid",
+  "Evoker",
+  "Fiend Patron",
+  "Fighter",
+  "Hunter",
+  "Life Domain",
+  "Monk",
+  "Oath of Devotion",
+  "Paladin",
+  "Path of the Berserker",
+  "Ranger",
+  "Rogue",
+  "Sorcerer",
+  "Thief",
+  "Warlock",
+  "Warrior of the Open Hand",
+  "Wizard"
+ ],
+ "creatures": [
+  {
+   "name": "Aboleth",
+   "pv": 150,
+   "ca": 17,
+   "fp": 10.0,
+   "carac": [
+    21,
+    9,
+    15,
+    18,
+    15,
+    18
+   ]
+  },
+  {
+   "name": "Adult Black Dragon",
+   "pv": 195,
+   "ca": 19,
+   "fp": 14.0,
+   "carac": [
+    23,
+    14,
+    21,
+    14,
+    13,
+    19
+   ]
+  },
+  {
+   "name": "Adult Blue Dragon",
+   "pv": 212,
+   "ca": 19,
+   "fp": 16.0,
+   "carac": [
+    25,
+    10,
+    23,
+    16,
+    15,
+    20
+   ]
+  },
+  {
+   "name": "Adult Brass Dragon",
+   "pv": 172,
+   "ca": 18,
+   "fp": 13.0,
+   "carac": [
+    23,
+    10,
+    21,
+    14,
+    13,
+    17
+   ]
+  },
+  {
+   "name": "Adult Bronze Dragon",
+   "pv": 212,
+   "ca": 18,
+   "fp": 15.0,
+   "carac": [
+    25,
+    10,
+    23,
+    16,
+    15,
+    20
+   ]
+  },
+  {
+   "name": "Adult Copper Dragon",
+   "pv": 184,
+   "ca": 18,
+   "fp": 14.0,
+   "carac": [
+    23,
+    12,
+    21,
+    18,
+    15,
+    18
+   ]
+  },
+  {
+   "name": "Adult Gold Dragon",
+   "pv": 243,
+   "ca": 19,
+   "fp": 17.0,
+   "carac": [
+    27,
+    14,
+    25,
+    16,
+    15,
+    24
+   ]
+  },
+  {
+   "name": "Adult Green Dragon",
+   "pv": 207,
+   "ca": 19,
+   "fp": 15.0,
+   "carac": [
+    23,
+    12,
+    21,
+    18,
+    15,
+    18
+   ]
+  },
+  {
+   "name": "Adult Red Dragon",
+   "pv": 256,
+   "ca": 19,
+   "fp": 17.0,
+   "carac": [
+    27,
+    10,
+    25,
+    16,
+    13,
+    23
+   ]
+  },
+  {
+   "name": "Adult Silver Dragon",
+   "pv": 216,
+   "ca": 19,
+   "fp": 16.0,
+   "carac": [
+    27,
+    10,
+    25,
+    16,
+    13,
+    22
+   ]
+  },
+  {
+   "name": "Adult White Dragon",
+   "pv": 200,
+   "ca": 18,
+   "fp": 13.0,
+   "carac": [
+    22,
+    10,
+    22,
+    8,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Air Elemental",
+   "pv": 90,
+   "ca": 15,
+   "fp": 5.0,
+   "carac": [
+    14,
+    20,
+    14,
+    6,
+    10,
+    6
+   ]
+  },
+  {
+   "name": "Allosaurus",
+   "pv": 51,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    19,
+    13,
+    17,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Ancient Black Dragon",
+   "pv": 367,
+   "ca": 22,
+   "fp": 21.0,
+   "carac": [
+    27,
+    14,
+    25,
+    16,
+    15,
+    22
+   ]
+  },
+  {
+   "name": "Ancient Blue Dragon",
+   "pv": 481,
+   "ca": 22,
+   "fp": 23.0,
+   "carac": [
+    29,
+    10,
+    27,
+    18,
+    17,
+    25
+   ]
+  },
+  {
+   "name": "Ancient Brass Dragon",
+   "pv": 332,
+   "ca": 20,
+   "fp": 20.0,
+   "carac": [
+    27,
+    10,
+    25,
+    16,
+    15,
+    22
+   ]
+  },
+  {
+   "name": "Ancient Bronze Dragon",
+   "pv": 444,
+   "ca": 22,
+   "fp": 22.0,
+   "carac": [
+    29,
+    10,
+    27,
+    18,
+    17,
+    25
+   ]
+  },
+  {
+   "name": "Ancient Copper Dragon",
+   "pv": 367,
+   "ca": 21,
+   "fp": 21.0,
+   "carac": [
+    27,
+    12,
+    25,
+    20,
+    17,
+    22
+   ]
+  },
+  {
+   "name": "Ancient Gold Dragon",
+   "pv": 546,
+   "ca": 22,
+   "fp": 24.0,
+   "carac": [
+    30,
+    14,
+    29,
+    18,
+    17,
+    28
+   ]
+  },
+  {
+   "name": "Ancient Green Dragon",
+   "pv": 402,
+   "ca": 21,
+   "fp": 22.0,
+   "carac": [
+    27,
+    12,
+    25,
+    20,
+    17,
+    22
+   ]
+  },
+  {
+   "name": "Ancient Red Dragon",
+   "pv": 507,
+   "ca": 22,
+   "fp": 24.0,
+   "carac": [
+    30,
+    10,
+    29,
+    18,
+    15,
+    27
+   ]
+  },
+  {
+   "name": "Ancient Silver Dragon",
+   "pv": 468,
+   "ca": 22,
+   "fp": 23.0,
+   "carac": [
+    30,
+    10,
+    29,
+    18,
+    15,
+    26
+   ]
+  },
+  {
+   "name": "Ancient White Dragon",
+   "pv": 333,
+   "ca": 20,
+   "fp": 20.0,
+   "carac": [
+    26,
+    10,
+    26,
+    10,
+    13,
+    18
+   ]
+  },
+  {
+   "name": "Animated Armor",
+   "pv": 33,
+   "ca": 18,
+   "fp": 1.0,
+   "carac": [
+    14,
+    11,
+    13,
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "Animated Flying Sword",
+   "pv": 14,
+   "ca": 17,
+   "fp": 0.25,
+   "carac": [
+    12,
+    15,
+    11,
+    1,
+    5,
+    1
+   ]
+  },
+  {
+   "name": "Animated Rug of Smothering",
+   "pv": 27,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    17,
+    14,
+    10,
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "Ankheg",
+   "pv": 45,
+   "ca": 14,
+   "fp": 2.0,
+   "carac": [
+    17,
+    11,
+    14,
+    1,
+    13,
+    6
+   ]
+  },
+  {
+   "name": "Ankylosaurus",
+   "pv": 68,
+   "ca": 15,
+   "fp": 3.0,
+   "carac": [
+    19,
+    11,
+    15,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Ape",
+   "pv": 19,
+   "ca": 12,
+   "fp": 0.5,
+   "carac": [
+    16,
+    14,
+    14,
+    6,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Archelon",
+   "pv": 90,
+   "ca": 17,
+   "fp": 4.0,
+   "carac": [
+    18,
+    16,
+    13,
+    4,
+    14,
+    6
+   ]
+  },
+  {
+   "name": "Archmage",
+   "pv": 170,
+   "ca": 17,
+   "fp": 12.0,
+   "carac": [
+    10,
+    14,
+    12,
+    20,
+    15,
+    16
+   ]
+  },
+  {
+   "name": "Assassin",
+   "pv": 97,
+   "ca": 16,
+   "fp": 8.0,
+   "carac": [
+    11,
+    18,
+    14,
+    16,
+    11,
+    10
+   ]
+  },
+  {
+   "name": "Awakened Shrub",
+   "pv": 10,
+   "ca": 9,
+   "fp": 0.0,
+   "carac": [
+    3,
+    8,
+    11,
+    10,
+    10,
+    6
+   ]
+  },
+  {
+   "name": "Awakened Tree",
+   "pv": 59,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    19,
+    6,
+    15,
+    10,
+    10,
+    7
+   ]
+  },
+  {
+   "name": "Axe Beak",
+   "pv": 19,
+   "ca": 11,
+   "fp": 0.25,
+   "carac": [
+    14,
+    12,
+    12,
+    2,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Azer Sentinel",
+   "pv": 39,
+   "ca": 17,
+   "fp": 2.0,
+   "carac": [
+    17,
+    12,
+    15,
+    12,
+    13,
+    10
+   ]
+  },
+  {
+   "name": "Baboon",
+   "pv": 3,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    8,
+    14,
+    11,
+    4,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Badger",
+   "pv": 5,
+   "ca": 11,
+   "fp": 0.0,
+   "carac": [
+    10,
+    11,
+    16,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Balor",
+   "pv": 287,
+   "ca": 19,
+   "fp": 19.0,
+   "carac": [
+    26,
+    15,
+    22,
+    20,
+    16,
+    22
+   ]
+  },
+  {
+   "name": "Bandit",
+   "pv": 11,
+   "ca": 12,
+   "fp": 0.125,
+   "carac": [
+    11,
+    12,
+    12,
+    10,
+    10,
+    10
+   ]
+  },
+  {
+   "name": "Bandit Captain",
+   "pv": 52,
+   "ca": 15,
+   "fp": 2.0,
+   "carac": [
+    15,
+    16,
+    14,
+    14,
+    11,
+    14
+   ]
+  },
+  {
+   "name": "Barbed Devil",
+   "pv": 110,
+   "ca": 15,
+   "fp": 5.0,
+   "carac": [
+    16,
+    17,
+    18,
+    12,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "Basilisk",
+   "pv": 52,
+   "ca": 15,
+   "fp": 3.0,
+   "carac": [
+    16,
+    8,
+    15,
+    2,
+    8,
+    7
+   ]
+  },
+  {
+   "name": "Bat",
+   "pv": 1,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    2,
+    15,
+    8,
+    2,
+    12,
+    4
+   ]
+  },
+  {
+   "name": "Bearded Devil",
+   "pv": 58,
+   "ca": 13,
+   "fp": 3.0,
+   "carac": [
+    16,
+    15,
+    15,
+    9,
+    11,
+    14
+   ]
+  },
+  {
+   "name": "Behir",
+   "pv": 168,
+   "ca": 17,
+   "fp": 11.0,
+   "carac": [
+    23,
+    16,
+    18,
+    7,
+    14,
+    12
+   ]
+  },
+  {
+   "name": "Berserker",
+   "pv": 67,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    16,
+    12,
+    17,
+    9,
+    11,
+    9
+   ]
+  },
+  {
+   "name": "Black Bear",
+   "pv": 19,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    15,
+    12,
+    14,
+    2,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Black Dragon Wyrmling",
+   "pv": 33,
+   "ca": 17,
+   "fp": 2.0,
+   "carac": [
+    15,
+    14,
+    13,
+    10,
+    11,
+    13
+   ]
+  },
+  {
+   "name": "Black Pudding",
+   "pv": 68,
+   "ca": 7,
+   "fp": 4.0,
+   "carac": [
+    16,
+    5,
+    16,
+    1,
+    6,
+    1
+   ]
+  },
+  {
+   "name": "Blink Dog",
+   "pv": 22,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    12,
+    17,
+    12,
+    10,
+    13,
+    11
+   ]
+  },
+  {
+   "name": "Blood Hawk",
+   "pv": 7,
+   "ca": 12,
+   "fp": 0.125,
+   "carac": [
+    6,
+    14,
+    10,
+    3,
+    14,
+    5
+   ]
+  },
+  {
+   "name": "Blue Dragon Wyrmling",
+   "pv": 65,
+   "ca": 17,
+   "fp": 3.0,
+   "carac": [
+    17,
+    10,
+    15,
+    12,
+    11,
+    15
+   ]
+  },
+  {
+   "name": "Boar",
+   "pv": 13,
+   "ca": 11,
+   "fp": 0.25,
+   "carac": [
+    13,
+    11,
+    14,
+    2,
+    9,
+    5
+   ]
+  },
+  {
+   "name": "Bone Devil",
+   "pv": 161,
+   "ca": 16,
+   "fp": 9.0,
+   "carac": [
+    18,
+    16,
+    18,
+    13,
+    14,
+    16
+   ]
+  },
+  {
+   "name": "Brass Dragon Wyrmling",
+   "pv": 22,
+   "ca": 15,
+   "fp": 1.0,
+   "carac": [
+    15,
+    10,
+    13,
+    10,
+    11,
+    13
+   ]
+  },
+  {
+   "name": "Bronze Dragon Wyrmling",
+   "pv": 39,
+   "ca": 15,
+   "fp": 2.0,
+   "carac": [
+    17,
+    10,
+    15,
+    12,
+    11,
+    15
+   ]
+  },
+  {
+   "name": "Brown Bear",
+   "pv": 22,
+   "ca": 11,
+   "fp": 1.0,
+   "carac": [
+    17,
+    12,
+    15,
+    2,
+    13,
+    7
+   ]
+  },
+  {
+   "name": "Bugbear Stalker",
+   "pv": 65,
+   "ca": 15,
+   "fp": 3.0,
+   "carac": [
+    17,
+    14,
+    14,
+    11,
+    12,
+    11
+   ]
+  },
+  {
+   "name": "Bugbear Warrior",
+   "pv": 33,
+   "ca": 14,
+   "fp": 1.0,
+   "carac": [
+    15,
+    14,
+    13,
+    8,
+    11,
+    9
+   ]
+  },
+  {
+   "name": "Bulette",
+   "pv": 94,
+   "ca": 17,
+   "fp": 5.0,
+   "carac": [
+    19,
+    11,
+    21,
+    2,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Camel",
+   "pv": 17,
+   "ca": 10,
+   "fp": 0.125,
+   "carac": [
+    15,
+    8,
+    17,
+    2,
+    11,
+    5
+   ]
+  },
+  {
+   "name": "Cat",
+   "pv": 2,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    3,
+    15,
+    10,
+    3,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Centaur Trooper",
+   "pv": 45,
+   "ca": 16,
+   "fp": 2.0,
+   "carac": [
+    18,
+    14,
+    14,
+    9,
+    13,
+    11
+   ]
+  },
+  {
+   "name": "Chain Devil",
+   "pv": 85,
+   "ca": 15,
+   "fp": 8.0,
+   "carac": [
+    18,
+    15,
+    18,
+    11,
+    12,
+    14
+   ]
+  },
+  {
+   "name": "Chimera",
+   "pv": 114,
+   "ca": 14,
+   "fp": 6.0,
+   "carac": [
+    19,
+    11,
+    19,
+    3,
+    14,
+    10
+   ]
+  },
+  {
+   "name": "Chuul",
+   "pv": 76,
+   "ca": 16,
+   "fp": 4.0,
+   "carac": [
+    19,
+    10,
+    16,
+    5,
+    11,
+    5
+   ]
+  },
+  {
+   "name": "Clay Golem",
+   "pv": 123,
+   "ca": 14,
+   "fp": 9.0,
+   "carac": [
+    20,
+    9,
+    18,
+    3,
+    8,
+    1
+   ]
+  },
+  {
+   "name": "Cloaker",
+   "pv": 91,
+   "ca": 14,
+   "fp": 8.0,
+   "carac": [
+    17,
+    15,
+    12,
+    13,
+    14,
+    7
+   ]
+  },
+  {
+   "name": "Cloud Giant",
+   "pv": 200,
+   "ca": 14,
+   "fp": 9.0,
+   "carac": [
+    27,
+    10,
+    22,
+    12,
+    16,
+    16
+   ]
+  },
+  {
+   "name": "Cockatrice",
+   "pv": 22,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    6,
+    12,
+    12,
+    2,
+    13,
+    5
+   ]
+  },
+  {
+   "name": "Commoner",
+   "pv": 4,
+   "ca": 10,
+   "fp": 0.0,
+   "carac": [
+    10,
+    10,
+    10,
+    10,
+    10,
+    10
+   ]
+  },
+  {
+   "name": "Constrictor Snake",
+   "pv": 13,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    15,
+    14,
+    12,
+    1,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Copper Dragon Wyrmling",
+   "pv": 22,
+   "ca": 16,
+   "fp": 1.0,
+   "carac": [
+    15,
+    12,
+    13,
+    14,
+    11,
+    13
+   ]
+  },
+  {
+   "name": "Couatl",
+   "pv": 60,
+   "ca": 19,
+   "fp": 4.0,
+   "carac": [
+    16,
+    20,
+    17,
+    18,
+    20,
+    18
+   ]
+  },
+  {
+   "name": "Crab",
+   "pv": 3,
+   "ca": 11,
+   "fp": 0.0,
+   "carac": [
+    6,
+    11,
+    12,
+    1,
+    8,
+    2
+   ]
+  },
+  {
+   "name": "Crocodile",
+   "pv": 13,
+   "ca": 12,
+   "fp": 0.5,
+   "carac": [
+    15,
+    10,
+    13,
+    2,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Cultist",
+   "pv": 9,
+   "ca": 12,
+   "fp": 0.125,
+   "carac": [
+    11,
+    12,
+    10,
+    10,
+    11,
+    10
+   ]
+  },
+  {
+   "name": "Cultist Fanatic",
+   "pv": 44,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    11,
+    14,
+    12,
+    10,
+    14,
+    13
+   ]
+  },
+  {
+   "name": "Darkmantle",
+   "pv": 22,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    16,
+    12,
+    13,
+    2,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Death Dog",
+   "pv": 39,
+   "ca": 12,
+   "fp": 1.0,
+   "carac": [
+    15,
+    14,
+    14,
+    3,
+    13,
+    6
+   ]
+  },
+  {
+   "name": "Deer",
+   "pv": 4,
+   "ca": 13,
+   "fp": 0.0,
+   "carac": [
+    11,
+    16,
+    11,
+    2,
+    14,
+    5
+   ]
+  },
+  {
+   "name": "Deva",
+   "pv": 229,
+   "ca": 17,
+   "fp": 10.0,
+   "carac": [
+    18,
+    18,
+    18,
+    17,
+    20,
+    20
+   ]
+  },
+  {
+   "name": "Dire Wolf",
+   "pv": 22,
+   "ca": 14,
+   "fp": 1.0,
+   "carac": [
+    17,
+    15,
+    15,
+    3,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Djinni",
+   "pv": 218,
+   "ca": 17,
+   "fp": 11.0,
+   "carac": [
+    21,
+    15,
+    22,
+    15,
+    16,
+    20
+   ]
+  },
+  {
+   "name": "Doppelganger",
+   "pv": 52,
+   "ca": 14,
+   "fp": 3.0,
+   "carac": [
+    11,
+    18,
+    14,
+    11,
+    12,
+    14
+   ]
+  },
+  {
+   "name": "Draft Horse",
+   "pv": 15,
+   "ca": 10,
+   "fp": 0.25,
+   "carac": [
+    18,
+    10,
+    15,
+    2,
+    11,
+    7
+   ]
+  },
+  {
+   "name": "Dragon Turtle",
+   "pv": 356,
+   "ca": 20,
+   "fp": 17.0,
+   "carac": [
+    25,
+    10,
+    20,
+    10,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Dretch",
+   "pv": 18,
+   "ca": 11,
+   "fp": 0.25,
+   "carac": [
+    12,
+    11,
+    12,
+    5,
+    8,
+    3
+   ]
+  },
+  {
+   "name": "Drider",
+   "pv": 123,
+   "ca": 19,
+   "fp": 6.0,
+   "carac": [
+    16,
+    19,
+    18,
+    13,
+    16,
+    12
+   ]
+  },
+  {
+   "name": "Druid",
+   "pv": 44,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    10,
+    12,
+    13,
+    12,
+    16,
+    11
+   ]
+  },
+  {
+   "name": "Dryad",
+   "pv": 22,
+   "ca": 16,
+   "fp": 1.0,
+   "carac": [
+    10,
+    12,
+    11,
+    14,
+    15,
+    18
+   ]
+  },
+  {
+   "name": "Dust Mephit",
+   "pv": 17,
+   "ca": 12,
+   "fp": 0.5,
+   "carac": [
+    5,
+    14,
+    10,
+    9,
+    11,
+    10
+   ]
+  },
+  {
+   "name": "Eagle",
+   "pv": 4,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    6,
+    15,
+    12,
+    2,
+    14,
+    7
+   ]
+  },
+  {
+   "name": "Earth Elemental",
+   "pv": 147,
+   "ca": 17,
+   "fp": 5.0,
+   "carac": [
+    20,
+    8,
+    20,
+    5,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Efreeti",
+   "pv": 212,
+   "ca": 17,
+   "fp": 11.0,
+   "carac": [
+    22,
+    12,
+    24,
+    16,
+    15,
+    19
+   ]
+  },
+  {
+   "name": "Elephant",
+   "pv": 76,
+   "ca": 12,
+   "fp": 4.0,
+   "carac": [
+    22,
+    9,
+    17,
+    3,
+    11,
+    6
+   ]
+  },
+  {
+   "name": "Elk",
+   "pv": 11,
+   "ca": 10,
+   "fp": 0.25,
+   "carac": [
+    16,
+    10,
+    11,
+    2,
+    10,
+    6
+   ]
+  },
+  {
+   "name": "Erinyes",
+   "pv": 178,
+   "ca": 18,
+   "fp": 12.0,
+   "carac": [
+    18,
+    16,
+    18,
+    14,
+    14,
+    18
+   ]
+  },
+  {
+   "name": "Ettercap",
+   "pv": 44,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    14,
+    15,
+    13,
+    7,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "Ettin",
+   "pv": 85,
+   "ca": 12,
+   "fp": 4.0,
+   "carac": [
+    21,
+    8,
+    17,
+    6,
+    10,
+    8
+   ]
+  },
+  {
+   "name": "Fire Elemental",
+   "pv": 93,
+   "ca": 13,
+   "fp": 5.0,
+   "carac": [
+    10,
+    17,
+    16,
+    6,
+    10,
+    7
+   ]
+  },
+  {
+   "name": "Fire Giant",
+   "pv": 162,
+   "ca": 18,
+   "fp": 9.0,
+   "carac": [
+    25,
+    9,
+    23,
+    10,
+    14,
+    13
+   ]
+  },
+  {
+   "name": "Flesh Golem",
+   "pv": 127,
+   "ca": 9,
+   "fp": 5.0,
+   "carac": [
+    19,
+    9,
+    18,
+    6,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Flying Snake",
+   "pv": 5,
+   "ca": 14,
+   "fp": 0.125,
+   "carac": [
+    4,
+    15,
+    11,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Frog",
+   "pv": 1,
+   "ca": 11,
+   "fp": 0.0,
+   "carac": [
+    1,
+    13,
+    8,
+    1,
+    8,
+    3
+   ]
+  },
+  {
+   "name": "Frost Giant",
+   "pv": 149,
+   "ca": 15,
+   "fp": 8.0,
+   "carac": [
+    23,
+    9,
+    21,
+    9,
+    10,
+    12
+   ]
+  },
+  {
+   "name": "Gargoyle",
+   "pv": 67,
+   "ca": 15,
+   "fp": 2.0,
+   "carac": [
+    15,
+    11,
+    16,
+    6,
+    11,
+    7
+   ]
+  },
+  {
+   "name": "Gelatinous Cube",
+   "pv": 63,
+   "ca": 6,
+   "fp": 2.0,
+   "carac": [
+    14,
+    3,
+    20,
+    1,
+    6,
+    1
+   ]
+  },
+  {
+   "name": "Ghast",
+   "pv": 36,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    16,
+    17,
+    10,
+    11,
+    10,
+    8
+   ]
+  },
+  {
+   "name": "Ghost",
+   "pv": 45,
+   "ca": 11,
+   "fp": 4.0,
+   "carac": [
+    7,
+    13,
+    10,
+    10,
+    12,
+    17
+   ]
+  },
+  {
+   "name": "Ghoul",
+   "pv": 22,
+   "ca": 12,
+   "fp": 1.0,
+   "carac": [
+    13,
+    15,
+    10,
+    7,
+    10,
+    6
+   ]
+  },
+  {
+   "name": "Giant Ape",
+   "pv": 168,
+   "ca": 12,
+   "fp": 7.0,
+   "carac": [
+    23,
+    14,
+    18,
+    5,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Giant Badger",
+   "pv": 15,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    13,
+    10,
+    17,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Giant Bat",
+   "pv": 22,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    15,
+    16,
+    11,
+    2,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Giant Boar",
+   "pv": 42,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    17,
+    10,
+    16,
+    2,
+    7,
+    5
+   ]
+  },
+  {
+   "name": "Giant Centipede",
+   "pv": 9,
+   "ca": 14,
+   "fp": 0.25,
+   "carac": [
+    5,
+    14,
+    12,
+    1,
+    7,
+    3
+   ]
+  },
+  {
+   "name": "Giant Constrictor Snake",
+   "pv": 60,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    19,
+    14,
+    12,
+    1,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Giant Crab",
+   "pv": 13,
+   "ca": 15,
+   "fp": 0.125,
+   "carac": [
+    13,
+    13,
+    11,
+    1,
+    9,
+    3
+   ]
+  },
+  {
+   "name": "Giant Crocodile",
+   "pv": 85,
+   "ca": 14,
+   "fp": 5.0,
+   "carac": [
+    21,
+    9,
+    17,
+    2,
+    10,
+    7
+   ]
+  },
+  {
+   "name": "Giant Eagle",
+   "pv": 26,
+   "ca": 13,
+   "fp": 1.0,
+   "carac": [
+    16,
+    17,
+    13,
+    8,
+    14,
+    10
+   ]
+  },
+  {
+   "name": "Giant Elk",
+   "pv": 42,
+   "ca": 14,
+   "fp": 2.0,
+   "carac": [
+    19,
+    18,
+    14,
+    7,
+    14,
+    10
+   ]
+  },
+  {
+   "name": "Giant Fire Beetle",
+   "pv": 4,
+   "ca": 13,
+   "fp": 0.0,
+   "carac": [
+    8,
+    10,
+    12,
+    1,
+    7,
+    3
+   ]
+  },
+  {
+   "name": "Giant Fly",
+   "pv": 19,
+   "ca": 11,
+   "fp": 0.0,
+   "carac": [
+    14,
+    13,
+    13,
+    2,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Giant Frog",
+   "pv": 18,
+   "ca": 11,
+   "fp": 0.25,
+   "carac": [
+    12,
+    13,
+    11,
+    2,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Giant Goat",
+   "pv": 19,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    17,
+    13,
+    12,
+    3,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Giant Hyena",
+   "pv": 45,
+   "ca": 12,
+   "fp": 1.0,
+   "carac": [
+    16,
+    14,
+    14,
+    2,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Giant Lizard",
+   "pv": 19,
+   "ca": 12,
+   "fp": 0.25,
+   "carac": [
+    15,
+    12,
+    13,
+    2,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Giant Octopus",
+   "pv": 45,
+   "ca": 11,
+   "fp": 1.0,
+   "carac": [
+    17,
+    13,
+    13,
+    5,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "Giant Owl",
+   "pv": 19,
+   "ca": 12,
+   "fp": 0.25,
+   "carac": [
+    13,
+    15,
+    12,
+    10,
+    14,
+    10
+   ]
+  },
+  {
+   "name": "Giant Rat",
+   "pv": 7,
+   "ca": 13,
+   "fp": 0.125,
+   "carac": [
+    7,
+    16,
+    11,
+    2,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "Giant Scorpion",
+   "pv": 52,
+   "ca": 15,
+   "fp": 3.0,
+   "carac": [
+    16,
+    13,
+    15,
+    1,
+    9,
+    3
+   ]
+  },
+  {
+   "name": "Giant Seahorse",
+   "pv": 16,
+   "ca": 14,
+   "fp": 0.5,
+   "carac": [
+    15,
+    12,
+    11,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Giant Shark",
+   "pv": 92,
+   "ca": 13,
+   "fp": 5.0,
+   "carac": [
+    23,
+    11,
+    21,
+    1,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Giant Spider",
+   "pv": 26,
+   "ca": 14,
+   "fp": 1.0,
+   "carac": [
+    14,
+    16,
+    12,
+    2,
+    11,
+    4
+   ]
+  },
+  {
+   "name": "Giant Toad",
+   "pv": 39,
+   "ca": 11,
+   "fp": 1.0,
+   "carac": [
+    15,
+    13,
+    13,
+    2,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Giant Venomous Snake",
+   "pv": 11,
+   "ca": 14,
+   "fp": 0.25,
+   "carac": [
+    10,
+    18,
+    13,
+    2,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Giant Vulture",
+   "pv": 25,
+   "ca": 10,
+   "fp": 1.0,
+   "carac": [
+    15,
+    10,
+    16,
+    6,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Giant Wasp",
+   "pv": 22,
+   "ca": 13,
+   "fp": 0.5,
+   "carac": [
+    10,
+    14,
+    10,
+    1,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Giant Weasel",
+   "pv": 9,
+   "ca": 13,
+   "fp": 0.125,
+   "carac": [
+    11,
+    17,
+    10,
+    4,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Giant Wolf Spider",
+   "pv": 11,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    12,
+    16,
+    13,
+    3,
+    12,
+    4
+   ]
+  },
+  {
+   "name": "Gibbering Mouther",
+   "pv": 52,
+   "ca": 9,
+   "fp": 2.0,
+   "carac": [
+    10,
+    8,
+    16,
+    3,
+    10,
+    6
+   ]
+  },
+  {
+   "name": "Glabrezu",
+   "pv": 189,
+   "ca": 17,
+   "fp": 9.0,
+   "carac": [
+    20,
+    15,
+    21,
+    19,
+    17,
+    16
+   ]
+  },
+  {
+   "name": "Gladiator",
+   "pv": 112,
+   "ca": 16,
+   "fp": 5.0,
+   "carac": [
+    18,
+    15,
+    16,
+    10,
+    12,
+    15
+   ]
+  },
+  {
+   "name": "Gnoll Warrior",
+   "pv": 27,
+   "ca": 15,
+   "fp": 0.5,
+   "carac": [
+    14,
+    12,
+    11,
+    6,
+    10,
+    7
+   ]
+  },
+  {
+   "name": "Goat",
+   "pv": 4,
+   "ca": 10,
+   "fp": 0.0,
+   "carac": [
+    11,
+    10,
+    11,
+    2,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Goblin Boss",
+   "pv": 21,
+   "ca": 17,
+   "fp": 1.0,
+   "carac": [
+    10,
+    15,
+    10,
+    10,
+    8,
+    10
+   ]
+  },
+  {
+   "name": "Goblin Minion",
+   "pv": 7,
+   "ca": 12,
+   "fp": 0.125,
+   "carac": [
+    8,
+    15,
+    10,
+    10,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "Goblin Warrior",
+   "pv": 10,
+   "ca": 15,
+   "fp": 0.25,
+   "carac": [
+    8,
+    15,
+    10,
+    10,
+    8,
+    8
+   ]
+  },
+  {
+   "name": "Gold Dragon Wyrmling",
+   "pv": 60,
+   "ca": 17,
+   "fp": 3.0,
+   "carac": [
+    19,
+    14,
+    17,
+    14,
+    11,
+    16
+   ]
+  },
+  {
+   "name": "Gorgon",
+   "pv": 114,
+   "ca": 19,
+   "fp": 5.0,
+   "carac": [
+    20,
+    11,
+    18,
+    2,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Gray Ooze",
+   "pv": 22,
+   "ca": 9,
+   "fp": 0.5,
+   "carac": [
+    12,
+    6,
+    16,
+    1,
+    6,
+    2
+   ]
+  },
+  {
+   "name": "Green Dragon Wyrmling",
+   "pv": 38,
+   "ca": 17,
+   "fp": 2.0,
+   "carac": [
+    15,
+    12,
+    13,
+    14,
+    11,
+    13
+   ]
+  },
+  {
+   "name": "Green Hag",
+   "pv": 82,
+   "ca": 17,
+   "fp": 3.0,
+   "carac": [
+    18,
+    12,
+    16,
+    13,
+    14,
+    14
+   ]
+  },
+  {
+   "name": "Grick",
+   "pv": 54,
+   "ca": 14,
+   "fp": 2.0,
+   "carac": [
+    14,
+    14,
+    11,
+    3,
+    14,
+    5
+   ]
+  },
+  {
+   "name": "Griffon",
+   "pv": 59,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    18,
+    15,
+    16,
+    2,
+    13,
+    8
+   ]
+  },
+  {
+   "name": "Grimlock",
+   "pv": 11,
+   "ca": 11,
+   "fp": 0.25,
+   "carac": [
+    16,
+    12,
+    12,
+    9,
+    8,
+    6
+   ]
+  },
+  {
+   "name": "Guard",
+   "pv": 11,
+   "ca": 16,
+   "fp": 0.125,
+   "carac": [
+    13,
+    12,
+    12,
+    10,
+    11,
+    10
+   ]
+  },
+  {
+   "name": "Guard Captain",
+   "pv": 75,
+   "ca": 18,
+   "fp": 4.0,
+   "carac": [
+    18,
+    14,
+    16,
+    12,
+    14,
+    13
+   ]
+  },
+  {
+   "name": "Guardian Naga",
+   "pv": 136,
+   "ca": 18,
+   "fp": 10.0,
+   "carac": [
+    19,
+    18,
+    16,
+    16,
+    19,
+    18
+   ]
+  },
+  {
+   "name": "Half-Dragon",
+   "pv": 105,
+   "ca": 18,
+   "fp": 5.0,
+   "carac": [
+    19,
+    14,
+    16,
+    10,
+    15,
+    14
+   ]
+  },
+  {
+   "name": "Harpy",
+   "pv": 38,
+   "ca": 11,
+   "fp": 1.0,
+   "carac": [
+    12,
+    13,
+    12,
+    7,
+    10,
+    13
+   ]
+  },
+  {
+   "name": "Hawk",
+   "pv": 1,
+   "ca": 13,
+   "fp": 0.0,
+   "carac": [
+    5,
+    16,
+    8,
+    2,
+    14,
+    6
+   ]
+  },
+  {
+   "name": "Hell Hound",
+   "pv": 58,
+   "ca": 15,
+   "fp": 3.0,
+   "carac": [
+    17,
+    12,
+    14,
+    6,
+    13,
+    6
+   ]
+  },
+  {
+   "name": "Hezrou",
+   "pv": 157,
+   "ca": 18,
+   "fp": 8.0,
+   "carac": [
+    19,
+    17,
+    20,
+    5,
+    12,
+    13
+   ]
+  },
+  {
+   "name": "Hill Giant",
+   "pv": 105,
+   "ca": 13,
+   "fp": 5.0,
+   "carac": [
+    21,
+    8,
+    19,
+    5,
+    9,
+    6
+   ]
+  },
+  {
+   "name": "Hippogriff",
+   "pv": 26,
+   "ca": 11,
+   "fp": 1.0,
+   "carac": [
+    17,
+    13,
+    13,
+    2,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "Hippopotamus",
+   "pv": 82,
+   "ca": 14,
+   "fp": 4.0,
+   "carac": [
+    21,
+    7,
+    15,
+    2,
+    12,
+    4
+   ]
+  },
+  {
+   "name": "Hobgoblin Captain",
+   "pv": 58,
+   "ca": 17,
+   "fp": 3.0,
+   "carac": [
+    15,
+    14,
+    14,
+    12,
+    10,
+    13
+   ]
+  },
+  {
+   "name": "Hobgoblin Warrior",
+   "pv": 11,
+   "ca": 18,
+   "fp": 0.5,
+   "carac": [
+    13,
+    12,
+    12,
+    10,
+    10,
+    9
+   ]
+  },
+  {
+   "name": "Homunculus",
+   "pv": 4,
+   "ca": 13,
+   "fp": 0.0,
+   "carac": [
+    4,
+    15,
+    14,
+    10,
+    10,
+    7
+   ]
+  },
+  {
+   "name": "Horned Devil",
+   "pv": 199,
+   "ca": 18,
+   "fp": 11.0,
+   "carac": [
+    22,
+    17,
+    21,
+    12,
+    16,
+    18
+   ]
+  },
+  {
+   "name": "Hunter Shark",
+   "pv": 45,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    18,
+    14,
+    15,
+    1,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "Hydra",
+   "pv": 184,
+   "ca": 15,
+   "fp": 8.0,
+   "carac": [
+    20,
+    12,
+    20,
+    2,
+    10,
+    7
+   ]
+  },
+  {
+   "name": "Hyena",
+   "pv": 5,
+   "ca": 11,
+   "fp": 0.0,
+   "carac": [
+    11,
+    13,
+    12,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Ice Devil",
+   "pv": 228,
+   "ca": 18,
+   "fp": 14.0,
+   "carac": [
+    21,
+    14,
+    18,
+    18,
+    15,
+    18
+   ]
+  },
+  {
+   "name": "Ice Mephit",
+   "pv": 21,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    7,
+    13,
+    10,
+    9,
+    11,
+    12
+   ]
+  },
+  {
+   "name": "Imp",
+   "pv": 21,
+   "ca": 13,
+   "fp": 1.0,
+   "carac": [
+    6,
+    17,
+    13,
+    11,
+    12,
+    14
+   ]
+  },
+  {
+   "name": "Incubus",
+   "pv": 66,
+   "ca": 15,
+   "fp": 4.0,
+   "carac": [
+    8,
+    17,
+    13,
+    15,
+    12,
+    20
+   ]
+  },
+  {
+   "name": "Invisible Stalker",
+   "pv": 97,
+   "ca": 14,
+   "fp": 6.0,
+   "carac": [
+    16,
+    19,
+    14,
+    10,
+    15,
+    11
+   ]
+  },
+  {
+   "name": "Iron Golem",
+   "pv": 252,
+   "ca": 20,
+   "fp": 16.0,
+   "carac": [
+    24,
+    9,
+    20,
+    3,
+    11,
+    1
+   ]
+  },
+  {
+   "name": "Jackal",
+   "pv": 3,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    8,
+    15,
+    11,
+    3,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Killer Whale",
+   "pv": 90,
+   "ca": 12,
+   "fp": 3.0,
+   "carac": [
+    19,
+    14,
+    13,
+    3,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Knight",
+   "pv": 52,
+   "ca": 18,
+   "fp": 3.0,
+   "carac": [
+    16,
+    11,
+    14,
+    11,
+    11,
+    15
+   ]
+  },
+  {
+   "name": "Kobold Warrior",
+   "pv": 7,
+   "ca": 14,
+   "fp": 0.125,
+   "carac": [
+    7,
+    15,
+    9,
+    8,
+    7,
+    8
+   ]
+  },
+  {
+   "name": "Kraken",
+   "pv": 481,
+   "ca": 18,
+   "fp": 23.0,
+   "carac": [
+    30,
+    11,
+    26,
+    22,
+    18,
+    20
+   ]
+  },
+  {
+   "name": "Lamia",
+   "pv": 97,
+   "ca": 13,
+   "fp": 4.0,
+   "carac": [
+    16,
+    13,
+    15,
+    14,
+    15,
+    16
+   ]
+  },
+  {
+   "name": "Lemure",
+   "pv": 9,
+   "ca": 9,
+   "fp": 0.0,
+   "carac": [
+    10,
+    5,
+    11,
+    1,
+    11,
+    3
+   ]
+  },
+  {
+   "name": "Lich",
+   "pv": 315,
+   "ca": 20,
+   "fp": 21.0,
+   "carac": [
+    11,
+    16,
+    16,
+    21,
+    14,
+    16
+   ]
+  },
+  {
+   "name": "Lion",
+   "pv": 22,
+   "ca": 12,
+   "fp": 1.0,
+   "carac": [
+    17,
+    15,
+    11,
+    3,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "Lizard",
+   "pv": 2,
+   "ca": 10,
+   "fp": 0.0,
+   "carac": [
+    2,
+    11,
+    10,
+    1,
+    8,
+    3
+   ]
+  },
+  {
+   "name": "Mage",
+   "pv": 81,
+   "ca": 15,
+   "fp": 6.0,
+   "carac": [
+    9,
+    14,
+    11,
+    17,
+    12,
+    11
+   ]
+  },
+  {
+   "name": "Magma Mephit",
+   "pv": 18,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    8,
+    12,
+    12,
+    7,
+    10,
+    10
+   ]
+  },
+  {
+   "name": "Magmin",
+   "pv": 13,
+   "ca": 14,
+   "fp": 0.5,
+   "carac": [
+    7,
+    15,
+    12,
+    8,
+    11,
+    10
+   ]
+  },
+  {
+   "name": "Mammoth",
+   "pv": 126,
+   "ca": 13,
+   "fp": 6.0,
+   "carac": [
+    24,
+    9,
+    21,
+    3,
+    11,
+    6
+   ]
+  },
+  {
+   "name": "Manticore",
+   "pv": 68,
+   "ca": 14,
+   "fp": 3.0,
+   "carac": [
+    17,
+    16,
+    17,
+    7,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "Marilith",
+   "pv": 220,
+   "ca": 16,
+   "fp": 16.0,
+   "carac": [
+    18,
+    20,
+    20,
+    18,
+    16,
+    20
+   ]
+  },
+  {
+   "name": "Mastiff",
+   "pv": 5,
+   "ca": 12,
+   "fp": 0.125,
+   "carac": [
+    13,
+    14,
+    12,
+    3,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Medusa",
+   "pv": 127,
+   "ca": 15,
+   "fp": 6.0,
+   "carac": [
+    10,
+    17,
+    16,
+    12,
+    13,
+    15
+   ]
+  },
+  {
+   "name": "Merfolk Skirmisher",
+   "pv": 11,
+   "ca": 11,
+   "fp": 0.125,
+   "carac": [
+    10,
+    13,
+    12,
+    11,
+    14,
+    12
+   ]
+  },
+  {
+   "name": "Merrow",
+   "pv": 45,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    18,
+    15,
+    15,
+    8,
+    10,
+    9
+   ]
+  },
+  {
+   "name": "Mimic",
+   "pv": 58,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    17,
+    12,
+    15,
+    5,
+    13,
+    8
+   ]
+  },
+  {
+   "name": "Minotaur Skeleton",
+   "pv": 45,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    18,
+    11,
+    15,
+    6,
+    8,
+    5
+   ]
+  },
+  {
+   "name": "Minotaur of Baphomet",
+   "pv": 85,
+   "ca": 14,
+   "fp": 3.0,
+   "carac": [
+    18,
+    11,
+    16,
+    6,
+    16,
+    9
+   ]
+  },
+  {
+   "name": "Mule",
+   "pv": 11,
+   "ca": 10,
+   "fp": 0.125,
+   "carac": [
+    14,
+    10,
+    13,
+    2,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Mummy",
+   "pv": 58,
+   "ca": 11,
+   "fp": 3.0,
+   "carac": [
+    16,
+    8,
+    15,
+    6,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Mummy Lord",
+   "pv": 187,
+   "ca": 17,
+   "fp": 15.0,
+   "carac": [
+    18,
+    10,
+    17,
+    11,
+    19,
+    16
+   ]
+  },
+  {
+   "name": "Nalfeshnee",
+   "pv": 184,
+   "ca": 18,
+   "fp": 13.0,
+   "carac": [
+    21,
+    10,
+    22,
+    19,
+    12,
+    15
+   ]
+  },
+  {
+   "name": "Night Hag",
+   "pv": 112,
+   "ca": 17,
+   "fp": 5.0,
+   "carac": [
+    18,
+    15,
+    16,
+    16,
+    14,
+    16
+   ]
+  },
+  {
+   "name": "Nightmare",
+   "pv": 68,
+   "ca": 13,
+   "fp": 3.0,
+   "carac": [
+    18,
+    15,
+    16,
+    10,
+    13,
+    15
+   ]
+  },
+  {
+   "name": "Noble",
+   "pv": 9,
+   "ca": 15,
+   "fp": 0.125,
+   "carac": [
+    11,
+    12,
+    11,
+    12,
+    14,
+    16
+   ]
+  },
+  {
+   "name": "Ochre Jelly",
+   "pv": 52,
+   "ca": 8,
+   "fp": 2.0,
+   "carac": [
+    15,
+    6,
+    14,
+    2,
+    6,
+    1
+   ]
+  },
+  {
+   "name": "Octopus",
+   "pv": 3,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    4,
+    15,
+    0,
+    3,
+    10,
+    -3
+   ]
+  },
+  {
+   "name": "Ogre",
+   "pv": 68,
+   "ca": 11,
+   "fp": 2.0,
+   "carac": [
+    19,
+    8,
+    16,
+    5,
+    7,
+    7
+   ]
+  },
+  {
+   "name": "Ogre Zombie",
+   "pv": 85,
+   "ca": 8,
+   "fp": 2.0,
+   "carac": [
+    19,
+    6,
+    18,
+    3,
+    6,
+    5
+   ]
+  },
+  {
+   "name": "Oni",
+   "pv": 119,
+   "ca": 17,
+   "fp": 7.0,
+   "carac": [
+    19,
+    11,
+    16,
+    14,
+    12,
+    15
+   ]
+  },
+  {
+   "name": "Otyugh",
+   "pv": 104,
+   "ca": 14,
+   "fp": 5.0,
+   "carac": [
+    16,
+    11,
+    19,
+    6,
+    13,
+    6
+   ]
+  },
+  {
+   "name": "Owl",
+   "pv": 1,
+   "ca": 11,
+   "fp": 0.0,
+   "carac": [
+    3,
+    13,
+    8,
+    2,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Owlbear",
+   "pv": 59,
+   "ca": 13,
+   "fp": 3.0,
+   "carac": [
+    20,
+    12,
+    17,
+    3,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Panther",
+   "pv": 13,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    14,
+    16,
+    10,
+    3,
+    14,
+    7
+   ]
+  },
+  {
+   "name": "Pegasus",
+   "pv": 59,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    18,
+    15,
+    16,
+    10,
+    15,
+    13
+   ]
+  },
+  {
+   "name": "Phase Spider",
+   "pv": 45,
+   "ca": 14,
+   "fp": 3.0,
+   "carac": [
+    15,
+    16,
+    12,
+    6,
+    10,
+    6
+   ]
+  },
+  {
+   "name": "Piranha",
+   "pv": 1,
+   "ca": 13,
+   "fp": 0.0,
+   "carac": [
+    2,
+    16,
+    9,
+    1,
+    7,
+    2
+   ]
+  },
+  {
+   "name": "Pirate",
+   "pv": 33,
+   "ca": 14,
+   "fp": 1.0,
+   "carac": [
+    10,
+    16,
+    12,
+    8,
+    12,
+    14
+   ]
+  },
+  {
+   "name": "Pirate Captain",
+   "pv": 84,
+   "ca": 17,
+   "fp": 6.0,
+   "carac": [
+    10,
+    18,
+    14,
+    10,
+    14,
+    17
+   ]
+  },
+  {
+   "name": "Pit Fiend",
+   "pv": 337,
+   "ca": 21,
+   "fp": 20.0,
+   "carac": [
+    26,
+    14,
+    24,
+    22,
+    18,
+    24
+   ]
+  },
+  {
+   "name": "Planetar",
+   "pv": 262,
+   "ca": 19,
+   "fp": 16.0,
+   "carac": [
+    24,
+    20,
+    24,
+    19,
+    22,
+    25
+   ]
+  },
+  {
+   "name": "Plesiosaurus",
+   "pv": 68,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    18,
+    15,
+    16,
+    2,
+    12,
+    5
+   ]
+  },
+  {
+   "name": "Polar Bear",
+   "pv": 42,
+   "ca": 12,
+   "fp": 2.0,
+   "carac": [
+    20,
+    14,
+    16,
+    2,
+    13,
+    7
+   ]
+  },
+  {
+   "name": "Pony",
+   "pv": 11,
+   "ca": 10,
+   "fp": 0.125,
+   "carac": [
+    15,
+    10,
+    13,
+    2,
+    11,
+    7
+   ]
+  },
+  {
+   "name": "Priest",
+   "pv": 38,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    16,
+    10,
+    12,
+    13,
+    16,
+    13
+   ]
+  },
+  {
+   "name": "Priest Acolyte",
+   "pv": 11,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    14,
+    10,
+    12,
+    10,
+    14,
+    11
+   ]
+  },
+  {
+   "name": "Pseudodragon",
+   "pv": 10,
+   "ca": 14,
+   "fp": 0.25,
+   "carac": [
+    6,
+    15,
+    13,
+    10,
+    12,
+    10
+   ]
+  },
+  {
+   "name": "Pteranodon",
+   "pv": 13,
+   "ca": 13,
+   "fp": 0.25,
+   "carac": [
+    12,
+    15,
+    10,
+    2,
+    9,
+    5
+   ]
+  },
+  {
+   "name": "Purple Worm",
+   "pv": 247,
+   "ca": 18,
+   "fp": 15.0,
+   "carac": [
+    28,
+    7,
+    22,
+    1,
+    8,
+    4
+   ]
+  },
+  {
+   "name": "Quasit",
+   "pv": 25,
+   "ca": 13,
+   "fp": 1.0,
+   "carac": [
+    5,
+    17,
+    10,
+    7,
+    10,
+    10
+   ]
+  },
+  {
+   "name": "Rakshasa",
+   "pv": 221,
+   "ca": 17,
+   "fp": 13.0,
+   "carac": [
+    14,
+    17,
+    18,
+    13,
+    16,
+    20
+   ]
+  },
+  {
+   "name": "Rat",
+   "pv": 1,
+   "ca": 10,
+   "fp": 0.0,
+   "carac": [
+    2,
+    11,
+    9,
+    2,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "Raven",
+   "pv": 2,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    2,
+    14,
+    10,
+    5,
+    13,
+    6
+   ]
+  },
+  {
+   "name": "Red Dragon Wyrmling",
+   "pv": 75,
+   "ca": 17,
+   "fp": 4.0,
+   "carac": [
+    19,
+    10,
+    17,
+    12,
+    11,
+    15
+   ]
+  },
+  {
+   "name": "Reef Shark",
+   "pv": 22,
+   "ca": 12,
+   "fp": 0.5,
+   "carac": [
+    14,
+    15,
+    13,
+    1,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "Remorhaz",
+   "pv": 195,
+   "ca": 17,
+   "fp": 11.0,
+   "carac": [
+    24,
+    13,
+    21,
+    4,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Rhinoceros",
+   "pv": 45,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    21,
+    8,
+    15,
+    2,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Riding Horse",
+   "pv": 13,
+   "ca": 11,
+   "fp": 0.25,
+   "carac": [
+    16,
+    13,
+    12,
+    2,
+    11,
+    7
+   ]
+  },
+  {
+   "name": "Roc",
+   "pv": 248,
+   "ca": 15,
+   "fp": 11.0,
+   "carac": [
+    28,
+    10,
+    20,
+    3,
+    10,
+    9
+   ]
+  },
+  {
+   "name": "Roper",
+   "pv": 93,
+   "ca": 20,
+   "fp": 5.0,
+   "carac": [
+    18,
+    8,
+    17,
+    7,
+    16,
+    6
+   ]
+  },
+  {
+   "name": "Rust Monster",
+   "pv": 33,
+   "ca": 14,
+   "fp": 0.5,
+   "carac": [
+    13,
+    12,
+    13,
+    2,
+    13,
+    6
+   ]
+  },
+  {
+   "name": "Saber-Toothed Tiger",
+   "pv": 52,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    18,
+    17,
+    15,
+    3,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "Sahuagin Warrior",
+   "pv": 22,
+   "ca": 12,
+   "fp": 0.5,
+   "carac": [
+    13,
+    11,
+    12,
+    12,
+    13,
+    9
+   ]
+  },
+  {
+   "name": "Salamander",
+   "pv": 90,
+   "ca": 15,
+   "fp": 5.0,
+   "carac": [
+    18,
+    14,
+    15,
+    11,
+    10,
+    12
+   ]
+  },
+  {
+   "name": "Satyr",
+   "pv": 31,
+   "ca": 13,
+   "fp": 0.5,
+   "carac": [
+    12,
+    16,
+    11,
+    12,
+    10,
+    14
+   ]
+  },
+  {
+   "name": "Scorpion",
+   "pv": 1,
+   "ca": 11,
+   "fp": 0.0,
+   "carac": [
+    2,
+    11,
+    8,
+    1,
+    8,
+    2
+   ]
+  },
+  {
+   "name": "Scout",
+   "pv": 16,
+   "ca": 13,
+   "fp": 0.5,
+   "carac": [
+    11,
+    14,
+    12,
+    11,
+    13,
+    11
+   ]
+  },
+  {
+   "name": "Sea Hag",
+   "pv": 52,
+   "ca": 14,
+   "fp": 2.0,
+   "carac": [
+    16,
+    13,
+    16,
+    12,
+    12,
+    13
+   ]
+  },
+  {
+   "name": "Seahorse",
+   "pv": 1,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    1,
+    12,
+    8,
+    1,
+    10,
+    2
+   ]
+  },
+  {
+   "name": "Shadow",
+   "pv": 27,
+   "ca": 12,
+   "fp": 0.5,
+   "carac": [
+    6,
+    14,
+    13,
+    6,
+    10,
+    8
+   ]
+  },
+  {
+   "name": "Shambling Mound",
+   "pv": 110,
+   "ca": 15,
+   "fp": 5.0,
+   "carac": [
+    18,
+    8,
+    16,
+    5,
+    10,
+    5
+   ]
+  },
+  {
+   "name": "Shield Guardian",
+   "pv": 142,
+   "ca": 17,
+   "fp": 7.0,
+   "carac": [
+    18,
+    8,
+    18,
+    7,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Shrieker Fungus",
+   "pv": 13,
+   "ca": 5,
+   "fp": 0.0,
+   "carac": [
+    1,
+    1,
+    10,
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "Silver Dragon Wyrmling",
+   "pv": 45,
+   "ca": 17,
+   "fp": 2.0,
+   "carac": [
+    19,
+    10,
+    17,
+    12,
+    11,
+    15
+   ]
+  },
+  {
+   "name": "Skeleton",
+   "pv": 13,
+   "ca": 14,
+   "fp": 0.25,
+   "carac": [
+    10,
+    16,
+    15,
+    6,
+    8,
+    5
+   ]
+  },
+  {
+   "name": "Solar",
+   "pv": 297,
+   "ca": 21,
+   "fp": 21.0,
+   "carac": [
+    26,
+    22,
+    26,
+    25,
+    25,
+    30
+   ]
+  },
+  {
+   "name": "Specter",
+   "pv": 22,
+   "ca": 12,
+   "fp": 1.0,
+   "carac": [
+    1,
+    14,
+    11,
+    10,
+    10,
+    11
+   ]
+  },
+  {
+   "name": "Sphinx of Lore",
+   "pv": 170,
+   "ca": 17,
+   "fp": 11.0,
+   "carac": [
+    18,
+    15,
+    16,
+    18,
+    18,
+    18
+   ]
+  },
+  {
+   "name": "Sphinx of Valor",
+   "pv": 199,
+   "ca": 17,
+   "fp": 17.0,
+   "carac": [
+    22,
+    10,
+    20,
+    16,
+    23,
+    18
+   ]
+  },
+  {
+   "name": "Sphinx of Wonder",
+   "pv": 24,
+   "ca": 13,
+   "fp": 1.0,
+   "carac": [
+    6,
+    17,
+    13,
+    15,
+    12,
+    11
+   ]
+  },
+  {
+   "name": "Spider",
+   "pv": 1,
+   "ca": 12,
+   "fp": 0.0,
+   "carac": [
+    2,
+    14,
+    8,
+    1,
+    10,
+    2
+   ]
+  },
+  {
+   "name": "Spirit Naga",
+   "pv": 135,
+   "ca": 17,
+   "fp": 8.0,
+   "carac": [
+    18,
+    17,
+    14,
+    16,
+    15,
+    16
+   ]
+  },
+  {
+   "name": "Sprite",
+   "pv": 10,
+   "ca": 15,
+   "fp": 0.25,
+   "carac": [
+    3,
+    18,
+    10,
+    14,
+    13,
+    11
+   ]
+  },
+  {
+   "name": "Spy",
+   "pv": 27,
+   "ca": 12,
+   "fp": 1.0,
+   "carac": [
+    10,
+    15,
+    10,
+    12,
+    14,
+    16
+   ]
+  },
+  {
+   "name": "Steam Mephit",
+   "pv": 17,
+   "ca": 10,
+   "fp": 0.25,
+   "carac": [
+    5,
+    11,
+    10,
+    11,
+    10,
+    12
+   ]
+  },
+  {
+   "name": "Stirge",
+   "pv": 5,
+   "ca": 13,
+   "fp": 0.125,
+   "carac": [
+    4,
+    16,
+    11,
+    2,
+    8,
+    6
+   ]
+  },
+  {
+   "name": "Stone Giant",
+   "pv": 126,
+   "ca": 17,
+   "fp": 7.0,
+   "carac": [
+    23,
+    15,
+    20,
+    10,
+    12,
+    9
+   ]
+  },
+  {
+   "name": "Stone Golem",
+   "pv": 220,
+   "ca": 18,
+   "fp": 10.0,
+   "carac": [
+    22,
+    9,
+    20,
+    3,
+    11,
+    1
+   ]
+  },
+  {
+   "name": "Storm Giant",
+   "pv": 230,
+   "ca": 16,
+   "fp": 13.0,
+   "carac": [
+    29,
+    14,
+    20,
+    16,
+    20,
+    18
+   ]
+  },
+  {
+   "name": "Succubus",
+   "pv": 71,
+   "ca": 15,
+   "fp": 4.0,
+   "carac": [
+    8,
+    17,
+    13,
+    15,
+    12,
+    20
+   ]
+  },
+  {
+   "name": "Swarm of Bats",
+   "pv": 11,
+   "ca": 12,
+   "fp": 0.25,
+   "carac": [
+    5,
+    15,
+    10,
+    2,
+    12,
+    4
+   ]
+  },
+  {
+   "name": "Swarm of Crawling Claws",
+   "pv": 49,
+   "ca": 12,
+   "fp": 3.0,
+   "carac": [
+    14,
+    14,
+    11,
+    5,
+    10,
+    4
+   ]
+  },
+  {
+   "name": "Swarm of Insects",
+   "pv": 19,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    3,
+    13,
+    14,
+    1,
+    7,
+    1
+   ]
+  },
+  {
+   "name": "Swarm of Piranhas",
+   "pv": 28,
+   "ca": 13,
+   "fp": 1.0,
+   "carac": [
+    13,
+    16,
+    9,
+    1,
+    7,
+    2
+   ]
+  },
+  {
+   "name": "Swarm of Rats",
+   "pv": 14,
+   "ca": 10,
+   "fp": 0.25,
+   "carac": [
+    9,
+    11,
+    9,
+    2,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Swarm of Ravens",
+   "pv": 11,
+   "ca": 12,
+   "fp": 0.25,
+   "carac": [
+    6,
+    14,
+    12,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Swarm of Venomous Snakes",
+   "pv": 36,
+   "ca": 14,
+   "fp": 2.0,
+   "carac": [
+    8,
+    18,
+    11,
+    1,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Tarrasque",
+   "pv": 697,
+   "ca": 25,
+   "fp": 30.0,
+   "carac": [
+    30,
+    11,
+    30,
+    3,
+    11,
+    11
+   ]
+  },
+  {
+   "name": "Tiger",
+   "pv": 30,
+   "ca": 13,
+   "fp": 1.0,
+   "carac": [
+    17,
+    16,
+    14,
+    3,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "Tough",
+   "pv": 32,
+   "ca": 12,
+   "fp": 0.5,
+   "carac": [
+    15,
+    12,
+    14,
+    10,
+    10,
+    11
+   ]
+  },
+  {
+   "name": "Tough Boss",
+   "pv": 82,
+   "ca": 16,
+   "fp": 4.0,
+   "carac": [
+    17,
+    14,
+    16,
+    11,
+    10,
+    11
+   ]
+  },
+  {
+   "name": "Treant",
+   "pv": 138,
+   "ca": 16,
+   "fp": 9.0,
+   "carac": [
+    23,
+    8,
+    21,
+    12,
+    16,
+    12
+   ]
+  },
+  {
+   "name": "Triceratops",
+   "pv": 114,
+   "ca": 14,
+   "fp": 5.0,
+   "carac": [
+    22,
+    9,
+    17,
+    2,
+    11,
+    5
+   ]
+  },
+  {
+   "name": "Troll",
+   "pv": 94,
+   "ca": 15,
+   "fp": 5.0,
+   "carac": [
+    18,
+    13,
+    20,
+    7,
+    9,
+    7
+   ]
+  },
+  {
+   "name": "Troll Limb",
+   "pv": 14,
+   "ca": 13,
+   "fp": 0.5,
+   "carac": [
+    18,
+    12,
+    10,
+    1,
+    9,
+    1
+   ]
+  },
+  {
+   "name": "Tyrannosaurus Rex",
+   "pv": 136,
+   "ca": 13,
+   "fp": 8.0,
+   "carac": [
+    25,
+    10,
+    19,
+    2,
+    12,
+    9
+   ]
+  },
+  {
+   "name": "Unicorn",
+   "pv": 97,
+   "ca": 12,
+   "fp": 5.0,
+   "carac": [
+    18,
+    14,
+    15,
+    11,
+    17,
+    16
+   ]
+  },
+  {
+   "name": "Vampire",
+   "pv": 195,
+   "ca": 16,
+   "fp": 13.0,
+   "carac": [
+    18,
+    18,
+    18,
+    17,
+    15,
+    18
+   ]
+  },
+  {
+   "name": "Vampire Familiar",
+   "pv": 65,
+   "ca": 15,
+   "fp": 3.0,
+   "carac": [
+    17,
+    16,
+    15,
+    10,
+    10,
+    14
+   ]
+  },
+  {
+   "name": "Vampire Spawn",
+   "pv": 90,
+   "ca": 16,
+   "fp": 5.0,
+   "carac": [
+    16,
+    16,
+    16,
+    11,
+    10,
+    12
+   ]
+  },
+  {
+   "name": "Venomous Snake",
+   "pv": 5,
+   "ca": 12,
+   "fp": 0.125,
+   "carac": [
+    2,
+    15,
+    11,
+    1,
+    10,
+    3
+   ]
+  },
+  {
+   "name": "Violet Fungus",
+   "pv": 18,
+   "ca": 5,
+   "fp": 0.25,
+   "carac": [
+    3,
+    1,
+    10,
+    1,
+    3,
+    1
+   ]
+  },
+  {
+   "name": "Vrock",
+   "pv": 152,
+   "ca": 15,
+   "fp": 6.0,
+   "carac": [
+    17,
+    15,
+    18,
+    8,
+    13,
+    8
+   ]
+  },
+  {
+   "name": "Vulture",
+   "pv": 5,
+   "ca": 10,
+   "fp": 0.0,
+   "carac": [
+    7,
+    10,
+    13,
+    2,
+    12,
+    4
+   ]
+  },
+  {
+   "name": "Warhorse",
+   "pv": 19,
+   "ca": 11,
+   "fp": 0.5,
+   "carac": [
+    18,
+    12,
+    13,
+    2,
+    12,
+    7
+   ]
+  },
+  {
+   "name": "Warhorse Skeleton",
+   "pv": 22,
+   "ca": 13,
+   "fp": 0.5,
+   "carac": [
+    18,
+    12,
+    15,
+    2,
+    8,
+    5
+   ]
+  },
+  {
+   "name": "Warrior Infantry",
+   "pv": 9,
+   "ca": 13,
+   "fp": 0.125,
+   "carac": [
+    13,
+    11,
+    11,
+    8,
+    11,
+    8
+   ]
+  },
+  {
+   "name": "Warrior Veteran",
+   "pv": 65,
+   "ca": 17,
+   "fp": 3.0,
+   "carac": [
+    16,
+    13,
+    14,
+    10,
+    11,
+    10
+   ]
+  },
+  {
+   "name": "Water Elemental",
+   "pv": 114,
+   "ca": 14,
+   "fp": 5.0,
+   "carac": [
+    18,
+    14,
+    18,
+    5,
+    10,
+    8
+   ]
+  },
+  {
+   "name": "Weasel",
+   "pv": 1,
+   "ca": 13,
+   "fp": 0.0,
+   "carac": [
+    3,
+    16,
+    8,
+    2,
+    12,
+    3
+   ]
+  },
+  {
+   "name": "Werebear",
+   "pv": 135,
+   "ca": 15,
+   "fp": 5.0,
+   "carac": [
+    19,
+    10,
+    17,
+    11,
+    12,
+    12
+   ]
+  },
+  {
+   "name": "Wereboar",
+   "pv": 97,
+   "ca": 15,
+   "fp": 4.0,
+   "carac": [
+    17,
+    10,
+    15,
+    10,
+    11,
+    8
+   ]
+  },
+  {
+   "name": "Wererat",
+   "pv": 60,
+   "ca": 13,
+   "fp": 2.0,
+   "carac": [
+    10,
+    16,
+    12,
+    11,
+    10,
+    8
+   ]
+  },
+  {
+   "name": "Weretiger",
+   "pv": 120,
+   "ca": 12,
+   "fp": 4.0,
+   "carac": [
+    17,
+    15,
+    16,
+    10,
+    13,
+    11
+   ]
+  },
+  {
+   "name": "Werewolf",
+   "pv": 71,
+   "ca": 15,
+   "fp": 3.0,
+   "carac": [
+    16,
+    14,
+    14,
+    10,
+    11,
+    10
+   ]
+  },
+  {
+   "name": "White Dragon Wyrmling",
+   "pv": 32,
+   "ca": 16,
+   "fp": 2.0,
+   "carac": [
+    14,
+    10,
+    14,
+    5,
+    10,
+    11
+   ]
+  },
+  {
+   "name": "Wight",
+   "pv": 82,
+   "ca": 14,
+   "fp": 3.0,
+   "carac": [
+    15,
+    14,
+    16,
+    10,
+    13,
+    15
+   ]
+  },
+  {
+   "name": "Will-o'-Wisp",
+   "pv": 27,
+   "ca": 19,
+   "fp": 2.0,
+   "carac": [
+    1,
+    28,
+    10,
+    13,
+    14,
+    11
+   ]
+  },
+  {
+   "name": "Winter Wolf",
+   "pv": 75,
+   "ca": 13,
+   "fp": 3.0,
+   "carac": [
+    18,
+    13,
+    14,
+    7,
+    12,
+    8
+   ]
+  },
+  {
+   "name": "Wolf",
+   "pv": 11,
+   "ca": 12,
+   "fp": 0.25,
+   "carac": [
+    14,
+    15,
+    12,
+    3,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Worg",
+   "pv": 26,
+   "ca": 13,
+   "fp": 0.5,
+   "carac": [
+    16,
+    13,
+    13,
+    7,
+    11,
+    8
+   ]
+  },
+  {
+   "name": "Wraith",
+   "pv": 67,
+   "ca": 13,
+   "fp": 5.0,
+   "carac": [
+    6,
+    16,
+    16,
+    12,
+    14,
+    15
+   ]
+  },
+  {
+   "name": "Wyvern",
+   "pv": 127,
+   "ca": 14,
+   "fp": 6.0,
+   "carac": [
+    19,
+    10,
+    16,
+    5,
+    12,
+    6
+   ]
+  },
+  {
+   "name": "Xorn",
+   "pv": 84,
+   "ca": 19,
+   "fp": 5.0,
+   "carac": [
+    17,
+    10,
+    22,
+    11,
+    10,
+    11
+   ]
+  },
+  {
+   "name": "Young Black Dragon",
+   "pv": 127,
+   "ca": 18,
+   "fp": 7.0,
+   "carac": [
+    19,
+    14,
+    17,
+    12,
+    11,
+    15
+   ]
+  },
+  {
+   "name": "Young Blue Dragon",
+   "pv": 152,
+   "ca": 18,
+   "fp": 9.0,
+   "carac": [
+    21,
+    10,
+    19,
+    14,
+    13,
+    17
+   ]
+  },
+  {
+   "name": "Young Brass Dragon",
+   "pv": 110,
+   "ca": 17,
+   "fp": 6.0,
+   "carac": [
+    19,
+    10,
+    17,
+    12,
+    11,
+    15
+   ]
+  },
+  {
+   "name": "Young Bronze Dragon",
+   "pv": 142,
+   "ca": 17,
+   "fp": 8.0,
+   "carac": [
+    21,
+    10,
+    19,
+    14,
+    13,
+    17
+   ]
+  },
+  {
+   "name": "Young Copper Dragon",
+   "pv": 119,
+   "ca": 17,
+   "fp": 7.0,
+   "carac": [
+    19,
+    12,
+    17,
+    16,
+    13,
+    15
+   ]
+  },
+  {
+   "name": "Young Gold Dragon",
+   "pv": 178,
+   "ca": 18,
+   "fp": 10.0,
+   "carac": [
+    23,
+    14,
+    21,
+    16,
+    13,
+    20
+   ]
+  },
+  {
+   "name": "Young Green Dragon",
+   "pv": 136,
+   "ca": 18,
+   "fp": 8.0,
+   "carac": [
+    19,
+    12,
+    17,
+    16,
+    13,
+    15
+   ]
+  },
+  {
+   "name": "Young Red Dragon",
+   "pv": 178,
+   "ca": 18,
+   "fp": 10.0,
+   "carac": [
+    23,
+    10,
+    21,
+    14,
+    11,
+    19
+   ]
+  },
+  {
+   "name": "Young Silver Dragon",
+   "pv": 168,
+   "ca": 18,
+   "fp": 9.0,
+   "carac": [
+    23,
+    10,
+    21,
+    14,
+    11,
+    19
+   ]
+  },
+  {
+   "name": "Young White Dragon",
+   "pv": 123,
+   "ca": 17,
+   "fp": 6.0,
+   "carac": [
+    18,
+    10,
+    18,
+    6,
+    11,
+    12
+   ]
+  },
+  {
+   "name": "Zombie",
+   "pv": 15,
+   "ca": 8,
+   "fp": 0.25,
+   "carac": [
+    13,
+    6,
+    16,
+    3,
+    6,
+    5
+   ]
+  }
+ ]
+}

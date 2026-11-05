@@ -1,0 +1,164 @@
+/* ============================================================================
+   ARCANA 5e — jetons du design system Stitch (projet « Grimoire 5e Compendium »)
+   Source : design system « Arcana 5e » du MCP Stitch + rendu des maquettes.
+   Les jetons --st-* sont toujours définis ; le bloc « skin » plus bas rebranche
+   les anciens noms (--bg, --surface, --gold…) dessus pour les pages migrées
+   (body[data-skin="stitch"]). Lors du déploiement global, ce bloc passera sur :root.
+   ============================================================================ */
+
+:root {
+  /* Surfaces : bleu nuit → indigo sombre (du plus profond au plus élevé) */
+  --st-surface-lowest: #060919;
+  --st-surface-low: #0c1126;
+  --st-surface: #090d1e;
+  --st-surface-container: #111733;
+  --st-surface-high: #1a2144;
+  --st-surface-highest: #252d57;
+  --st-surface-bright: #2d3665;
+
+  /* Texte */
+  --st-on-surface: #e8ebff;
+  --st-on-surface-variant: #bcc2e6;
+  --st-outline: #8790bd;
+  --st-outline-variant: #343c6b;
+
+  /* Jaune vif (primaire) */
+  --st-primary: #ffd84a;
+  --st-primary-dim: #f5c518;
+  --st-primary-fixed: #ffe98a;
+  --st-primary-container: #f5c518;
+  --st-on-primary: #2e2300;
+  --st-on-primary-container: #2e2300;
+
+  /* Cyan électrique (secondaire) */
+  --st-secondary: #4de8ff;
+  --st-secondary-container: #19d3f2;
+  --st-on-secondary: #00323d;
+  --st-on-secondary-container: #00323d;
+
+  /* Vert néon (tertiaire) */
+  --st-tertiary: #5dffb0;
+  --st-tertiary-container: #3bf59a;
+  --st-on-tertiary-container: #00321c;
+
+  /* Erreur */
+  --st-error: #ff9aa8;
+  --st-error-container: #8f1230;
+  --st-on-error: #5c0018;
+  --st-on-error-container: #ffd9de;
+
+  /* Lueurs Aurora : triplets RVB, utilisés en rgb(var(--x) / alpha) */
+  --au-yellow: 255 216 74;
+  --au-cyan: 77 232 255;
+  --au-green: 93 255 176;
+  --au-violet: 150 130 255;
+  --au-red: 255 120 140;
+
+  /* Typographies */
+  --st-font-head: "Playfair Display", Georgia, serif;
+  --st-font-body: "Plus Jakarta Sans", system-ui, "Segoe UI", sans-serif;
+  --st-font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* Rayons (rendu réel des maquettes : rounded = 2px, lg = 4px, xl = 8px) */
+  --st-r-sm: 2px;
+  --st-r-md: 4px;
+  --st-r-lg: 8px;
+  --st-r-pill: 999px;
+
+  /* Espacements */
+  --st-space-xs: .25rem;
+  --st-space-sm: .5rem;
+  --st-space-md: 1rem;
+  --st-space-lg: 1.5rem;
+  --st-space-xl: 2.5rem;
+
+  /* Ombres */
+  /* Profondeur : filets lumineux intérieurs + ambiance diffuse (pas d'ombre portée nette) */
+  --st-shadow-sm: inset 0 0 0 1px rgba(160,170,255,.06);
+  --st-shadow-md: inset 0 0 0 1px rgba(160,170,255,.08), inset 0 1px 0 rgba(255,255,255,.05);
+  --st-shadow-xl: inset 0 0 0 1px rgba(160,170,255,.10), inset 0 1px 0 rgba(255,255,255,.06), 0 30px 60px -30px rgba(2,4,18,.85);
+  --st-shadow-float: inset 0 0 0 1px rgba(120,225,255,.18), inset 0 1px 0 rgba(255,255,255,.07), 0 40px 80px -30px rgba(2,4,18,.9);
+  --st-glow-primary: 0 0 24px rgba(255,216,74,.28);
+
+  /* Teintes de l'économie d'action (fond / texte) */
+  --st-act-action: var(--st-primary-container);
+  --st-on-act-action: var(--st-on-primary-container);
+  --st-act-bonus: var(--st-secondary-container);
+  --st-on-act-bonus: var(--st-on-secondary-container);
+  --st-act-reaction: var(--st-tertiary-container);
+  --st-on-act-reaction: var(--st-on-tertiary-container);
+  --st-act-action-rgb: var(--au-yellow);
+  --st-act-bonus-rgb: var(--au-cyan);
+  --st-act-reaction-rgb: var(--au-green);
+}
+
+/* ------------------------------ Skin « Stitch » ------------------------------
+   Thème sombre uniquement : le thème « parchemin » n'a pas de maquette Stitch
+   (décision à valider) et garde donc son apparence actuelle.                    */
+html[data-theme="nuit"] body[data-skin="stitch"] {
+  color-scheme: dark;
+
+  --bg: var(--st-surface);
+  --bg-2: var(--st-surface-lowest);
+  --surface: var(--st-surface-container);
+  --surface-2: var(--st-surface-high);
+  --surface-3: var(--st-surface-highest);
+  --ink: var(--st-on-surface);
+  --ink-dim: var(--st-on-surface-variant);
+  --ink-faint: var(--st-outline);
+
+  --gold: var(--st-primary-container);
+  --gold-bright: var(--st-primary);
+  --gold-dim: rgba(255,216,74,.42);
+  --arcane: var(--st-secondary);
+  --arcane-deep: #0b4a66;
+  --arcane-glow: rgba(77,232,255,.14);
+  --line: rgba(135,144,189,.20);
+  --line-strong: rgba(135,144,189,.34);
+  --danger: var(--st-error);
+  --success: var(--st-tertiary);
+
+  /* Économie d'action : Action = or, Action bonus = cyan, Réaction = indigo */
+  --act-action: var(--st-act-action);
+  --act-bonus: var(--st-act-bonus);
+  --act-reaction: var(--st-act-reaction);
+
+  /* Caractéristiques (repère mnémotechnique conservé, teintes accordées à la palette) */
+  --ab-force: #ff8a9a;
+  --ab-dexterite: #5dffb0;
+  --ab-constitution: #ffb347;
+  --ab-intelligence: var(--st-secondary);
+  --ab-sagesse: #3ff0d2;
+  --ab-charisme: #ff9bd5;
+
+  --res-rage: #ff8a9a;
+  --res-nature: #5dffb0;
+  --res-arcane: var(--st-secondary);
+  --res-sacre: var(--st-primary);
+  --res-vitalite: #5dffb0;
+  --res-ki: #3ff0d2;
+  --res-charme: #ff9bd5;
+  --res-chasse: #ffb347;
+  --res-ombre: #aab6dd;
+  --res-espece: #9682ff;
+
+  --card-glow: none;
+  --page-vignette: none;
+  --texture: none;
+  --radius: var(--st-r-lg);
+  --radius-lg: var(--st-r-lg);
+  --shadow-1: var(--st-shadow-md);
+  --shadow-2: var(--st-shadow-float);
+
+  /* Typographies : titres Playfair, libellés et texte Plus Jakarta Sans */
+  --font-display: var(--st-font-head);
+  --font-title: var(--st-font-body);
+  --font-flavor: var(--st-font-body);
+}
+
+/* « Manuscrit » (réglage plume par défaut) : sous le skin, le texte courant passe en Plus Jakarta Sans.
+   Les autres plumes (Lisible, Moderne, Livre) restent des choix d'accessibilité inchangés. */
+html[data-theme="nuit"][data-font="manuscrit"] body[data-skin="stitch"] {
+  --font-body: var(--st-font-body);
+  --font-body-size: 15px;
+}
